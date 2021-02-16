@@ -29,6 +29,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
+
 library(readxl)
 library(ggplot2)
 library(ggmosaic)
@@ -58,26 +59,30 @@ pie(table(donnees_creps$POLES), col = c("lightskyblue2", "lightgoldenrod3", "mis
 barplot(table(factor(donnees_creps$SCORE, levels = 0:20)), main = "Scores obtenus - Tous pôles confondus", ylim = c(0,15), cex.names = 0.6, ylab = "Effectifs", xlab= "Score", col = heat.colors(20))
 ```
 - Camembert : 
-On note que c'est en Basket Ball qu'il y a le plus d'athlètes, soit 1/3. Viennent ensuite (de façon décroissante) la Natation Synchronisée, la Boxe Française, l'Aviron et la Natation. C'est en bowling qu'il y a le moins d'athlètes.
+On note que c'est en Basket Ball qu'il y a le plus d'athlètes, soit 1/3. Viennent ensuite, de façon décroissante, la Natation Synchronisée, la Boxe Française, l'Aviron et la Natation. C'est en bowling qu'il y a le moins d'athlètes.
 
 - Barplot effectif/score 
-La majorité des athlètes obtiennent un score de 10. + de notes en dessous qu'au dessus de la moyenne. (peut-être analyser les scores où il y a le + de monde et comparer : variabilité des profils etc)
+La majorité des athlètes obtiennent un score de 10, soit la moyenne. Cependant, il y a plus de notes en dessous qu'au dessus de la moyenne.
+12 athlètes ont reçu un score de 8, autant que pour un score de 9. Des pics plus discrets s'affichent pour les scores de 12, 5 (et 14).
+
+(analyser les scores où il y a le plus de monde et comparer : variabilité des profils...)
 
 ```{r}
 boxplot(donnees_creps$SCORE ~ donnees_creps$POLES, cex.axis = 0.8, main = "Boxplots parallèles des scores en fonction des pôles", xlab = "Pôles", ylab = "Score")
 ```
-(50% des observations sont rassemblées à l'intérieur de la boîte)
-BL,BK,AV : médianes alignées à 9/20
-AV : faible écart inter-qartiles
-en NS : médiane la plus élevée à 11/20 (logique avec graphes précédents)
--> scores médians plutôt similaires mais les scores de certains pôles sont plus variables (BF par rapport à AV par exemple"")
+(50% des observations sont rassemblées à l'intérieur d'une boîte)
+Les médianes sont alignés au score de 9/20 pour les boxplots concernant les athlètes de Bowling, Basketball et Aviron : il y a autant de scores obtenus en-dessous qu'au dessus de cette note, pour ces pôles-ci.
+En aviron, on observe un faible écart inter-qartiles, les scores ne sont pas trop dispersés au sein de ce pôle, niveau homogène. (mais 2 outliers).
+En Natation Synchronisée, la médiane s'élève à 11/20, la plus élevée parmi tous les pôles. De plus, l'écart interquartiles n'est pas très haut, on peut en déduire un niveau homogène et bon.
+En conclusion, les scores médians sont plutôt proches mais les scores selon les pôles sont plus dispersés (BF par rapport à AV par exemple)
 
 ```{r}
 ggplot(data = donnees_creps) + geom_histogram(aes(x = SCORE, fill = POLES), binwidth = 0.5) + scale_x_continuous(breaks=seq(0, 20, by = 1)) + xlab("Score") + ylab("Effectifs") + ggtitle("Effectifs selon les scores obtenus (toutes catégories) selon les pôles")
 ```
-Parmi les boulistes, les moins nombreux, aucun n'obtient un score au dessus de 12, tout comme les pratiquants de la Boxe Française.
-Les seuls 0 visibles correspondent aux athlètes du BK, mais ils sont les plus nombreux (donc + de possibilités de variation des scores).
-Nat syncho : entre 7 (élevé comme score minimum) et 18/20
+Parmi les bowlers, les moins nombreux, aucun n'obtient un score au dessus de 12, tout comme les boxeurs.
+Les seuls 0 visibles correspondent aux joueurs de Basket Ball, mais ils sont les plus nombreux (donc plus de possibilités de varibilité des scores).
+En Natation synchronisée, les scores se situent entre 7 (élevé pour un score minimum) et 18/20.
+Du fait qu'ils soient nombreux, on voit bien que les joueurs de basket ont des scores qui s'étendent de 0 à 19/20 (niveaux hétérogènes).
 
 # Pour essayer d'étudier la spécificité de chaque pôle
 
@@ -90,14 +95,14 @@ plot(donnees_creps$STABSUP ~donnees_creps$POLES,ylab="Score en stabilité sup", 
 ```
 
 
-- Pour la mobilité inférieure (note sur 8) : la médiane de tous les pôles se situe aux alentours d'un score de 3, i.e 50% des athlètes de ces pôles ont un score inférieur à 3. Le pôle Natation Synchronisée se détache avec une médiane très proche de 6, et une certaine homogénéité des athlètes (faible écart interquartile). (Les nageuses sont plus souples : sont-elles moins blessées à ce niveau-la pour autant?).
+- Pour la mobilité inférieure (note sur 8) : le score médian de tous les pôles se situe aux alentours de 3, i.e 50% des athlètes de ces pôles ont un score inférieur à 3. Le pôle Natation Synchronisée se détache avec une médiane très proche de 6, et une certaine homogénéité des athlètes (faible écart interquartile). (Les nageuses sont plus souples : sont-elles moins blessées à ce niveau-la pour autant?).
 - Pour la mobilité supérieure (note sur 4) : Les pôles Boxe et Bowling sont les plus faibles avec une médiane de 1. On peut également remarquer qu'un grand nombre d'atlètes ont un score approximatif de 1, car la médiane semble assimilable au premier quartile. Ces deux pôles semblent avoir un comportement similaire, même dispersion (cf ont-ils le même type de blessure?).Pour l'Aviron et le Basket, il est plus difficile de conclure, la dispersion est importante, les athlètes non homogènes? Plus grande homgonéité pour la Natation et la Natation Synchronisée, avec une médiane plus haute.
 -Pour la staibilité inférieure (note sur 6) : Encore une fois, on constate une certaine disparité entre les pôles. Les médianes les plus faibles (autour de 2) pour la boxe, la natation et la Natation Synchronisée. Il y a une dispersion plus important pour les trois autres pôles mais ils obtiennent globalement de meilleurs scores.
 -Pour la stabilité supérieure (note sur 2) : 75% des athlètes ont une note inférieure ou égale à 1 pour le basket, la boxe et le bowling. 75% des athlètes ont une note supérieure ou égale à 1 pour l'aviron et la natation. La répartition est symétrique par rapport au score 1 pour la Natation Synchronisée.
 
-Mais toutes ces différences constatées entre pôles sont-elles significatives ou simplement minimes? Cf les tests de signifcativité des paramètres avec une ANOVA pour chaque type de score.
+Mais toutes ces différences constatées entre pôles sont-elles significatives ou simplement minimes? Cf les tests de significativité des paramètres avec une ANOVA pour chaque type de score.
 
-N.B: Les observations à l'extérieur des moustaches doivent être étudiées de plus près. Elles ne sont pas forcément des valeurs aberrantes, mais possiblement des valeurs "déterminantes". A creuser...
+N.B: Les observations à l'extérieur des moustaches doivent être étudiées de plus près. Elles ne sont pas forcément des valeurs aberrantes, mais possiblement des valeurs "déterminantes". A voir...
 
 # Tests de modèle d'ANOVA
 
@@ -124,11 +129,13 @@ ao.score_stab_sup.pole = lm(donnees_creps$STABSUP ~ POLES, data = donnees_creps)
 summary(ao.score_stab_sup.pole)
 ```
 
-On voit que la variable POLES explique mieux les scores en mobilité inférieure et en stabilité supérieure  qu'elle n'explique le score total (meilleur $R^2$). Donc on peut en conclure que c'est dans ces deux "sous-catégories" de score que les disparités vont être les plus marquées entre les pôles. 
+On voit que la variable POLES explique mieux les scores en mobilité inférieure et en stabilité supérieure  qu'elle n'explique le score total (meilleur $R^2$). Donc on peut en conclure que c'est dans ces deux "sous-catégories" de score que les disparités entre les pôles vont être les plus marquées. 
+
+A Chercher : p-valeurs élevées (on ne rejette pas la nullité du paramètre) à interpréter (variables poles n'expliquent pas/mal les scores...?)
 
 Piste à creuser : Essayer de regarder l'importance relative des différentes sous-catégories de scores. Certaines pèsent-elles plus dans le risque de blessure?
 
-Piste à creuser : il peut-être intéressant de faire le comparatif avec le "type"" de blessure qu'il y a dans chaque pôle. Les blessures sont-elles globalement les mêmes dans les différents pôles? Ou la fréquence de certaines blessures est-elle plus importante dans certains pôles? 
+Piste à creuser : il peut-être intéressant de faire le comparatif avec le "type" de blessure qu'il y a dans chaque pôle. Les blessures sont-elles globalement les mêmes dans les différents pôles? Ou la fréquence de certaines blessures est-elle plus importante dans certains pôles? 
 Et tracer aussi comme il est fait dans le cas global, un graphe réprésentant les effectifs des scores spéciaux selon les pôles.
 
 ```{r}
@@ -148,6 +155,7 @@ Et tracer aussi comme il est fait dans le cas global, un graphe réprésentant l
 ```{r}
 ggplot(data = donnees_creps) + geom_histogram(aes(x = MOBINF, fill = POLES), binwidth = 0.5) + scale_x_continuous(breaks=seq(0, 20, by = 1)) + xlab("Score") + ylab("Effectifs") + ggtitle("Effectifs selon les scores obtenus en mobilité inférieure selon les pôles")
 ```
+Alors que chaque pôle apparaît sur quasiment chaque score possible de mobilité inf, les athlètes de natation synchronisée n'apparaissent qu'à parti de 3/8 ! 
 
 ```{r}
 ggplot(data = donnees_creps) + geom_histogram(aes(x = STABSUP, fill = POLES), binwidth = 0.5) + scale_x_continuous(breaks=seq(0, 20, by = 1)) + xlab("Score") + ylab("Effectifs") + ggtitle("Effectifs selon les scores obtenus en stabilité supérieure selon les pôles")
