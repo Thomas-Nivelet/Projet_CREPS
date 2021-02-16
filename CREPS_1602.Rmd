@@ -28,8 +28,9 @@ header-includes:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r}
+# Importation des librairies `R` nécessaires
 
+```{r}
 library(readxl)
 library(ggplot2)
 library(ggmosaic)
@@ -43,6 +44,7 @@ library(MASS)
 donnees_creps <- read_excel("donnees_CREPS_1.xlsx")
 ```
 
+# Prise en main des données et statistiques descriptives
 
 ```{r}
 donnees_creps$POLES <- as.factor(donnees_creps$POLES)
@@ -50,10 +52,7 @@ summary(donnees_creps)
 head(donnees_creps)
 ```
 
-# Prise en main des données et statistiques descriptives
-
 ```{r}
-#par(mfrow = c(1, 4))
 pie(table(donnees_creps$POLES), col = c("lightskyblue2", "lightgoldenrod3", "mistyrose4", "lightcoral", "mediumblue", "lightseagreen"),main = "Répartition des athlètes dans les pôles")
 
 barplot(table(factor(donnees_creps$SCORE, levels = 0:20)), main = "Scores obtenus - Tous pôles confondus", ylim = c(0,15), cex.names = 0.6, ylab = "Effectifs", xlab= "Score", col = heat.colors(20))
@@ -63,28 +62,29 @@ On note que c'est en Basket Ball qu'il y a le plus d'athlètes, soit 1/3. Vienne
 
 - Barplot effectif/score 
 La majorité des athlètes obtiennent un score de 10, soit la moyenne. Cependant, il y a plus de notes en dessous qu'au dessus de la moyenne.
-12 athlètes ont reçu un score de 8, autant que pour un score de 9. Des pics plus discrets s'affichent pour les scores de 12, 5 (et 14).
+12 athlètes ont reçu un score de 8, autant que pour un score de 9. Des pics plus discrets s'affichent pour les scores de 12, 5 (et 14). 
 
-(analyser les scores où il y a le plus de monde et comparer : variabilité des profils...)
+- Analyser les scores où il y a le plus de monde et comparer : variabilité des profils, mise en perspective selon les pôles...
 
 ```{r}
 boxplot(donnees_creps$SCORE ~ donnees_creps$POLES, cex.axis = 0.8, main = "Boxplots parallèles des scores en fonction des pôles", xlab = "Pôles", ylab = "Score")
 ```
-(50% des observations sont rassemblées à l'intérieur d'une boîte)
+(50% des observations sont rassemblées à l'intérieur d'une boîte, le trait noir plus épais représente la médiane)
 Les médianes sont alignés au score de 9/20 pour les boxplots concernant les athlètes de Bowling, Basketball et Aviron : il y a autant de scores obtenus en-dessous qu'au dessus de cette note, pour ces pôles-ci.
-En aviron, on observe un faible écart inter-qartiles, les scores ne sont pas trop dispersés au sein de ce pôle, niveau homogène. (mais 2 outliers).
-En Natation Synchronisée, la médiane s'élève à 11/20, la plus élevée parmi tous les pôles. De plus, l'écart interquartiles n'est pas très haut, on peut en déduire un niveau homogène et bon.
-En conclusion, les scores médians sont plutôt proches mais les scores selon les pôles sont plus dispersés (BF par rapport à AV par exemple)
+En aviron, on observe un faible écart inter-quartiles, les scores ne sont pas trop dispersés au sein de ce pôle, niveau homogène. (mais 2 outliers).
+En Natation Synchronisée, la médiane s'élève à 11/20, la plus élevée parmi tous les pôles. De plus, l'écart interquartiles n'est pas très haut, on peut en déduire un niveau homogène et bon, en majorité situé au-dessus de la moyenne de 10/20.
+En conclusion, les scores médians sont plutôt proches mais les scores selon les pôles sont plus dispersés (BF par rapport à AV par exemple).
+L'ensemble de ces analyses doit être mise en relief avec l'effectif d'athlètes pour chaque pôle considéré ; en effet, on dispose de moins d'athlètes pour l'aviron que pour le basketball par exemple.
 
 ```{r}
 ggplot(data = donnees_creps) + geom_histogram(aes(x = SCORE, fill = POLES), binwidth = 0.5) + scale_x_continuous(breaks=seq(0, 20, by = 1)) + xlab("Score") + ylab("Effectifs") + ggtitle("Effectifs selon les scores obtenus (toutes catégories) selon les pôles")
 ```
 Parmi les bowlers, les moins nombreux, aucun n'obtient un score au dessus de 12, tout comme les boxeurs.
-Les seuls 0 visibles correspondent aux joueurs de Basket Ball, mais ils sont les plus nombreux (donc plus de possibilités de varibilité des scores).
+Les seuls 0 visibles correspondent aux joueurs de Basketball, mais ils sont les plus nombreux (donc davantage de possibilités de variabilité des scores).
 En Natation synchronisée, les scores se situent entre 7 (élevé pour un score minimum) et 18/20.
-Du fait qu'ils soient nombreux, on voit bien que les joueurs de basket ont des scores qui s'étendent de 0 à 19/20 (niveaux hétérogènes).
+Du fait qu'ils soient nombreux, on voit bien que les joueurs de basket ont des scores qui s'étendent de 0 à 19/20 : les niveaux peuvent être considérés comme hétérogènes, bien que l'on puisse se poser la question sur les valeurs extrêmement faibles (problème lors du test ? erreur de casting ?).
 
-# Pour essayer d'étudier la spécificité de chaque pôle
+# Étude de la spécificité de chaque pôle
 
 ```{r}
 par(mfrow=c(2,2))
@@ -94,15 +94,14 @@ plot(donnees_creps$STABINF ~donnees_creps$POLES, ylab="Score en stabilité inf",
 plot(donnees_creps$STABSUP ~donnees_creps$POLES,ylab="Score en stabilité sup", xlab="Poles")
 ```
 
-
 - Pour la mobilité inférieure (note sur 8) : le score médian de tous les pôles se situe aux alentours de 3, i.e 50% des athlètes de ces pôles ont un score inférieur à 3. Le pôle Natation Synchronisée se détache avec une médiane très proche de 6, et une certaine homogénéité des athlètes (faible écart interquartile). (Les nageuses sont plus souples : sont-elles moins blessées à ce niveau-la pour autant?).
-- Pour la mobilité supérieure (note sur 4) : Les pôles Boxe et Bowling sont les plus faibles avec une médiane de 1. On peut également remarquer qu'un grand nombre d'atlètes ont un score approximatif de 1, car la médiane semble assimilable au premier quartile. Ces deux pôles semblent avoir un comportement similaire, même dispersion (cf ont-ils le même type de blessure?).Pour l'Aviron et le Basket, il est plus difficile de conclure, la dispersion est importante, les athlètes non homogènes? Plus grande homgonéité pour la Natation et la Natation Synchronisée, avec une médiane plus haute.
--Pour la staibilité inférieure (note sur 6) : Encore une fois, on constate une certaine disparité entre les pôles. Les médianes les plus faibles (autour de 2) pour la boxe, la natation et la Natation Synchronisée. Il y a une dispersion plus important pour les trois autres pôles mais ils obtiennent globalement de meilleurs scores.
--Pour la stabilité supérieure (note sur 2) : 75% des athlètes ont une note inférieure ou égale à 1 pour le basket, la boxe et le bowling. 75% des athlètes ont une note supérieure ou égale à 1 pour l'aviron et la natation. La répartition est symétrique par rapport au score 1 pour la Natation Synchronisée.
+- Pour la mobilité supérieure (note sur 4) : Les pôles Boxe et Bowling sont les plus faibles avec une médiane de 1. On peut également remarquer qu'un grand nombre d'atlètes ont un score approximatif de 1, car la médiane semble assimilable au premier quartile. Ces deux pôles semblent avoir un comportement similaire, même dispersion (cf ont-ils le même type de blessure?).Pour l'Aviron et le Basket, il est plus difficile de conclure, la dispersion est importante, les athlètes non homogènes? Plus grande homogénéité pour la Natation et la Natation Synchronisée, avec une médiane plus haute.
+- Pour la stabilité inférieure (note sur 6) : Encore une fois, on constate une certaine disparité entre les pôles. Les médianes les plus faibles (autour de 2) pour la boxe, la natation et la Natation Synchronisée. Il y a une dispersion plus important pour les trois autres pôles mais ils obtiennent globalement de meilleurs scores.
+- Pour la stabilité supérieure (note sur 2) : 75% des athlètes ont une note inférieure ou égale à 1 pour le basket, la boxe et le bowling. 75% des athlètes ont une note supérieure ou égale à 1 pour l'aviron et la natation. La répartition est symétrique par rapport au score 1 pour la Natation Synchronisée.
 
 Mais toutes ces différences constatées entre pôles sont-elles significatives ou simplement minimes? Cf les tests de significativité des paramètres avec une ANOVA pour chaque type de score.
 
-N.B: Les observations à l'extérieur des moustaches doivent être étudiées de plus près. Elles ne sont pas forcément des valeurs aberrantes, mais possiblement des valeurs "déterminantes". A voir...
+N.B.: Les observations à l'extérieur des moustaches doivent être étudiées de plus près. Elles ne sont pas forcément des valeurs aberrantes, mais possiblement des valeurs "déterminantes". A voir...
 
 # Tests de modèle d'ANOVA
 
@@ -111,7 +110,7 @@ ao.score.pole = lm(SCORE ~ POLES, data = donnees_creps)
 summary(ao.score.pole)
 ```
 
-On peut voir que le modèle d'ANOVA testé ici (la variable POLES pour expliquer le score) n'ajuste pas bien les données, car le $R^2$ est faible (proche de 0). Donc l'appartenance à un pôle ne suffit pas à expliquer le score obtenu au test.
+On peut voir que le modèle d'ANOVA testé ici (la variable POLES pour expliquer le score) n'ajuste pas bien les données, car le $R^2$ est faible (proche de 0). Donc l'appartenance à un pôle ne suffit pas à expliquer le score obtenu au test. Pour mieux expliquer le score, il nous faudra donc "complexifier" le modèle", en considérant par exemple d'autres variables.
 
 ```{r}
 #Modèle d'anova pour chaque catégorie de sport
@@ -129,9 +128,9 @@ ao.score_stab_sup.pole = lm(donnees_creps$STABSUP ~ POLES, data = donnees_creps)
 summary(ao.score_stab_sup.pole)
 ```
 
-On voit que la variable POLES explique mieux les scores en mobilité inférieure et en stabilité supérieure  qu'elle n'explique le score total (meilleur $R^2$). Donc on peut en conclure que c'est dans ces deux "sous-catégories" de score que les disparités entre les pôles vont être les plus marquées. 
+On voit que la variable POLES explique mieux les scores en mobilité inférieure et en stabilité supérieure qu'elle n'explique le score total (meilleur $R^2$). Donc on peut en conclure que c'est dans ces deux "sous-catégories" de score que les disparités entre les pôles vont être les plus marquées. 
 
-A Chercher : p-valeurs élevées (on ne rejette pas la nullité du paramètre) à interpréter (variables poles n'expliquent pas/mal les scores...?)
+A Chercher : p-valeurs élevées (on ne rejette pas individuellement la nullité du paramètre) à interpréter (variables pôles n'expliquent pas/mal les scores...?)
 
 Piste à creuser : Essayer de regarder l'importance relative des différentes sous-catégories de scores. Certaines pèsent-elles plus dans le risque de blessure?
 
@@ -155,13 +154,15 @@ Et tracer aussi comme il est fait dans le cas global, un graphe réprésentant l
 ```{r}
 ggplot(data = donnees_creps) + geom_histogram(aes(x = MOBINF, fill = POLES), binwidth = 0.5) + scale_x_continuous(breaks=seq(0, 20, by = 1)) + xlab("Score") + ylab("Effectifs") + ggtitle("Effectifs selon les scores obtenus en mobilité inférieure selon les pôles")
 ```
-Alors que chaque pôle apparaît sur quasiment chaque score possible de mobilité inf, les athlètes de natation synchronisée n'apparaissent qu'à parti de 3/8 ! 
+On retrouve ici que les résultats obtenus aux exercices de mobilité inférieure sont très disparates, les 9 niveaux de notation sont utilisés. L'essentiel des notes sont comprises entre 0 et 6, et ce, pour l'ensemble des pôles.
+Alors que chaque pôle apparaît sur quasiment chaque score possible de mobilité inférieure, les athlètes de natation synchronisée n'apparaissent qu'à partir de 3/8 ! Les scores obtenus pour ces athlètes sont bien meilleurs relativement aux autres pratiquants, la mobilité inférieure étant généralement une caractéristique intrinsèque de ce sport, ces résultats pour la natation synchronisée semblent conformes à nos attentes. 
 
 ```{r}
 ggplot(data = donnees_creps) + geom_histogram(aes(x = STABSUP, fill = POLES), binwidth = 0.5) + scale_x_continuous(breaks=seq(0, 20, by = 1)) + xlab("Score") + ylab("Effectifs") + ggtitle("Effectifs selon les scores obtenus en stabilité supérieure selon les pôles")
 ```
+De même, pour la stabilité supérieure, on constate que les trois valeurs de notation sont utilisées, et que les résultats sont à nouveau uniformément disparates. Cependant, aucune tendance claire ne se dégage ici, aucun pôle n'obtient des résultats significativement plus élevés ou plus faibles ; cela étant probablement dû à la faible échelle de notation pour cette partie du test. La stabilité supérieure ne semble donc pas être une caractéristique qui dégage clairement un pôle par rapport à un autre dans le cadre de notre étude, avec les données que nous avons à disposition.
 
-Les deux graphes ci-dessus permettent une meilleure visualisation que les boxplots avant.
+Les deux graphes ci-dessus permettent une meilleure visualisation que les boxplots présentés plus haut dans le document. 
 
 # Redéfinition de la variable `Score` en sous-catégories
 
@@ -169,7 +170,7 @@ Les deux graphes ci-dessus permettent une meilleure visualisation que les boxplo
 # Possible de redéfinir les seuils et les noms !
 # Possible aussi de redéfinir le nom des facteurs !
 
-#SCORE_cat <- donnees_creps$SCORE_cat
+SCORE_cat <- donnees_creps$SCORE
 SCORE <- donnees_creps$SCORE
 POLES <- donnees_creps$POLES
 
@@ -187,42 +188,46 @@ SCORE_cat = factor(SCORE_cat, levels = c("Tres faible", "Faible", "Moyen", "Bon"
 table.cat <- table(POLES, SCORE_cat)
 addmargins(table.cat)
 
-prop.cat <- prop.table(table.cat, 1)
+prop.cat <- prop.table(table.cat,1)
 prop.cat
-
-#table.cat2 <- table(SCORE_cat, POLES)
-#prop.cat2 <- prop.table(table.cat2)
 ```
 
-Grâce à la table de contingence ci-dessus, on peut observer la répartition des résultats au test des différents athlètes, selon les différentes "tranches" de score qu'on a défini: Très faible, Faible, Moyen, et Bon. 
-On voit qu'il n'y a que très peu de score au-dessus de 15. 
+Grâce à la table de contingence ci-dessus, on peut observer la répartition des résultats au test des différents athlètes, selon les différentes "tranches" de score qu'on a défini : Très faible, Faible, Moyen, et Bon. 
+
+On constate qu'il n'y a que très peu de score au-dessus de 15. On peut donc d'ores et déjà se poser la question de la pertinence de ce découpage en sous-catégories de score et de ces valeurs de seuil : sont-elles vraiment adaptées compte tenu des résultats obtenus et de la construction du testing ? Ce découpage en sous catégories est une première étape dans la définition de l'obtention d'un "bon score" et d'un "moins bon score" à ce testing.
 
 Dans la seconde table de contingence, on peut observer les répartition des scores de chaque pôle en pourcentage. Pour tous les pôles sauf le pôle de NS la plupart des athlètes ont un score compris entre 5 et 10. Pour la NS, un score moyen (i.e. entre 10 et 15) est majoritaire.
 
 Cf illustration avec le mosaic plot ci-dessous.
 
-Piste à creuser: éventuellement redéfinir nos différents seuils pour le score: cf en fonction de FMS, GMC, analyse des blessures... Car il y a beaucoup d'athlètes dans chaque pôle qui ont un score que nous avons défini comme "moyen", entre 10 et 15, et pourtant le nombre de blessures est conséquent. Mais correspondent-elles à des blessures qu'on pourrait qualifier de "mineures"?
+Piste à creuser : éventuellement redéfinir nos différents seuils pour le score: cf en fonction de FMS, GMC, analyse des blessures... En effet, il y a beaucoup d'athlètes dans chaque pôle qui ont un score que nous avons défini comme "moyen", entre 10 et 15, et pourtant le nombre de blessures est conséquent. Mais correspondent-elles à des blessures que l'on pourrait qualifier de "mineures" ? Faire le parallèle avec les seuils considérés pour le testing FMS par exemple.
 
 ```{r}
 mosaicplot(table.cat,color=c("#FF3333","#FF9933", "#FFCC00","#66CC00"), main="Contingence Catégorie de score / Pôles", xlab = "Pôles", ylab = "Catégories de score") 
 
 ```
 Interprétation :
-En natation, aucun score très faible (ça vérifie interprét. du début)
-BF, BL, NAT : aucun Bon score 
-en NS: + de moyens que de faibles scores (voire de bons scores)
-en NAT : assez bien réparti entre Moyens et Faibles scores
-même proportion de très faibles en AV, BF,BK
+On retrouve certains points soulevés précédemment :
+- Aucun score considéré comme "très faible" en natation et natation synchronisée.
+- A contrario, aucun score "bon" en BF, BL, NAT. Les scores sont plutôt moyens pour ces pôles, et assez concentrés.
+- Seule de meilleurs résultats globaux (moyens voire bons) en natation synchronisée, la tendance est globalement meilleure pour ce pôle relativement aux autres. 
+- En natation, résultats concentrés et seulement répartis dans les facteurs "Faible" et "Moyen".
+- Proportion semblable de scores très faibles en AV, BF et BK.
 
-# petit ajout utile ! 
+L'ensemble de ces interprétations nous a permis de confirmer les observations et tendances dégagées dans l'analyse descriptive uni- et bidimensionnelle. Les futurs objectifs de ce découpage en sous-catégories de score seront d'essayer de redéfinir les seuils, et de les mettre en perspective avec les seuils déjà existants (comme pour le test FMS). Nous essaierons alors de définir ce que l'on peut conidérer comme un "bon score" au test, en corrélant notamment avec les données sur les blessures.
+
+## Visualisation de caractéristiques statistiques unidimensionnelles 
 ```{r}
 library(dplyr)
-tab_mean=tapply(SCORE, POLES, mean)
-tab_median=tapply(SCORE, POLES, median) # ajout aussi de la médiane, peut être utile ?
+tab_mean <- tapply(SCORE, POLES, mean) # moyenne des scores pour chaque pôle
+tab_median <- tapply(SCORE, POLES, median) # médiane des scores pour chaque pôle
+tab_mean
+tab_median
 ```
 
-# Travail sur les données blessures 
+# Étude des données blessures 
 
+## Importation et définition des données
 ```{r}
 donnees_bless= read_excel("Donnees_bless_Poles.xlsx")
 ```
@@ -230,6 +235,9 @@ donnees_bless= read_excel("Donnees_bless_Poles.xlsx")
 ```{r}
 donnees_bless$POLE=as.factor(donnees_bless$POLE)
 ```
+
+## Comparaison des scores obtenus et des blessures dans chaque pôle
+### Première vision globale
 
 ```{r}
 par(mar=c(4,4,3,5))
@@ -245,16 +253,16 @@ mtext("Pôles",side=1,line=2.5,col="black")
 box()
 ```
 
-Commentaires: 
-Globalement, quand les différents scores obtenus par les athlètes du pôles semblent être plus faibles, le pourcentage de blessés semblent être beaucoup plus important que pour des pôles avec des scores plus élevés. (Pour le voir, comparer la tendance des pourcentages en rouges par rapport à la tendance des médianes des boxplots et en fonction de la dispersion des boxplots).
+Commentaires : 
+Globalement, lorsque les différents scores obtenus par les athlètes du pôles semblent être plus faibles, le pourcentage de blessés semblent être beaucoup plus important que pour des pôles avec des scores plus élevés. (Pour le voir, comparer la tendance des pourcentages en rouges par rapport à la tendance des médianes des boxplots et en fonction de la dispersion des boxplots).
 
-Tous les pôles exceptés celui de la NS ont des scores médians de 10, et un pourcentage de blessés supérieur à 50%. Au contraire, le pôle NS a un score médian supérieur à 10 et un pourcentage de blessé nul! On pourrait ainsi voir un premier seuil déterminant apparaître au niveau du score 10?
-
+Tous les pôles, excepté celui de la NS ont des scores médians de 10, et un pourcentage de blessés supérieur à 50%. Au contraire, le pôle NS a un score médian supérieur à 10 et un pourcentage de blessé nul ! On pourrait ainsi voir un premier seuil déterminant apparaître au niveau du score 10.
 
 Piste à creuser : Pourrait-on définir un second seuil à 8. Avoir un score en dessous de 8 (comme pour le pôle Boxe Française ici) augmenterait encore d'un cran le risque de blessures?
 
+### En fonction du score médian de chaque pôle
 
-nombre de blessures en fonction du score moyen de chaque pôle (ce ne sera plus un boxplot mais un plot simple):
+Le graphe ci-après représente le nombre de blessures en fonction du score médian de chaque pôle, sous la forme d'un petit nuage de points. On y superpose une droite de régression linéaire.
 ```{r}
 #a<- boxplot(donnees_creps$SCORE~donnees_creps$POLES)
 
@@ -282,11 +290,11 @@ text(coord_x,coord_y,nom, pos=2, offset=0.5, cex=0.7)
 
 ```
 
-Il semblerait que l'on puisse grossièrement tracer une droite de régression linéaire pour ajuster les données (droite qui passe au milieu des points (1 point= 1 individu), les individus étant les pôles). On remarque que le pourcentage de blessés diminue lorsque le score augmente. Ce qui semble être un début de confirmation de validation du testing. (Une tendance opposée aurait été étrange!).
+Il semblerait que l'on puisse grossièrement tracer une droite de régression linéaire pour ajuster les données (droite qui passe au milieu des points (1 point = 1 individu), les individus étant les pôles). On remarque que le pourcentage de blessés diminue lorsque le score augmente. Ce qui semble être un début de confirmation de validation du testing. (Une tendance opposée aurait été étrange !).
 
-On observe une large zone sans données entre 9 et 11 pour la valeur du score médian.  On pourrait déja voir qu'un score de 11 serait un assez bon score permettant un risque moindre de blessures. MAis attention les échantillons sont petits! Est-ce que l'échantillon de la NS n'est pas "trop spécial"et donc peut-être aberrant?
+On observe une large zone sans données entre 9 et 11 pour la valeur du score médian. On pourrait déjà voir qu'un score de 11 serait un assez bon score permettant un risque moindre de blessures. MAis attention les échantillons sont petits ! Est-ce que l'échantillon de la NS n'est pas "trop spécial" et donc peut-être aberrant ?
 
-Par catégorie de scores maintenant:
+On affine notre analyse en scindant selon les catégories d'exercices.
 
 ```{r}
 par(mfrow=c(2,2))
@@ -328,25 +336,25 @@ reg <- lm(coord_y ~ coord_x)
 abline(reg, col = "red")
 ```
 
--Mobilité inférieure: on voit une tendance linéaire apparaître, comme pour le score global. Le pourcentage de blessés semble diminuer quand le score dans cette catégorie augmente.
+- Mobilité inférieure: on voit une tendance linéaire apparaître, comme pour le score global. Le pourcentage de blessés semble diminuer quand le score dans cette catégorie augmente.
 
--Stabilité supérieure: La droite de régression linéaire est horizontale. Il n'y a donc aucun lien entre le porucentage de blessés et le score obtenu dans cette catégorie. Pour un même score médian, (BF, BK, AV, BL et NS), les chances de blessures sont très disparates. Ces conclusions sont-elles justes? Ce qui aménerait à penser que les tests de cette catégorie ne sont peut-êtrepas judicieusement choisis? Ou est-ce dû à des données aberrantes? Par exemple, le pôle NS est-il aberrant? 
+- Stabilité supérieure: La droite de régression linéaire est horizontale. Il n'y a donc aucun lien entre le porucentage de blessés et le score obtenu dans cette catégorie. Pour un même score médian, (BF, BK, AV, BL et NS), les chances de blessures sont très disparates. Ces conclusions sont-elles justes? Ce qui aménerait à penser que les tests de cette catégorie ne sont peut-être pas judicieusement choisis? Ou est-ce dû à des données aberrantes? Par exemple, le pôle NS est-il aberrant? 
 
--Mobilité supérieure: Droite de régression linéaire décroissante. Le pourcentage de blessés semble diminuer quand le score dans cette catégorie augmente. 
+- Mobilité supérieure: Droite de régression linéaire décroissante. Le pourcentage de blessés semble diminuer quand le score dans cette catégorie augmente. 
 
 -Stabilité inférieure: On remarque ici un résultat assez étrange. La droite de régression linéaire est croissante, ce qui impliquerait qu'un score plus élevé dans cette catégorie induirait un pourcentage de blessures plus important. Plusieurs conclusions sont alors possible:
 (1) Ce score en stabilité inférieure n'est absolument pas déterminant pour des risques de blessure.
-(2) Ce score est déterminant mais le jeu de données présent ne nous permet pas de conclure: résultat d'un ou de plusieurs pôles abberants (NS par exemple avec 0 blessés et un score dans les plus faibles).
+(2) Ce score est déterminant mais le jeu de données présent ne nous permet pas de conclure: résultat d'un ou de plusieurs pôles aberrants (NS par exemple avec 0 blessés et un score dans les plus faibles).
 (3) Ce score est déterminant mais pas forcément dans tous les sports: il peut être important d'avoir une bonne stabilité inférieure en Basket et en Aviron mais pas en Natation et Natation Synchronisée par exemple. Dans ce dernier cas, il faudrait alors considérer différents modèles de prédiction de blessures, ou alors donner différents poids aux scores des différentes catégories.
 (4) Peut-^tre mieux de considérer la moyenne?
 
-Pistes à creuser: Possible que certaines relations ne soient pas linéaires mais quadratiques par exemple? Cf les différentes tranformations (log, cubique etc.. et les cas d'application).
+Pistes à creuser: Possible que certaines relations ne soient pas linéaires mais quadratiques par exemple? Cf les différentes transformations (log, cubique etc.. et les cas d'application).
 + question soulevée dans le dernier point.
 
+### En fonction du score moyen de chaque pôle
 
-En considérant la moyenne:
-La moyenne a l'inconvénient d'être influencée par les valeurs extrêmes (dans le cas où un petit nombre de valeurs aberrantes peut fausser la moyenne). Mais ici on a un petit échantillon? Donc est-ce que c'est pas mieux de prendre la moyenne?
-Selon les graphes ci-dessous: pas vraiment. 
+Considérons à présent la moyenne comme caractéristique discriminante. La moyenne a l'inconvénient d'être influencée par les valeurs extrêmes (dans le cas où un petit nombre de valeurs aberrantes peut fausser la moyenne). Mais ici, on a un échantillon relativement petit ? Donc n'est-il pas mieux de prendre la moyenne ?
+Les graphes ci-dessous nous montrent qu'utiliser la moyenne peut se révéler adapté dans notre cas.
 La médiane sert aussi pour des distributions asymétriques (ce qu'on a ici en général d'après les boxplots).
 ```{r}
 par(mfrow=c(2,2))
@@ -388,26 +396,17 @@ reg <- lm(coord_y ~ coord_x)
 abline(reg, col = "red")
 ```
 
+Questions: Il serait peut-être intéressant d'avoir les blessures classées par type de blessures. Par zone comme les zones du score (mobinf, mobsup, stabinf, stabsup...).
+Aussi éventuellement classées par ordre de gravité (ou selon le temps d'arrêt ?) (comme expliqué ci-dessus avant le mosaic plot).
 
 
-Questions: Il serait peut-être intéresant d'avoir les blessures classées par type de blessures. Par zone comme les zones du score (mobinf, mobsup, stabinf, stabsup...).
-Aussi éventiuellement classées par gravité (comme expliqué ci-dessus avant le mosaic plot).
-
-
-
-Remarque supplémentaire : Essayer de comparer nos excels construits "à la main" avec les fichiers csv qu'ils nous ont mis à disposition après coup... Pas le même nombre d'observations à tous les coups ? Ont-ils "viré" des individus trop "exotiques/aberrants" ? Sur quel fichier on travaillera au final ?
-
-
-
-Le reste ci-dessous est à supprimer (je laisse pour l'instant car j'ai pas eu le temps de regarder mais: tous les noms des pôles n'apparaissent pas au niveau des points: question de place? )
+Le reste ci-dessous est à supprimer (je laisse pour l'instant car j'ai pas eu le temps de regarder mais: tous les noms des pôles n'apparaissent pas au niveau des points: question de place? Th. : Alors, pour moi on voyait bien tous les points, j'ai juste modifié l'échelle des x, avec xlim=..., dis moi si c'est bien ce que tu voulais !)
 ```{r}
 c<- boxplot(donnees_creps$STABSUP~donnees_creps$POLES)
-
-
 coord_x=c$stats[3,]
 coord_y=donnees_bless$BLESS_POURC
 nom=c("AV","BF","BK","BL","NAT","NS")
-plot(coord_x,coord_y, ylab="Pourcentage de blessés", xlab="Score médian en stab sup obtenu dans chaque pôle", main="Pourcentage de blessés en fonction du score médian obtenu pour chaque pôle", cex.main=0.7)
+plot(coord_x,coord_y, ylab="Pourcentage de blessés", xlab="Score médian en stab sup obtenu dans chaque pôle", main="Pourcentage de blessés en fonction du score médian obtenu pour chaque pôle", cex.main=0.7, xlim=c(1,1.6))
 text(coord_x,coord_y,nom, pos=4, offset=0.5, cex=0.7)
 ```
 
@@ -415,11 +414,10 @@ text(coord_x,coord_y,nom, pos=4, offset=0.5, cex=0.7)
 ```{r}
 d<- boxplot(donnees_creps$MOBSUP~donnees_creps$POLES)
 
-
 coord_x=d$stats[3,]
 coord_y=donnees_bless$BLESS_POURC
 nom=c("AV","BF","BK","BL","NAT","NS")
-plot(coord_x,coord_y, ylab="Pourcentage de blessés", xlab="Score médian en mob sup obtenu dans chaque pôle", main="Pourcentage de blessés en fonction du score médian obtenu pour chaque pôle", cex.main=0.7)
+plot(coord_x,coord_y, ylab="Pourcentage de blessés", xlab="Score médian en mob sup obtenu dans chaque pôle", main="Pourcentage de blessés en fonction du score médian obtenu pour chaque pôle", cex.main=0.7, xlim = c(1,2.6))
 text(coord_x,coord_y,nom, pos=4, offset=0.5, cex=0.7)
 ```
 
@@ -427,11 +425,10 @@ text(coord_x,coord_y,nom, pos=4, offset=0.5, cex=0.7)
 ```{r}
 e<- boxplot(donnees_creps$STABINF~donnees_creps$POLES)
 
-
 coord_x=e$stats[3,]
 coord_y=donnees_bless$BLESS_POURC
 nom=c("AV","BF","BK","BL","NAT","NS")
-plot(coord_x,coord_y, ylab="Pourcentage de blessés", xlab="Score médian en stab inf obtenu dans chaque pôle", main="Pourcentage de blessés en fonction du score médian obtenu pour chaque pôle", cex.main=0.7)
+plot(coord_x,coord_y, ylab="Pourcentage de blessés", xlab="Score médian en stab inf obtenu dans chaque pôle", main="Pourcentage de blessés en fonction du score médian obtenu pour chaque pôle", cex.main=0.7, xlim = c(2,4.1))
 text(coord_x,coord_y,nom, pos=4, offset=0.5, cex=0.7)
 ```
 
