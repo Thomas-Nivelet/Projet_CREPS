@@ -135,7 +135,7 @@ A Chercher : p-valeurs élevées (on ne rejette pas individuellement la nullité
 Piste à creuser : Essayer de regarder l'importance relative des différentes sous-catégories de scores. Certaines pèsent-elles plus dans le risque de blessure?
 
 Piste à creuser : il peut-être intéressant de faire le comparatif avec le "type" de blessure qu'il y a dans chaque pôle. Les blessures sont-elles globalement les mêmes dans les différents pôles? Ou la fréquence de certaines blessures est-elle plus importante dans certains pôles? 
-Et tracer aussi comme il est fait dans le cas global, un graphe réprésentant les effectifs des scores spéciaux selon les pôles.
+Et tracer aussi comme il est fait dans le cas global, un graphe représentant les effectifs des scores spéciaux selon les pôles.
 
 ```{r}
 #Possible d'essayer de mettre en place des modèles additifs voire ajouter ds interactions pour voir si le $R^2$ est meilleur ? 
@@ -214,7 +214,7 @@ On retrouve certains points soulevés précédemment :
 - En natation, résultats concentrés et seulement répartis dans les facteurs "Faible" et "Moyen".
 - Proportion semblable de scores très faibles en AV, BF et BK.
 
-L'ensemble de ces interprétations nous a permis de confirmer les observations et tendances dégagées dans l'analyse descriptive uni- et bidimensionnelle. Les futurs objectifs de ce découpage en sous-catégories de score seront d'essayer de redéfinir les seuils, et de les mettre en perspective avec les seuils déjà existants (comme pour le test FMS). Nous essaierons alors de définir ce que l'on peut conidérer comme un "bon score" au test, en corrélant notamment avec les données sur les blessures.
+L'ensemble de ces interprétations nous a permis de confirmer les observations et tendances dégagées dans l'analyse descriptive uni- et bidimensionnelle. Les futurs objectifs de ce découpage en sous-catégories de score seront d'essayer de redéfinir les seuils, et de les mettre en perspective avec les seuils déjà existants (comme pour le test FMS). Nous essaierons alors de définir ce que l'on peut considérer comme un "bon score" au test, en corrélant notamment avec les données sur les blessures.
 
 ## Visualisation de caractéristiques statistiques unidimensionnelles 
 ```{r}
@@ -273,20 +273,23 @@ Le graphe ci-après représente le nombre de blessures en fonction du score méd
 coord_x=tab_median
 coord_y=donnees_bless$BLESS_POURC
 nom=c("AV","BF","BK","BL","NAT","NS")
-reg <- lm(coord_y ~ coord_x)
+reg.med <- lm(coord_y ~ coord_x)
 plot(coord_x,coord_y, ylab="Pourcentage de blessés", xlab="Score médian obtenu dans chaque pôle", main="Pourcentage de blessés en fonction du score médian obtenu pour chaque pôle", cex.main=0.7)
-abline(reg, col = "red")
+abline(reg.med, col = "red")
 text(coord_x,coord_y,nom, pos=2, offset=0.5, cex=0.7)
 
 #Plus pertinent avec les scores moyens de chaque pôle??
 coord_x=tab_mean
 coord_y=donnees_bless$BLESS_POURC
 nom=c("AV","BF","BK","BL","NAT","NS")
-reg <- lm(coord_y ~ coord_x)
-plot(coord_x,coord_y, ylab="Pourcentage de blessés", xlab="Score médian obtenu dans chaque pôle", main="Pourcentage de blessés en fonction du score médian obtenu pour chaque pôle", cex.main=0.7)
-abline(reg, col = "red")
+reg.moy <- lm(coord_y ~ coord_x)
+plot(coord_x,coord_y, ylab="Pourcentage de blessés", xlab="Score moyen obtenu dans chaque pôle", main="Pourcentage de blessés en fonction du score médian obtenu pour chaque pôle", cex.main=0.7)
+abline(reg.moy, col = "red")
 text(coord_x,coord_y,nom, pos=2, offset=0.5, cex=0.7)
 
+# Ajustement des modèles :
+summary(reg.med)
+summary(reg.moy)
 
 ```
 
