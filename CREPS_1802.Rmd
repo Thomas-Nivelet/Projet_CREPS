@@ -484,6 +484,12 @@ ao.score.contact = lm(SCORE ~ Contact, data = donnees_creps)
 summary(ao.score.contact)
 ```
 
+```{r}
+#essai
+ao.score_mob_inf.contact = lm(donnees_creps$MOBINF ~ Contact, data = donnees_creps)
+summary(ao.score_mob_inf.contact)
 
+```
+R^2 très bas...
 
 
