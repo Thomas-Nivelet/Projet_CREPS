@@ -450,11 +450,25 @@ pie(table(donnees_creps$Contact),labels=c("Sans Contact","Avec Contacts"), main=
 
 ```
 ```{r}
+ggplot(data = donnees_creps) + geom_histogram(aes(x = SCORE, fill = Contact), binwidth = 0.5) + scale_x_continuous(breaks=seq(0, 20, by = 1)) + xlab("Score") + ylab("Effectifs") + ggtitle("Effectifs selon les scores obtenus (toutes catégories) selon l'absence ou non de contact")+theme(plot.title =element_text(,,,12)) 
+```
+Ce sont les athlètes de sports de contact que l'on retrouve le plus dans les scores <=5 (Très faibles + 5 inclus)
+Entre 6 et 13(inclus) ce sont plutôt les athlètes de sports sans contact que l'on retrouve en majorité (mais équitables pour les scores de 8 et 10).
+Plus de 13 : bien répartis. Autant d'athlètes SC qui ont 18 que d'atlètes AC cumulés qui ont 16 ou 19.Equitables en 14.
+
+IDEE :
+Nouveaux seuils ?? 0-5 ; 6-13 : 13-20 ?... 
+Ou proposer 2 catégories de seuils selon AC/SC : et ainsi le jugement serait différent 
+(ex : "faible" pour un basketeur(AC) serait "très faible" pour une nageuse synchr(SC))
+
+
+```{r}
 boxplot(donnees_creps$SCORE ~ donnees_creps$Contact, cex.axis = 0.8, main = "Boxplots parallèles des scores en fonction de la catégorie de pôle", xlab = "Contact", ylab = "Score",names=c("Non","Oui"))
 ```
 On note que les scores des sports sans contact sont plus élevés : 50% des scores sont entre 8 et 12, la médiane est à 9.5 tandis que 50% des scores des sports de contact (BF,BK) s'étendent entre 5 et 10, avec une médiane à 8.
 75% des athlètes en sports AC ont moins de 10/20.
 75% des athlètes en sports SC ont plus de 8/20.
+Cohérence avec plot du dessus.
 
 ```{r}
 par(mfrow=c(2,2))
