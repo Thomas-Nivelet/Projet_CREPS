@@ -494,9 +494,13 @@ tab_mean2
 tab_median2
 ```
 ```{r}
+donnees_creps$Contact=as.factor(donnees_creps$Contact)
+
 ao.score.contact = lm(SCORE ~ Contact, data = donnees_creps)
 summary(ao.score.contact)
 ```
+Test de significativité de la varible Contact: p-valeur=0.0744. On ne rejette pas avec certitude la nullité du paramètre, mais on peut tout de même la rejeter en se fixant un seuil de risque égal à 10% (ou même 8%). Donc la variable Contact semble être utile pour expliquer le score global.
+
 
 ```{r}
 #essai
@@ -505,5 +509,61 @@ summary(ao.score_mob_inf.contact)
 
 ```
 R^2 très bas...
+Mais p-valeur inférieure à 5% donc on rejette la nullité des paramètres! Donc bon signe? car veut dire que la variable contact est utile pour expliquer la différence des scores?
 
+
+
+```{r}
+donnees_bless$Contact=donnees_bless$POLE=="BK"|donnees_bless$POLE=="BF"
+donnees_bless$Contact=as.factor(donnees_bless$Contact)
+donnees_creps$Contact=as.factor(donnees_creps$Contact)
+```
+
+```{r}
+plot(donnees_creps$SCORE ~donnees_creps$Contact, main="Score global en fonction du type de pôle", labels=c("Sans contact", "Avec contact"), ylab="Score global", xlab="Type de pôle")
+plot(donnees_bless$BLESS_POURC ~donnees_bless$Contact, main="Pourcentage de blessures en fonction du type de pôle", labels=c("Sans contact", "Avec contact"), ylab="Pourcentage de blessures", xlab="Type de pôle")
+```
+
+```{r}
+par(mar=c(4,4,3,5))
+plot(donnees_bless$BLESS_POURC ~donnees_bless$Contact, ylab="", xlab="", axes= FALSE, medcol = "red", boxcol = "red")
+axis(2 , xlim=c(0,100), col="red",col.axis="red",at=seq(0, 101, by=10), cex.axis = 0.7) 
+mtext("Pourcentage de blessures",side=2,line=2.5, col = "red")
+axis(1,at=c(1:2), labels=c("Sans contact", "Avec contact"), cex.axis = 0.8)
+mtext("Types de Pôles",side=1,line=2.5,col="black") 
+par(new=T)
+plot(donnees_creps$SCORE ~donnees_creps$Contact, main="Comparaison entre les scores obtenus et le pourcentage de blessés dans chaque type de pôle", cex.main=0.75, ylab="", xlab="", axes = FALSE,col="blue")
+axis(4, ylim=c(0,20),col="blue",col.axis="blue",at=seq(0, 20, by=2), cex.axis = 0.8) 
+mtext("Score global",side=4,line=2.5, col="blue") 
+box()
+```
+
+On a pu voir avec les anova effectuées juste avant qu'il y avait un lien entre le score obtenu et le type de pôle.
+Graphiquement une légère corrélation semble apparaître. Est-elle légitime/significative?
+
+```{r}
+ao.score.contact = lm(BLESS_POURC ~ Contact, data = donnees_bless)
+summary(ao.score.contact)
+```
+R^2 pas sihorrible que ça!.
+Mais On voit que la p-valeur du test de significativité de la variable Contact est grande. Donc on ne peut pas rejetter l'hypothèse de sa nullité. La variable Contact ne peut pas expliquer le porucentage de blessure. On peut aussi le voir avec la p-valeur du F-test de comparaison avec le modèle blanc qui est elle aussi très grande!
+
+Donc: cf si on obtient les mêmes conclusions avec les nouvelles données et le temps d'indispo par pôles au lieu du pourcentage de blessure! (fichier avec tous les détails par personne et faire un total et ramener en pourcentage par rapport au nombre de personnes dans la pôle). Si la variable contact n'a toujours aucune influence, alors ne sert vraiment pas à expliquer la blessure.
+
+PB ici pour cette anova: on a que deux individus "avec contact", et quatre individus "sans contact", ce qui ne fait vraiment pas bcp..
+
+Mais est-ce que ce serait tout de même justifié de changer sensiblement les seuils de catégorisation des scores en fonction de cette variable? (comme Alexia avait suggéré). Piste à creuser, remarquer si il y a une différence dans les scores (cela semble être le cas avec les anova), et une différence dans le "score qui suffit à se blesser"?
+
+
+Faire une ANOVA à plusieurs facteurs?! Avec le facteur Pole et le facteur Contact?! Pour expliquer le score? et les blessures?
+Pour expliquer les blessures: en fait c'est pas juste de faire une anova, car le pourcentage de blessures est calculé par pôle, donc faire une anova du pourcentage de blessures par pole en fonction des poles c'est pas logique ? plutôt une régression linéaire?? (ok je m'embrouille je crois je reprendrai ça à tête reposée)
+Mais si on fait ça avec les temps d'indispo sur le nouveau fichier du coup y a plus ce problème! A faire..
+
+Tranformer le score en variable explicative! Car jusqu'ici on a simplement comparer des études réalisées séparément sur les variables réponses correspondant au score et à la blessure.
+Pb: sans le score par individu c'est compliqué..
+Mais il serait possible de construire une variable correspondant au "score moyen par pôle"? et d'éventuellement faire une ANCOVA pour la variable réponse "Temps d'indispo" (par pôle), avec les variables explicatives (Pôle, Score moyen)? ou pas logique du tout?
+
+Donc travail avec les nouvelles données à faire!
+
++cf cette histoire de seuils à fixer? de manière empirique? avec les nouvelles données?
 
