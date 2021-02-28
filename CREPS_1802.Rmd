@@ -6,7 +6,7 @@ output:
     fig_width: 5.5
     number_sections: yes
     toc: yes
-date: "9 février 2021"
+date: "`r Sys.Date()`"
 subtitle: "Mise en place d'un modèle statistique pour validaton du testing TM2S"
 geometry: "left=2cm,right=2cm,top=2cm,bottom=2cm"
 header-includes:
@@ -28,63 +28,100 @@ header-includes:
 #knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# Importation des librairies `R` nécessaires
+**Importation des librairies `R` nécessaires**
 
 ```{r}
 library(readxl)
 library(ggplot2)
 library(ggmosaic)
 library(MASS)
+library(dplyr)
 ```
 
-# Importation des données 
+**Importation des données** 
 
 ```{r}
-# xlsx files
+# Importation du fichier de données depuis un .xlsx
 donnees_creps <- read_excel("donnees_CREPS_1.xlsx")
 ```
 
-# Prise en main des données et statistiques descriptives
+# Statistiques descriptives : première prise en main des données
+## Statistiques unidimensionnelles : étude générale des pôles et des scores obtenus
 
 ```{r}
+# Redéfinition de la variable qualitative à bon escient (en facteurs)
 donnees_creps$POLES <- as.factor(donnees_creps$POLES)
+
+# Vérification du contenu et présentation sommaire des variables
 summary(donnees_creps)
 head(donnees_creps)
 ```
+
+```{r}
+# Observations et variables contenues dans le jeu de données
+dim(donnees_creps)
+```
+Le premier jeu de données à notre disposition contient les scores obtenus au testing TM2S, relatif à la mobilité et à la stabilité su sportif, de 90 athlètes du CREPS, répartis dans 6 pôles sportifs différents (Aviron, Boxe française, Basketball, Bowling, Natation et Natation synchronisée). Plusieurs des variables présentes dans ce premier jeu de données attireront particulièrement notre attention dans la suite du projet :
+
+- `SCORE`, une variable quantitative discrète, prenant des valeurs de 0 à 20, représentant le score global obtenu par le sportif au test.
+- `POLES`, une variable qualitative à 6 modalités représentant les pôles du CREPS sur lesquels a été expérimenté le TM2S.
+- `MOBINF`, une variable quantitative discrète, représentant le score obtenu en mobilité inférieure.
+- `MOBSUP`, une variable quantitative discrète, représentant le score obtenu en mobilité supérieure.
+- `STABINF`, une variable quantitative discrète, représentant le score obtenu en stabilité inférieure.
+- `STABSUP`, une variable quantitative discrète, représentant le score obtenu en stabilité supérieure.
 
 ```{r}
 pie(table(donnees_creps$POLES), col = c("lightskyblue2", "lightgoldenrod3", "mistyrose4", "lightcoral", "mediumblue", "lightseagreen"),main = "Répartition des athlètes dans les pôles")
 
 barplot(table(factor(donnees_creps$SCORE, levels = 0:20)), main = "Scores obtenus - Tous pôles confondus", ylim = c(0,15), cex.names = 0.6, ylab = "Effectifs", xlab= "Score", col = heat.colors(20))
 ```
-- Camembert : 
-On note que c'est en Basket Ball qu'il y a le plus d'athlètes, soit 1/3. Viennent ensuite, de façon décroissante, la Natation Synchronisée, la Boxe Française, l'Aviron et la Natation. C'est en bowling qu'il y a le moins d'athlètes.
 
-- Barplot effectif/score 
-La majorité des athlètes obtiennent un score de 10, soit la moyenne. Cependant, il y a plus de notes en dessous qu'au dessus de la moyenne.
+- Répartition des athlètes dans les pôles : 
+Le diagramme circulaire ci-dessus nous permet d'affirmer que les sportifs testés proviennent de six pôles différents et mis à part en Basketball, les pôles présentent des effectifs assez comparables.
+On note que c'est en Basket Ball qu'il y a le plus d'athlètes, soit un tiers de l'effectif total des sportifs du CREPS testés. Viennent ensuite, de façon décroissante, la Natation Synchronisée, la Boxe Française, l'Aviron et la Natation. C'est en bowling qu'il y a le moins d'athlètes.
+
+- Scores globaux obtenus :
+On constate que les notes sont très échelonnées de 0 à 19 et prennent quasiment la totalité des valeurs possibles. Le score le plus obtenu au test est la note de 10, soit la moyenne.
+Cependant, on dénote davantage de notes inférieures à la moyenne que de notes supérieures à 10/20.
 12 athlètes ont reçu un score de 8, autant que pour un score de 9. Des pics plus discrets s'affichent pour les scores de 12, 5 (et 14). 
+Très peu d'athlètes obtiennent des notes au moins égales à 13.
+Notre premières impression est telle que l'on imagine ce testing assez compliqué dans l'absolu ; mais il va nous falloir étudier plus en détails cette notation, par pôles et par catégories d'exercices.
 
-- Analyser les scores où il y a le plus de monde et comparer : variabilité des profils, mise en perspective selon les pôles...
+## Statistiques bidimensionnelles : distinction des scores obtenus selon les pôles
+### Distinction des scores globaux obtenus selon les pôles
+
+Dans cette partie, nous cherchons à analyser les scores ou intervalles de score les plus obtenus et offrir une comparaison selon les pôles. On essaiera de déterminer une certaine variabilité des profils et de mettre en perspective ces résultats selon les pôles.
+
+```{r}
+tab_mean <- tapply(SCORE, POLES, mean) # Moyenne des scores pour chaque pôle
+tab_median <- tapply(SCORE, POLES, median) # Médiane des scores pour chaque pôle
+tab_mean
+tab_median
+```
 
 ```{r}
 boxplot(donnees_creps$SCORE ~ donnees_creps$POLES, cex.axis = 0.8, main = "Boxplots parallèles des scores en fonction des pôles", xlab = "Pôles", ylab = "Score")
 ```
-(50% des observations sont rassemblées à l'intérieur d'une boîte, le trait noir plus épais représente la médiane)
+Les boxplots (ou diagrammes en boîtes) ci-dessus nous permettent d'évaluer la position, l'éventuelle symétrie, ainsi que la dispersion des scores obtenus pour chaque pôle. Sur ces graphiques, 50% des observations sont rassemblées à l'intérieur d'une boîte grisée, le trait plein noir représentant la médiane.
+
 Les médianes sont alignés au score de 9/20 pour les boxplots concernant les athlètes de Bowling, Basketball et Aviron : il y a autant de scores obtenus en-dessous qu'au dessus de cette note, pour ces pôles-ci.
 En aviron, on observe un faible écart inter-quartiles, les scores ne sont pas trop dispersés au sein de ce pôle, niveau homogène. (mais 2 outliers).
-En Natation Synchronisée, la médiane s'élève à 11/20, la plus élevée parmi tous les pôles. De plus, l'écart interquartiles n'est pas très haut, on peut en déduire un niveau homogène et bon, en majorité situé au-dessus de la moyenne de 10/20.
+En Natation Synchronisée, la médiane s'élève à 11/20, la plus élevée parmi tous les pôles. De plus, l'écart interquartile n'est pas très haut, on peut en déduire un niveau homogène et bon, en majorité situé au-dessus de la moyenne de 10/20.
 En conclusion, les scores médians sont plutôt proches mais les scores selon les pôles sont plus dispersés (BF par rapport à AV par exemple).
 L'ensemble de ces analyses doit être mise en relief avec l'effectif d'athlètes pour chaque pôle considéré ; en effet, on dispose de moins d'athlètes pour l'aviron que pour le basketball par exemple.
 
 ```{r}
-ggplot(data = donnees_creps) + geom_histogram(aes(x = SCORE, fill = POLES), binwidth = 0.5) + scale_x_continuous(breaks=seq(0, 20, by = 1)) + xlab("Score") + ylab("Effectifs") + ggtitle("Effectifs selon les scores obtenus (toutes catégories) selon les pôles")
+ggplot(data = donnees_creps) + geom_histogram(aes(x = SCORE, fill = POLES), binwidth = 0.5) 
++ scale_x_continuous(breaks=seq(0, 20, by = 1)) 
++ xlab("Score") + ylab("Effectifs") 
++ ggtitle("Effectifs selon les scores obtenus (toutes catégories) selon les pôles")
 ```
 Parmi les bowlers, les moins nombreux, aucun n'obtient un score au dessus de 12, tout comme les boxeurs.
 Les seuls 0 visibles correspondent aux joueurs de Basketball, mais ils sont les plus nombreux (donc davantage de possibilités de variabilité des scores).
 En Natation synchronisée, les scores se situent entre 7 (élevé pour un score minimum) et 18/20.
 Du fait qu'ils soient nombreux, on voit bien que les joueurs de basket ont des scores qui s'étendent de 0 à 19/20 : les niveaux peuvent être considérés comme hétérogènes, bien que l'on puisse se poser la question sur les valeurs extrêmement faibles (problème lors du test ? erreur de casting ?).
 
-# Étude de la spécificité de chaque pôle
+### Étude de la spécificité de chaque pôle
 
 ```{r}
 par(mfrow=c(2,2))
@@ -103,7 +140,7 @@ Mais toutes ces différences constatées entre pôles sont-elles significatives 
 
 N.B.: Les observations à l'extérieur des moustaches doivent être étudiées de plus près. Elles ne sont pas forcément des valeurs aberrantes, mais possiblement des valeurs "déterminantes". A voir...
 
-# Tests de modèle d'ANOVA
+# Construction d'un modèle linéaire : tests de modèle d'ANOVA
 
 ```{r}
 ao.score.pole = lm(SCORE ~ POLES, data = donnees_creps)
@@ -216,18 +253,9 @@ On retrouve certains points soulevés précédemment :
 
 L'ensemble de ces interprétations nous a permis de confirmer les observations et tendances dégagées dans l'analyse descriptive uni- et bidimensionnelle. Les futurs objectifs de ce découpage en sous-catégories de score seront d'essayer de redéfinir les seuils, et de les mettre en perspective avec les seuils déjà existants (comme pour le test FMS). Nous essaierons alors de définir ce que l'on peut considérer comme un "bon score" au test, en corrélant notamment avec les données sur les blessures.
 
-## Visualisation de caractéristiques statistiques unidimensionnelles 
-```{r}
-library(dplyr)
-tab_mean <- tapply(SCORE, POLES, mean) # moyenne des scores pour chaque pôle
-tab_median <- tapply(SCORE, POLES, median) # médiane des scores pour chaque pôle
-tab_mean
-tab_median
-```
-
 # Étude des données blessures 
 
-## Importation et définition des données
+*Importation et définition des données*
 ```{r}
 donnees_bless= read_excel("Donnees_bless_Poles.xlsx")
 ```
@@ -434,8 +462,11 @@ nom=c("AV","BF","BK","BL","NAT","NS")
 plot(coord_x,coord_y, ylab="Pourcentage de blessés", xlab="Score médian en stab inf obtenu dans chaque pôle", main="Pourcentage de blessés en fonction du score médian obtenu pour chaque pôle", cex.main=0.7, xlim = c(2,4.1))
 text(coord_x,coord_y,nom, pos=4, offset=0.5, cex=0.7)
 ```
+## Étude de l'apparition de blessures en fonction de la nature du sport
 
-
+On définit la nouvelle variable `Contact` dans notre jeu de données, permettant de savoir si le sport pratiqué par l'individu en question est un sport de contact ou non.
+Dans notre cas, les sports considérés comme sports de contact sont la boxe française et le basket-ball.
+Cette nouvelle distinction entre les sports nous permettra d'identifier d'éventuelles corrélations avec les scores obtenues et les répercussions sur les blessures observées chez certains athlètes.
 
 ```{r}
 donnees_creps$Contact=donnees_creps$POLES=="BK"|donnees_creps$POLES=="BF"
@@ -443,28 +474,33 @@ donnees_creps
 ```
 ```{r}
 AC<-(sum(donnees_creps$Contact)/count(donnees_creps))*100
-AC
+
 SC<-(sum(donnees_creps$Contact==FALSE)/count(donnees_creps))*100
-SC
-pie(table(donnees_creps$Contact),labels=c("Sans Contact","Avec Contacts"), main="Répartition des athlètes selon la catégorie du sport : avec/sans contact")
+
+pie(table(donnees_creps$Contact),labels=c("Sans contact","Avec contacts"), main="Répartition des athlètes selon la nature du sport : avec/sans contact")
 
 ```
 ```{r}
-ggplot(data = donnees_creps) + geom_histogram(aes(x = SCORE, fill = Contact), binwidth = 0.5) + scale_x_continuous(breaks=seq(0, 20, by = 1)) + xlab("Score") + ylab("Effectifs") + ggtitle("Effectifs selon les scores obtenus (toutes catégories) selon l'absence ou non de contact")+theme(plot.title =element_text(,,,12)) 
+ggplot(data = donnees_creps) + geom_histogram(aes(x = SCORE, fill = Contact), binwidth = 0.5) + scale_x_continuous(breaks=seq(0, 20, by = 1)) + xlab("Score") + ylab("Effectifs") + ggtitle("Effectifs selon les scores obtenus (toutes catégories) selon l'absence ou non de contact") + theme(plot.title =element_text(,,,12)) 
 ```
-Ce sont les athlètes de sports de contact que l'on retrouve le plus dans les scores <=5 (Très faibles + 5 inclus)
-Entre 6 et 13(inclus) ce sont plutôt les athlètes de sports sans contact que l'on retrouve en majorité (mais équitables pour les scores de 8 et 10).
-Plus de 13 : bien répartis. Autant d'athlètes SC qui ont 18 que d'atlètes AC cumulés qui ont 16 ou 19.Equitables en 14.
+Ce sont les athlètes de sports de contact que l'on retrouve le plus dans les scores très faibles, c'est-à-dire inférieurs à 5.
+Entre 6 et 13 (inclus) ce sont plutôt les athlètes de sports sans contact que l'on retrouve en majorité (mais équitables pour les scores de 8 et 10).
+Plus de 13 : bien répartis. Autant d'athlètes SC qui ont 18 que d'athlètes AC cumulés qui ont 16 ou 19 ; proportions équitables en 14.
 
 IDEE :
 Nouveaux seuils ?? 0-5 ; 6-13 : 13-20 ?... 
 Ou proposer 2 catégories de seuils selon AC/SC : et ainsi le jugement serait différent 
-(ex : "faible" pour un basketeur(AC) serait "très faible" pour une nageuse synchr(SC))
-
+(ex : "faible" pour un basketteur(AC) serait "très faible" pour une nageuse synchr(SC))
+On pourrait définir de nouveaux seuils pour de nouvelles catégories de scores selon la nature du sport (avec / sans contacts).
 
 ```{r}
-boxplot(donnees_creps$SCORE ~ donnees_creps$Contact, cex.axis = 0.8, main = "Boxplots parallèles des scores en fonction de la catégorie de pôle", xlab = "Contact", ylab = "Score",names=c("Non","Oui"))
+boxplot(donnees_creps$SCORE ~ donnees_creps$Contact, cex.axis = 0.8, main = "Boxplots parallèles des scores en fonction de l'absence ou non de contact", 
+        cex.main = 0.9,
+        ylim=c(0,20),
+        xlab = "Contact", ylab = "Score",
+        names=c("Non","Oui"))
 ```
+D'un point de vue global ici, les scores obtenus par les sportifs "sans contact" sont plus élevés que ceux obtenus par les sportifs "avec contacts", comme en témoigne la position des deux boîtes grises.
 On note que les scores des sports sans contact sont plus élevés : 50% des scores sont entre 8 et 12, la médiane est à 9.5 tandis que 50% des scores des sports de contact (BF,BK) s'étendent entre 5 et 10, avec une médiane à 8.
 75% des athlètes en sports AC ont moins de 10/20.
 75% des athlètes en sports SC ont plus de 8/20.
@@ -545,8 +581,8 @@ Graphiquement une légère corrélation semble apparaître. Est-elle légitime/s
 ao.score.contact = lm(BLESS_POURC ~ Contact, data = donnees_bless)
 summary(ao.score.contact)
 ```
-R^2 pas sihorrible que ça!.
-Mais On voit que la p-valeur du test de significativité de la variable Contact est grande. Donc on ne peut pas rejetter l'hypothèse de sa nullité. La variable Contact ne peut pas expliquer le porucentage de blessure. On peut aussi le voir avec la p-valeur du F-test de comparaison avec le modèle blanc qui est elle aussi très grande!
+R^2 pas si horrible que ça!.
+Mais On voit que la p-valeur du test de significativité de la variable Contact est grande. Donc on ne peut pas rejeter l'hypothèse de sa nullité. La variable Contact ne peut pas expliquer le pourcentage de blessure. On peut aussi le voir avec la p-valeur du F-test de comparaison avec le modèle blanc qui est elle aussi très grande!
 
 Donc: cf si on obtient les mêmes conclusions avec les nouvelles données et le temps d'indispo par pôles au lieu du pourcentage de blessure! (fichier avec tous les détails par personne et faire un total et ramener en pourcentage par rapport au nombre de personnes dans la pôle). Si la variable contact n'a toujours aucune influence, alors ne sert vraiment pas à expliquer la blessure.
 
