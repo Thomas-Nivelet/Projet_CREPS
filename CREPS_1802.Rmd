@@ -462,6 +462,8 @@ nom=c("AV","BF","BK","BL","NAT","NS")
 plot(coord_x,coord_y, ylab="Pourcentage de blessés", xlab="Score médian en stab inf obtenu dans chaque pôle", main="Pourcentage de blessés en fonction du score médian obtenu pour chaque pôle", cex.main=0.7, xlim = c(2,4.1))
 text(coord_x,coord_y,nom, pos=4, offset=0.5, cex=0.7)
 ```
+
+
 ## Étude de l'apparition de blessures en fonction de la nature du sport
 
 On définit la nouvelle variable `Contact` dans notre jeu de données, permettant de savoir si le sport pratiqué par l'individu en question est un sport de contact ou non.

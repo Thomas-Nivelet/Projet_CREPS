@@ -1,0 +1,129 @@
+---
+title: "Classification sur les scores"
+author: "Celia"
+date: "1 mars 2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+```{r}
+library(readxl)
+library(ggplot2)
+library(ggmosaic)
+library(MASS)
+library(dplyr)
+```
+
+
+```{r}
+donnees_creps <- read_excel("donnees_CREPS_1.xlsx")
+donnees_classif=donnees_creps[,c(2,4:7)]
+#donnees_classif$SCORE <- as.factor(donnees_classif$SCORE)
+```
+
+
+```{r}
+library(stats)
+km.score <- kmeans(donnees_classif, centers = 4) #méthode de kmeans avec 4 classes
+km.score$cluster
+km.score$size
+```
+
+```{r}
+#récuperation des indices des athlètes selon la classe à laquelle ils appartiennent 
+score.cluster.1= which(km.score$cluster==1)
+score.cluster.2= which(km.score$cluster==2)
+score.cluster.3= which(km.score$cluster==3)
+score.cluster.4= which(km.score$cluster==4)
+```
+
+```{r}
+plot(seq(1:90), donnees_creps$SCORE, col=c("red", "blue", "green", "black")[km.score$cluster], xlab="Athlètes", ylab="Score global", main="Classification des athlètes en fonction de leur scores")
+```
+
+Résultat de la classification:
+Points verts = les scores les plus bas (en dessous de 7). Vert= cluster 3 = 22 athlètes.
+Points bleus = les scores les plus hauts (au dessus de 11). Bleu= cluster 2 = 19 athlètes.
+Points rouges et noirs = entre 7 et 11. Besoin de quelque chose en plus pour les différencier. Rouge et noir = cluster 1 et 4 = 24+25 athlètes.
+
+On voit plutôt apparaître 3 tranches de scores au lieu des 4 qu'on avait défini?
+
+```{r}
+#pour trouver les valeurs du score qui délimitent les classes
+max(donnees_classif[score.cluster.3,1])
+min(donnees_classif[score.cluster.2,1])
+max(donnees_classif[score.cluster.1,1])
+min(donnees_classif[score.cluster.1,1])
+max(donnees_classif[score.cluster.4,1])
+min(donnees_classif[score.cluster.4,1])
+```
+
+
+```{r}
+#tentative de raisonnement avec la variabilité (pas abouti)
+km.score$tot.withinss #somme des carrés totale "intra-classe"
+km.score$betweenss #variabilité inter-classe
+```
+Pour avoir la meilleure classification possible, on veut minimiser la variance intra-classe (on veut que les individus d'une même classe se ressemblent), et on veut maximiser la variabilité inter-classe (on veut que les différentes classes crées soient assez éloignées les unes des autres). Cf si on fait mieux avec seulement 3 classes ou avec justement plus de classes (5).
+
+
+```{r}
+par(mfrow=c(2,2))
+plot(seq(1:90), donnees_creps$MOBINF, col=c("red", "blue", "green", "black")[km.score$cluster], xlab="Athlètes", ylab="Score en mob inf", main="Classification des athlètes en fonction de leurs scores", cex.main=0.8)
+plot(seq(1:90), donnees_creps$MOBSUP, col=c("red", "blue", "green", "black")[km.score$cluster], xlab="Athlètes", ylab="Score en mob sup", main="Classification des athlètes en fonction de leurs scores", cex.main=0.8)
+plot(seq(1:90), donnees_creps$STABINF, col=c("red", "blue", "green", "black")[km.score$cluster], , xlab="Athlètes", ylab="Score en stab inf", main="Classification des athlètes en fonction de leurs scores", cex.main=0.8)
+plot(seq(1:90), donnees_creps$STABSUP, col=c("red", "blue", "green", "black")[km.score$cluster], xlab="Athlètes", ylab="Score en stab sup", main="Classification des athlètes en fonction de leurs scores", cex.main=0.8)
+```
+Pour différencier rouge et noir: noir plus haut en mob inf et rouge plutôt bas. Rouge en haut pour stab inf et noir plutôt bas.
+
+
+```{r}
+#tentative avec maintenant 3 classes
+donnees_classif.2=donnees_classif#[,c(2:5)]
+km.score.2 <- kmeans(donnees_classif.2, centers = 3)
+km.score.2$cluster
+km.score.2$size
+```
+
+
+
+```{r}
+plot(seq(1:90), donnees_creps$SCORE, col=c("red", "blue", "green", "black")[km.score.2$cluster], xlab="Athlètes", ylab="Score global", main="Classification des athlètes selon leur scores")
+```
+
+```{r}
+score.cluster.2.1= which(km.score.2$cluster==1)
+score.cluster.2.2= which(km.score.2$cluster==2)
+score.cluster.2.3= which(km.score.2$cluster==3)
+max(donnees_classif[score.cluster.2.1,1]) #classe qui va de 0 à max
+min(donnees_classif[score.cluster.2.2,1]) #classe qui va de min à 20
+max(donnees_classif[score.cluster.2.3,1]) #classe du milieu
+min(donnees_classif[score.cluster.2.3,1]) #classe du milieu
+```
+On voit trois tranches de scores ici apparraître: 0-8, 14-20, 7-13.
+
+
+
+```{r}
+km.score.2$tot.withinss #somme des carrés totale "intra-classe"
+km.score.2$betweenss #variabilité inter-classe
+```
+La variabilité intra-classe augmente et la variabilité inter-classe diminue. On préfère 4 classes à 3.
+?? je pense que je ne prend pas les bons objets/bonnes valeurs?! car avec ce critère, 80 classes seraient miuex! or: ça ne l'est clairement pas?!
+
+
+Est-ce que cette manière de classer les individus avec le score qu'ils ont obtenu dans chacune des catégories est pertinente en vue de déterminer des seuils?
+En déterminant ces différentes classes: cela nous permet de séparer des individus qui diffèrent par leur comportement, donc on peut dire en quelques sortes que les classes trouvées correspondent à des "groupes types".
+Lien avec le besoin de valider le protocole de test?
+
+Validation du protocole de testing peut-elle se faire uniquement à l'aide des statistiques descriptives qu'on a déjà pu effectuer? En visualisant les différences entre pôles et la corrélation avec l'occurence de blessures? (d'ailleurs à refaire avec les temps d'indispos au lieu du pourcentage de blessé)!
+
+
+Faire la même chose (classification) en classant les temps d'indispo?! mais le problème: c'est qu'on pourra jamais savoir si les individus de la classe dite "score très bon" sont les même que ceux de la classe dite "temps d'indispo nul"?
+Regarder à quels pôles ils appartiennent?
+
