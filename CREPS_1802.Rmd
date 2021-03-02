@@ -431,39 +431,6 @@ Questions: Il serait peut-être intéressant d'avoir les blessures classées par
 Aussi éventuellement classées par ordre de gravité (ou selon le temps d'arrêt ?) (comme expliqué ci-dessus avant le mosaic plot).
 
 
-Le reste ci-dessous est à supprimer (je laisse pour l'instant car j'ai pas eu le temps de regarder mais: tous les noms des pôles n'apparaissent pas au niveau des points: question de place? Th. : Alors, pour moi on voyait bien tous les points, j'ai juste modifié l'échelle des x, avec xlim=..., dis moi si c'est bien ce que tu voulais !)
-```{r}
-c<- boxplot(donnees_creps$STABSUP~donnees_creps$POLES)
-coord_x=c$stats[3,]
-coord_y=donnees_bless$BLESS_POURC
-nom=c("AV","BF","BK","BL","NAT","NS")
-plot(coord_x,coord_y, ylab="Pourcentage de blessés", xlab="Score médian en stab sup obtenu dans chaque pôle", main="Pourcentage de blessés en fonction du score médian obtenu pour chaque pôle", cex.main=0.7, xlim=c(1,1.6))
-text(coord_x,coord_y,nom, pos=4, offset=0.5, cex=0.7)
-```
-
-
-```{r}
-d<- boxplot(donnees_creps$MOBSUP~donnees_creps$POLES)
-
-coord_x=d$stats[3,]
-coord_y=donnees_bless$BLESS_POURC
-nom=c("AV","BF","BK","BL","NAT","NS")
-plot(coord_x,coord_y, ylab="Pourcentage de blessés", xlab="Score médian en mob sup obtenu dans chaque pôle", main="Pourcentage de blessés en fonction du score médian obtenu pour chaque pôle", cex.main=0.7, xlim = c(1,2.6))
-text(coord_x,coord_y,nom, pos=4, offset=0.5, cex=0.7)
-```
-
-
-```{r}
-e<- boxplot(donnees_creps$STABINF~donnees_creps$POLES)
-
-coord_x=e$stats[3,]
-coord_y=donnees_bless$BLESS_POURC
-nom=c("AV","BF","BK","BL","NAT","NS")
-plot(coord_x,coord_y, ylab="Pourcentage de blessés", xlab="Score médian en stab inf obtenu dans chaque pôle", main="Pourcentage de blessés en fonction du score médian obtenu pour chaque pôle", cex.main=0.7, xlim = c(2,4.1))
-text(coord_x,coord_y,nom, pos=4, offset=0.5, cex=0.7)
-```
-
-
 ## Étude de l'apparition de blessures en fonction de la nature du sport
 
 On définit la nouvelle variable `Contact` dans notre jeu de données, permettant de savoir si le sport pratiqué par l'individu en question est un sport de contact ou non.
@@ -597,11 +564,87 @@ Faire une ANOVA à plusieurs facteurs?! Avec le facteur Pole et le facteur Conta
 Pour expliquer les blessures: en fait c'est pas juste de faire une anova, car le pourcentage de blessures est calculé par pôle, donc faire une anova du pourcentage de blessures par pole en fonction des poles c'est pas logique ? plutôt une régression linéaire?? (ok je m'embrouille je crois je reprendrai ça à tête reposée)
 Mais si on fait ça avec les temps d'indispo sur le nouveau fichier du coup y a plus ce problème! A faire..
 
-Tranformer le score en variable explicative! Car jusqu'ici on a simplement comparer des études réalisées séparément sur les variables réponses correspondant au score et à la blessure.
+Transformer le score en variable explicative! Car jusqu'ici on a simplement comparer des études réalisées séparément sur les variables réponses correspondant au score et à la blessure.
 Pb: sans le score par individu c'est compliqué..
 Mais il serait possible de construire une variable correspondant au "score moyen par pôle"? et d'éventuellement faire une ANCOVA pour la variable réponse "Temps d'indispo" (par pôle), avec les variables explicatives (Pôle, Score moyen)? ou pas logique du tout?
 
 Donc travail avec les nouvelles données à faire!
 
 +cf cette histoire de seuils à fixer? de manière empirique? avec les nouvelles données?
+
+
+
+
+
+
+
+
+
+
+```{r}
+donnees_indispo <- read_excel("Donnees_Indispo.xlsx")
+```
+
+```{r}
+suppressWarnings({
+donnees_indispo$IND=donnees_indispo$TOT_INDISPO
+donnees_indispo$IND[donnees_indispo$TOT_INDISPO<=1]="Inf à 1" 
+donnees_indispo$IND[donnees_indispo$TOT_INDISPO>1& donnees_indispo$TOT_INDISPO<=3 ]="1 à 3"
+donnees_indispo$IND[donnees_indispo$TOT_INDISPO>3]="Sup à 3"
+
+donnees_indispo$IND = factor(donnees_indispo$IND, levels = c("Sup à 3", "1 à 3", "Inf à 1"))
+
+head(donnees_indispo)})
+```
+
+
+```{r}
+
+donnees_creps$SCORE_cat2 <- donnees_creps$SCORE
+SCORE <- donnees_creps$SCORE
+POLES <- donnees_creps$POLES
+
+donnees_creps$SCORE_cat2[SCORE<6]<-"Faible"
+donnees_creps$SCORE_cat2[SCORE<14 & SCORE>=6] <-"Moyen"
+donnees_creps$SCORE_cat2[SCORE<=20 & SCORE>=14]<-"Bon"
+
+donnees_creps$SCORE_cat2 = factor(donnees_creps$SCORE_cat2, levels = c("Faible", "Moyen", "Bon"))
+
+donnees_creps$SCORE_cat3 <- donnees_creps$SCORE
+
+donnees_creps$SCORE_cat3[SCORE<8]<-"Faible"
+donnees_creps$SCORE_cat3[SCORE<14 & SCORE>=8] <-"Moyen"
+donnees_creps$SCORE_cat3[SCORE<=20 & SCORE>=14]<-"Bon"
+
+donnees_creps$SCORE_cat3 = factor(donnees_creps$SCORE_cat3, levels = c("Faible", "Moyen", "Bon"))
+
+par (mfrow=c(1,3))
+table.IND <- table(donnees_indispo$POLE, donnees_indispo$IND)
+addmargins(table.IND)
+mosaicplot(table.IND,color=c("#FF3333","#FF9933","#66CC00"), main="Contingence Catégorie d'e score'indispo / Pôles", xlab = "Pôles", ylab = "Catégories d'indispo") 
+
+
+table.cat2 <- table(donnees_creps$POLES, donnees_creps$SCORE_cat2)
+addmargins(table.cat2)
+mosaicplot(table.cat2,color=c("#FF3333","#FF9933","#66CC00"), main="Contingence Catégorie de score / Pôles", xlab = "Pôles", ylab = "Catégories de scores")
+
+table.cat3 <- table(donnees_creps$POLES, donnees_creps$SCORE_cat3)
+addmargins(table.cat3)
+mosaicplot(table.cat3,color=c("#FF3333","#FF9933","#66CC00"), main="Contingence Catégorie d'e score / Pôles", xlab = "Pôles", ylab = "Catégories de scores")
+```
+A rajouter les indiv = 0 semaines de blessures pour pouvoir conclure.
+
+```{r}
+SCORE_cat2 <- donnees_creps$SCORE
+SCORE <- donnees_creps$SCORE
+POLES <- donnees_creps$POLES
+
+SCORE_cat2[SCORE<8]<-"Faible"
+SCORE_cat2[SCORE<14 & SCORE>=8] <-"Moyen"
+SCORE_cat2[SCORE<=20 & SCORE>=14]<-"Bon"
+
+SCORE_cat = factor(SCORE_cat, levels = c("Faible", "Moyen", "Bon"))
+```
+
+
 
