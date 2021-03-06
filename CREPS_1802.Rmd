@@ -36,6 +36,7 @@ library(ggplot2)
 library(ggmosaic)
 library(MASS)
 library(dplyr)
+library(fmsb)
 ```
 
 **Importation des données** 
@@ -93,6 +94,9 @@ Notre premières impression est telle que l'on imagine ce testing assez compliqu
 Dans cette partie, nous cherchons à analyser les scores ou intervalles de score les plus obtenus et offrir une comparaison selon les pôles. On essaiera de déterminer une certaine variabilité des profils et de mettre en perspective ces résultats selon les pôles.
 
 ```{r}
+SCORE <- donnees_creps$SCORE
+POLES <- donnees_creps$POLES
+
 tab_mean <- tapply(SCORE, POLES, mean) # Moyenne des scores pour chaque pôle
 tab_median <- tapply(SCORE, POLES, median) # Médiane des scores pour chaque pôle
 tab_mean
@@ -111,10 +115,7 @@ En conclusion, les scores médians sont plutôt proches mais les scores selon le
 L'ensemble de ces analyses doit être mise en relief avec l'effectif d'athlètes pour chaque pôle considéré ; en effet, on dispose de moins d'athlètes pour l'aviron que pour le basketball par exemple.
 
 ```{r}
-ggplot(data = donnees_creps) + geom_histogram(aes(x = SCORE, fill = POLES), binwidth = 0.5) 
-+ scale_x_continuous(breaks=seq(0, 20, by = 1)) 
-+ xlab("Score") + ylab("Effectifs") 
-+ ggtitle("Effectifs selon les scores obtenus (toutes catégories) selon les pôles")
+ggplot(data = donnees_creps) + geom_histogram(aes(x = SCORE, fill = POLES), binwidth = 0.5) + scale_x_continuous(breaks=seq(0, 20, by = 1)) + xlab("Score") + ylab("Effectifs")  + ggtitle("Effectifs selon les scores obtenus (toutes catégories) selon les pôles")
 ```
 Parmi les bowlers, les moins nombreux, aucun n'obtient un score au dessus de 12, tout comme les boxeurs.
 Les seuls 0 visibles correspondent aux joueurs de Basketball, mais ils sont les plus nombreux (donc davantage de possibilités de variabilité des scores).
@@ -139,6 +140,150 @@ plot(donnees_creps$STABSUP ~donnees_creps$POLES,ylab="Score en stabilité sup", 
 Mais toutes ces différences constatées entre pôles sont-elles significatives ou simplement minimes? Cf les tests de significativité des paramètres avec une ANOVA pour chaque type de score.
 
 N.B.: Les observations à l'extérieur des moustaches doivent être étudiées de plus près. Elles ne sont pas forcément des valeurs aberrantes, mais possiblement des valeurs "déterminantes". A voir...
+
+Représentons les scores moyens obtenus pour chaque pôle dans les quatre catégories d'exercices sous la forme d'un radarplot :
+
+```{r}
+# Récupération des moyennes et définition des valeurs par catégorie
+## AV
+Mob_inf_AV = c(8,0,mean(donnees_creps$MOBINF[POLES=="AV"]))
+Mob_sup_AV = c(4,0,mean(donnees_creps$MOBSUP[POLES=="AV"]))
+Stab_inf_AV = c(6,0,mean(donnees_creps$STABINF[POLES=="AV"]))
+Stab_sup_AV = c(2,0,mean(donnees_creps$STABSUP[POLES=="AV"]))
+data_spider_AV <- cbind(Mob_inf_AV,Mob_sup_AV,Stab_inf_AV,Stab_sup_AV)
+rownames(data_spider_AV) <- c("MAX", "MIN", "AV")
+colnames(data_spider_AV) <- c("Mob. inf.", "Mob. sup.", 
+                              "Stab. inf.", "Stab. sup.")
+data_spider_AV = as.data.frame(data_spider_AV)
+
+## BF
+Mob_inf_BF = c(8,0,mean(donnees_creps$MOBINF[POLES=="BF"]))
+Mob_sup_BF = c(4,0,mean(donnees_creps$MOBSUP[POLES=="BF"]))
+Stab_inf_BF = c(6,0,mean(donnees_creps$STABINF[POLES=="BF"]))
+Stab_sup_BF = c(2,0,mean(donnees_creps$STABSUP[POLES=="BF"]))
+data_spider_BF <- cbind(Mob_inf_BF,Mob_sup_BF,Stab_inf_BF,Stab_sup_BF)
+rownames(data_spider_BF) <- c("MAX", "MIN", "BF")
+colnames(data_spider_BF) <- c("Mob. inf.", "Mob. sup.", 
+                              "Stab. inf.", "Stab. sup.")
+data_spider_BF = as.data.frame(data_spider_BF)
+
+## BK
+Mob_inf_BK = c(8,0,mean(donnees_creps$MOBINF[POLES=="BK"]))
+Mob_sup_BK = c(4,0,mean(donnees_creps$MOBSUP[POLES=="BK"]))
+Stab_inf_BK = c(6,0,mean(donnees_creps$STABINF[POLES=="BK"]))
+Stab_sup_BK = c(2,0,mean(donnees_creps$STABSUP[POLES=="BK"]))
+data_spider_BK <- cbind(Mob_inf_BK,Mob_sup_BK,Stab_inf_BK,Stab_sup_BK)
+rownames(data_spider_BK) <- c("MAX", "MIN", "BK")
+colnames(data_spider_BK) <- c("Mob. inf.", "Mob. sup.", 
+                              "Stab. inf.", "Stab.sup.")
+data_spider_BK = as.data.frame(data_spider_BK)
+
+## BL
+Mob_inf_BL = c(8,0,mean(donnees_creps$MOBINF[POLES=="BL"]))
+Mob_sup_BL = c(4,0,mean(donnees_creps$MOBSUP[POLES=="BL"]))
+Stab_inf_BL = c(6,0,mean(donnees_creps$STABINF[POLES=="BL"]))
+Stab_sup_BL = c(2,0,mean(donnees_creps$STABSUP[POLES=="BL"]))
+data_spider_BL <- cbind(Mob_inf_BL,Mob_sup_BL,Stab_inf_BL,Stab_sup_BL)
+rownames(data_spider_BL) <- c("MAX", "MIN", "BL")
+colnames(data_spider_BL) <- c("Mob. inf.", "Mob. sup.", 
+                              "Stab. inf.", "Stab.sup")
+data_spider_BL = as.data.frame(data_spider_BL)
+
+## NAT
+Mob_inf_NAT = c(8,0,mean(donnees_creps$MOBINF[POLES=="NAT"]))
+Mob_sup_NAT = c(4,0,mean(donnees_creps$MOBSUP[POLES=="NAT"]))
+Stab_inf_NAT = c(6,0,mean(donnees_creps$STABINF[POLES=="NAT"]))
+Stab_sup_NAT = c(2,0,mean(donnees_creps$STABSUP[POLES=="NAT"]))
+data_spider_NAT <- cbind(Mob_inf_NAT,Mob_sup_NAT,Stab_inf_NAT,Stab_sup_NAT)
+rownames(data_spider_NAT) <- c("MAX", "MIN", "NAT")
+colnames(data_spider_NAT) <- c("Mob. inf.", "Mob. sup.", 
+                              "Stab. inf.", "Stab. sup.")
+data_spider_NAT = as.data.frame(data_spider_NAT)
+
+## NS
+Mob_inf_NS = c(8,0,mean(donnees_creps$MOBINF[POLES=="NS"]))
+Mob_sup_NS = c(4,0,mean(donnees_creps$MOBSUP[POLES=="NS"]))
+Stab_inf_NS = c(6,0,mean(donnees_creps$STABINF[POLES=="NS"]))
+Stab_sup_NS = c(2,0,mean(donnees_creps$STABSUP[POLES=="NS"]))
+data_spider_NS <- cbind(Mob_inf_NS,Mob_sup_NS,Stab_inf_NS,Stab_sup_NS)
+rownames(data_spider_NS) <- c("MAX", "MIN", "NS")
+colnames(data_spider_NS) <- c("Mob. inf.", "Mob. sup.", 
+                              "Stab. inf.", "Stab. sup.")
+data_spider_NS = as.data.frame(data_spider_NS)
+```
+
+
+```{r}
+# Préparation et affichage des graphiques
+
+par(mfrow=c(1,2), mar = c(1, 0, 1, 0))
+
+options(repr.plot.width = 15, repr.plot.height = 8)
+
+radarchart(data_spider_AV, 
+           axistype = 1,
+           pcol = "lightskyblue2", pfcol = scales::alpha("lightskyblue2", 0.5), plwd = 2, plty = 1,
+           cglcol = "grey", cglty = 1, cglwd = 0.8,
+           axislabcol = "grey",
+           vlcex = 0.6, vlabels = colnames(data_spider_AV),
+           caxislabels = NULL, title = "Scores moyens - Aviron"
+           )
+
+radarchart(data_spider_BF, 
+           axistype = 1,
+           pcol = "lightgoldenrod3", pfcol = scales::alpha("lightgoldenrod3", 0.5), plwd = 2, plty = 1,
+           cglcol = "grey", cglty = 1, cglwd = 0.8,
+           axislabcol = "grey",
+           vlcex = 0.6, vlabels = colnames(data_spider_BF),
+           caxislabels = NULL, title = "Scores moyens - Boxe française"
+           )
+
+```
+```{r}
+par(mfrow=c(1,2), mar = c(1, 2, 2, 1))
+options(repr.plot.width = 20, repr.plot.height = 10)
+
+radarchart(data_spider_BK, 
+           axistype = 1,
+           pcol = "mistyrose4", pfcol = scales::alpha("mistyrose4", 0.5), plwd = 2, plty = 1,
+           cglcol = "grey", cglty = 1, cglwd = 0.8,
+           axislabcol = "grey",
+           vlcex = 0.7, vlabels = colnames(data_spider_BK),
+           caxislabels = NULL, title = "Scores moyens - Basketball"
+           )
+
+radarchart(data_spider_BL, 
+           axistype = 1,
+           pcol = "lightcoral", pfcol = scales::alpha("lightcoral", 0.5), plwd = 2, plty = 1,
+           cglcol = "grey", cglty = 1, cglwd = 0.8,
+           axislabcol = "grey",
+           vlcex = 0.7, vlabels = colnames(data_spider_BL),
+           caxislabels = NULL, title = "Scores moyens - Bowling"
+           )
+```
+
+```{r}
+par(mfrow=c(1,2), mar = c(1, 2, 2, 1))
+options(repr.plot.width = 20, repr.plot.height = 10)
+
+radarchart(data_spider_NAT, 
+           axistype = 1,
+           pcol = "mediumblue", pfcol = scales::alpha("mediumblue", 0.5), plwd = 2, plty = 1,
+           cglcol = "grey", cglty = 1, cglwd = 0.8,
+           axislabcol = "grey",
+           vlcex = 0.7, vlabels = colnames(data_spider_NAT),
+           caxislabels = NULL, title = "Scores moyens - Natation"
+           )
+
+radarchart(data_spider_NS, 
+           axistype = 1,
+           pcol = "lightseagreen", pfcol = scales::alpha("lightseagreen", 0.5), plwd = 2, plty = 1,
+           cglcol = "grey", cglty = 1, cglwd = 0.8,
+           axislabcol = "grey",
+           vlcex = 0.7, vlabels = colnames(data_spider_NS),
+           caxislabels = NULL, title = "Scores moyens \n Natation synchronisée"
+           )
+```
 
 # Construction d'un modèle linéaire : tests de modèle d'ANOVA
 
@@ -621,7 +766,7 @@ donnees_creps$SCORE_cat3 = factor(donnees_creps$SCORE_cat3, levels = c("Faible",
 par (mfrow=c(1,3))
 table.IND <- table(donnees_indispo$POLE, donnees_indispo$IND)
 addmargins(table.IND)
-mosaicplot(table.IND,color=c("#FF3333","#FF9933","#66CC00"), main="Contingence Catégorie d'e score'indispo / Pôles", xlab = "Pôles", ylab = "Catégories d'indispo") 
+mosaicplot(table.IND,color=c("#FF3333","#FF9933","#66CC00"), main="Contingence Niv d'indispo / Pôles", xlab = "Pôles", ylab = "Catégories d'indispo") 
 
 
 table.cat2 <- table(donnees_creps$POLES, donnees_creps$SCORE_cat2)
@@ -630,7 +775,7 @@ mosaicplot(table.cat2,color=c("#FF3333","#FF9933","#66CC00"), main="Contingence 
 
 table.cat3 <- table(donnees_creps$POLES, donnees_creps$SCORE_cat3)
 addmargins(table.cat3)
-mosaicplot(table.cat3,color=c("#FF3333","#FF9933","#66CC00"), main="Contingence Catégorie d'e score / Pôles", xlab = "Pôles", ylab = "Catégories de scores")
+mosaicplot(table.cat3,color=c("#FF3333","#FF9933","#66CC00"), main="Contingence Catégorie de score / Pôles", xlab = "Pôles", ylab = "Catégories de scores")
 ```
 A rajouter les indiv = 0 semaines de blessures pour pouvoir conclure.
 
