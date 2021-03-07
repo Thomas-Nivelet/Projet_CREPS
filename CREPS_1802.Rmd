@@ -791,5 +791,26 @@ SCORE_cat2[SCORE<=20 & SCORE>=14]<-"Bon"
 SCORE_cat = factor(SCORE_cat, levels = c("Faible", "Moyen", "Bon"))
 ```
 
+##Analyse par exercice
+```{r}
+donnees_exos <- read_excel("Scores_points.xlsx")
+```
+
+```{r}
+summary(donnees_exos)
+head(donnees_exos)
+```
+
+```{r}
+exos_quant=donnees_exos[,2:21]
+E<-cor(exos_quant)
+corrplot(E,method="number",number.cex=0.5)
+corrplot(E,method="ellipse",number.cex=0.5)
+
+```
+Le corrélogramme montre que les exercices/positions ne sont pas vraiment lié(e)s entre eux/elles. On peut conclure qu'il n'y a pas de redondance et ainsi que chaque position a son "utilité". En effet, seules les positions D/G sont corrélées, mais ceci paraît logique. Hamstring Stretch D et G sont les plus liées avant Hamstring Curl D/G. Pigeon posé D/G et Arm Clock D/G ont aussi des coefficients de corrélations assez élevés relativement aux autres exercices. On peut également dire que Adductor Stretch est plutôt lié à Hamstring stretch.
+
+Cette étape fait partie des arguments en faveur de la validation du test. 
+
 
 
