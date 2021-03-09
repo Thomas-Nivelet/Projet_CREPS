@@ -333,7 +333,7 @@ radarchart(data_spider,
 
            axislabcol = "grey",
            vlcex = 0.7, vlabels = colnames(data_spider_NAT),
-           caxislabels = NULL, title = "Scores moyens par catégrories d'exercices"
+           caxislabels = NULL, title = "Scores moyens par catégories d'exercices"
            )
 
 legend(
@@ -348,6 +348,11 @@ legend(
  
 
 ```
+On peut clairement distinguer que les athlètes de Natation Synchronisée se démarquent sur la mobilité inférieure, ce qui peut s'expliquer par la souplesse requise et améliorée dans ce sport. Tandis que, les athlètes de la Natation, eux, se démarquent en stabilité supérieure ( les membres supérieurs sont plus sollicités pour nager ). 
+En Statibilité Inférieure, ce sont les athlètes de l'Aviron qui tirent leur épingle du jeu (ils obtiennent près de 75% des points). Moins élevés que les nageurs artistiques mais ils obtiennt + de 50% des points en Stabilité Supérieure ce qui paraît logique au vu des mouvements nécessaires à ce sport.
+En boxe française, les scores par catégories d'exercices sont plutôt homogènes, les athlètes obtiennent autour de 50% des points dans chacune des catégories.
+Au Basket Ball, les athlètes sont assez bons sur les exercices de mobilité supérieure  et stabilité inférieure puisqu'ils obtiennent près de 50% des points dans chacune des ces 2 catégories tandis que sur les autres, ils sont plutôt autour de 25%.
+Les joueurs de Bowling eux, sont assez bons sur la stabilité inférieure(50% des points) alors qu'ils sont à 40% du total sur les autres catégories. 
 
 # Construction d'un modèle linéaire : tests de modèle d'ANOVA
 
