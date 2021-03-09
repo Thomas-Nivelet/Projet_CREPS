@@ -55,7 +55,7 @@ library(fmsb)
 
 ```{r, include=FALSE}
 # Importation du fichier de données depuis un .xlsx
-donnees_creps <- read_excel("donnees_CREPS_1.xlsx")
+donnees_creps <- read_excel("Donnees_CREPS_1.xlsx")
 ```
 
 ## Première prise en main des données
@@ -167,7 +167,7 @@ data_spider = as.data.frame(data_spider)
 
 ## Définition et affichage du radarchart
 par(mar = c(1, 1, 1, 1))
-radarchart(data_spider, axistype = 1,pcol = c("lightskyblue2", "lightgoldenrod3", "mistyrose4", "lightcoral", "mediumblue", "lightseagreen"),plwd = 2, plty = 1,cglcol = "grey", cglty = 1, cglwd = 0.4, axislabcol = "grey",vlcex = 0.7, vlabels = colnames(data_spider_NAT),caxislabels = NULL, title = "Scores moyens par catégrories d'exercices")
+radarchart(data_spider, axistype = 1,pcol = c("lightskyblue2", "lightgoldenrod3", "mistyrose4", "lightcoral", "mediumblue", "lightseagreen"),plwd = 2, plty = 1,cglcol = "grey", cglty = 1, cglwd = 0.4, axislabcol = "grey",vlcex = 0.7, vlabels = colnames(data_spider),caxislabels = NULL, title = "Scores moyens par catégrories d'exercices")
 
 legend(x = "right", legend = rownames(data_spider[-c(1,2),]), horiz = FALSE,bty = "n", pch = 20 , col = c("lightskyblue2", "lightgoldenrod3", "mistyrose4", "lightcoral", "mediumblue", "lightseagreen"),text.col = "black", cex = 1, pt.cex = 1.5)
 ```
@@ -201,13 +201,270 @@ corrplot(E,method="ellipse",number.cex=0.5)
 
 ```
 Le corrélogramme montre que les exercices/positions ne sont pas vraiment lié(e)s entre eux/elles. On peut conclure qu'il n'y a pas de redondance et ainsi que chaque position a son "utilité". En effet, seules les positions D/G sont corrélées, mais ceci paraît logique. Hamstring Stretch D et G sont les plus liées avant Hamstring Curl D/G. Pigeon posé D/G et Arm Clock D/G ont aussi des coefficients de corrélations assez élevés relativement aux autres exercices. On peut également dire que Adductor Stretch est plutôt lié à Hamstring stretch.
+(A MODIFIER JE L'AI PAS ENCORE FAIT)
 
 Cette étape fait partie des arguments en faveur de la validation du test. 
 
 ## Analyse par exercice : Tests de Student de moyenne (moyenne=0, moyenne=1)
 
-```{r,echo=FALSE}
+```{r}
+#AdductorStretch
+
+mean(donnees_creps$AdductorStretch)
+
+res <- t.test(donnees_creps$AdductorStretch, mu=0, alternative="greater")
+res$p.value
+
+res1 <- t.test(donnees_creps$AdductorStretch, mu=1, alternative="less")
+res1$p.value
+
+#pertinent de faire un test de student pour une variable aléatoire qui suit une loi de Bernoulli? (moyenne = p = proba que X=1) = résultat d'une expérience à deux issues (loi discrète)
+#ou plutôt faire un test sur la valeur de la proportion (page 62 poly stat inférentielles 3A-S2?)
+#Rq page 63, test de proprtion si n est petit, quand n est grand, on applique le TCL et on fait un test de niveau asymptotique  alpha.
+#donc test de student est ici un test asymptotique d'égalité de la moyenne?
+
+# x correspond à la moyenne observée 
+# mu correspond à la moyenne théorique
+
+#x=mean(donnees_creps$nom_exo)
+ # Affichage de la p-value
+#res$parameter # Affichage du dégré de liberté
+#res$statistic # Affichage  de la statistique t
 ```
+```{r}
+#HamstringStretchG
+
+mean(donnees_creps$HamstringStretchG)
+
+res <- t.test(donnees_creps$HamstringStretchG, mu=0, alternative="greater")
+res$p.value
+
+res1 <- t.test(donnees_creps$HamstringStretchG, mu=1, alternative="less")
+res1$p.value
+```
+
+
+```{r}
+#HamstringStretchD
+
+mean(donnees_creps$HamstringStretchD)
+
+res <- t.test(donnees_creps$HamstringStretchD, mu=0, alternative="greater")
+res$p.value
+
+res1 <- t.test(donnees_creps$HamstringStretchD, mu=1, alternative="less")
+res1$p.value
+```
+
+```{r}
+#QuadStretchG
+
+mean(donnees_creps$QuadStretchG)
+
+res <- t.test(donnees_creps$QuadStretchG, mu=0, alternative="greater")
+res$p.value
+
+res1 <- t.test(donnees_creps$QuadStretchG, mu=1, alternative="less")
+res1$p.value
+```
+
+```{r}
+#QuadStretchD
+
+mean(donnees_creps$QuadStretchD)
+
+res <- t.test(donnees_creps$QuadStretchD, mu=0, alternative="greater")
+res$p.value
+
+res1 <- t.test(donnees_creps$QuadStretchD, mu=1, alternative="less")
+res1$p.value
+```
+
+```{r}
+#PigeonPoseG
+
+mean(donnees_creps$PigeonPoseG)
+
+res <- t.test(donnees_creps$PigeonPoseG, mu=0, alternative="greater")
+res$p.value
+
+res1 <- t.test(donnees_creps$PigeonPoseG, mu=1, alternative="less")
+res1$p.value
+```
+
+```{r}
+#PigeonPoseD
+
+mean(donnees_creps$PigeonPoseD)
+
+res <- t.test(donnees_creps$PigeonPoseD, mu=0, alternative="greater")
+res$p.value
+
+res1 <- t.test(donnees_creps$PigeonPoseD, mu=1, alternative="less")
+res1$p.value
+```
+
+```{r}
+#Chandelier
+
+mean(donnees_creps$Chandelier)
+
+res <- t.test(donnees_creps$Chandelier, mu=0, alternative="greater")
+res$p.value
+
+res1 <- t.test(donnees_creps$Chandelier, mu=1, alternative="less")
+res1$p.value
+```
+
+```{r}
+#ArmClockG
+
+mean(donnees_creps$ArmClockG)
+
+res <- t.test(donnees_creps$ArmClockG, mu=0, alternative="greater")
+res$p.value
+
+res1 <- t.test(donnees_creps$ArmClockG, mu=1, alternative="less")
+res1$p.value
+```
+
+```{r}
+#ArmClockD
+
+mean(donnees_creps$ArmClockD)
+
+res <- t.test(donnees_creps$ArmClockD, mu=0, alternative="greater")
+res$p.value
+
+res1 <- t.test(donnees_creps$ArmClockD, mu=1, alternative="less")
+res1$p.value
+```
+
+```{r}
+#ReverseTable
+
+mean(donnees_creps$ReverseTable)
+
+res <- t.test(donnees_creps$ReverseTable, mu=0, alternative="greater")
+res$p.value
+
+res1 <- t.test(donnees_creps$ReverseTable, mu=1, alternative="less")
+res1$p.value
+```
+
+```{r}
+#OverheadSquat
+
+mean(donnees_creps$OverheadSquat)
+
+res <- t.test(donnees_creps$OverheadSquat, mu=0, alternative="greater")
+res$p.value
+
+res1 <- t.test(donnees_creps$OverheadSquat, mu=1, alternative="less")
+res1$p.value
+```
+
+```{r}
+#HurdleStepG
+
+mean(donnees_creps$HurdleStepG)
+
+res <- t.test(donnees_creps$HurdleStepG, mu=0, alternative="greater")
+res$p.value
+
+res1 <- t.test(donnees_creps$HurdleStepG, mu=1, alternative="less")
+res1$p.value
+```
+
+```{r}
+#HurdleStepD
+
+mean(donnees_creps$HurdleStepD)
+
+res <- t.test(donnees_creps$HurdleStepD, mu=0, alternative="greater")
+res$p.value
+
+res1 <- t.test(donnees_creps$HurdleStepD, mu=1, alternative="less")
+res1$p.value
+```
+
+```{r}
+#HamstringCurlG
+
+mean(donnees_creps$HamstringCurlG)
+
+res <- t.test(donnees_creps$HamstringCurlG, mu=0, alternative="greater")
+res$p.value
+
+res1 <- t.test(donnees_creps$HamstringCurlG, mu=1, alternative="less")
+res1$p.value
+```
+
+```{r}
+#HamstringCurlD
+
+mean(donnees_creps$HamstringCurlD)
+
+res <- t.test(donnees_creps$HamstringCurlD, mu=0, alternative="greater")
+res$p.value
+
+res1 <- t.test(donnees_creps$HamstringCurlD, mu=1, alternative="less")
+res1$p.value
+```
+
+```{r}
+#CopenhagenPlankG
+
+mean(donnees_creps$CopenhagenPlankG)
+
+res <- t.test(donnees_creps$CopenhagenPlankG, mu=0, alternative="greater")
+res$p.value
+
+res1 <- t.test(donnees_creps$CopenhagenPlankG, mu=1, alternative="less")
+res1$p.value
+```
+
+```{r}
+#CopenhagenD
+
+mean(donnees_creps$CopenhagenD)
+
+res <- t.test(donnees_creps$CopenhagenD, mu=0, alternative="greater")
+res$p.value
+
+res1 <- t.test(donnees_creps$CopenhagenD, mu=1, alternative="less")
+res1$p.value
+```
+
+```{r}
+#PushUp
+
+mean(donnees_creps$PushUp)
+
+res <- t.test(donnees_creps$PushUp, mu=0, alternative="greater")
+res$p.value
+
+res1 <- t.test(donnees_creps$PushUp, mu=1, alternative="less")
+res1$p.value
+```
+
+```{r}
+#CoreActivation
+
+mean(donnees_creps$CoreActivation)
+
+res <- t.test(donnees_creps$CoreActivation, mu=0, alternative="greater")
+res$p.value
+
+res1 <- t.test(donnees_creps$CoreActivation, mu=1, alternative="less")
+res1$p.value
+
+#tester si moyenne très petite est-ce que p-valeur significative? combien il faut de moyenne pour qu'elle le soit avec notre échantillon??? même 0,2 considéré comme signifcativement différent de 0!
+```
+
+Toutes ces p-valeurs des différents tests de Student sont très faibles. Ainsi, on peut fortement rejeter les hypothèses d'une moyenne de chacun des exercices égale à 0 ou à 1.
+On peut ainsi en conclure que chaque exercice semble avoir son utilité, en permettant de différencier les différents individus. En effet, une moyenne nulle ou à l'inverse égale à 1 aurait "classé"" tous les individus d'un même côté et n'aurait pas permis d'apporter une quelconque information quant à la possibilité de blessure d'un athlète comparé à un autre.
+Cela apporte un nouvel argument en faveur de la validation du protocole de test TM2S.
 
 # Analyse test/blessure (certaines zones touchées)
 ##quel type de blessure selon les pôles?
