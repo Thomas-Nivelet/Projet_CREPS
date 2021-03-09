@@ -1,0 +1,217 @@
+---
+title: "Projet CREPS"
+geometry: left=2cm,right=2cm,top=2cm,bottom=2cm
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    df_print: paged
+    toc: yes
+  pdf_document:
+    fig_height: 4
+    fig_width: 5.5
+    number_sections: yes
+    toc: yes
+subtitle: Mise en place d'un modÃ¨le statistique pour validaton du testing TM2S
+header-includes:
+- \usepackage{authblk}
+- \usepackage[french]{babel}
+- \usepackage{fancyhdr}
+- \pagestyle{fancy}
+- \renewcommand\headrulewidth{1pt}
+- \fancyhead[L]{\scshape \leftmark}
+- \fancyhead[R]{\bfseries Projet tutorÃ©}
+- \fancyfoot[L]{INSA Toulouse}
+- \author{\bfseries CÃ©lia DULUC, Thomas NIVELET, Alexia GHOZLAND}
+- \affil{4\textsuperscript{e} annÃ©e MA}
+- \affil{INSA Toulouse}
+- \affil{\small AnnÃ©e universitaire 2020-2021}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+#inlude = FALSE : ni le code, ni la sortie apparaît dans le pdf
+#echo=FALSE: le code n'apparaît pas mais les sorties oui
+#eval=FALSE: le code n'est pas runné
+#results="hide": le code est visible mais pas les sorties
+```
+
+# Introduction
+
+
+# Statistiques descriptives
+
+**Importation des librairies `R` nécessaires**
+
+```{r, include=FALSE}
+library(readxl)
+library(ggplot2)
+library(ggmosaic)
+library(MASS)
+library(dplyr)
+library(fmsb)
+```
+
+**Importation des données** 
+
+```{r, include=FALSE}
+# Importation du fichier de données depuis un .xlsx
+donnees_creps <- read_excel("donnees_CREPS_1.xlsx")
+```
+
+## Première prise en main des données
+### Statistiques unidimensionnelles : étude générale des pôles et des scores obtenus
+
+```{r, include=FALSE}
+# Redéfinition de la variable qualitative à bon escient (en facteurs)
+donnees_creps$POLES <- as.factor(donnees_creps$POLES)
+
+# Vérification du contenu et présentation sommaire des variables
+summary(donnees_creps)
+head(donnees_creps)
+```
+
+
+```{r, include=FALSE}
+# Observations et variables contenues dans le jeu de données
+dim(donnees_creps)
+```
+
+Le premier jeu de données à notre disposition contient les scores obtenus au testing TM2S, relatif à la mobilité et à la stabilité su sportif, de 90 athlètes du CREPS, répartis dans 6 pôles sportifs différents (Aviron, Boxe française, Basketball, Bowling, Natation et Natation synchronisée). Plusieurs des variables présentes dans ce premier jeu de données attireront particulièrement notre attention dans la suite du projet :
+
+- `SCORE`, une variable quantitative discrète, prenant des valeurs de 0 à 20, représentant le score global obtenu par le sportif au test.
+- `POLES`, une variable qualitative à 6 modalités représentant les pôles du CREPS sur lesquels a été expérimenté le TM2S.
+- `MOBINF`, une variable quantitative discrète, représentant le score obtenu en mobilité inférieure.
+- `MOBSUP`, une variable quantitative discrète, représentant le score obtenu en mobilité supérieure.
+- `STABINF`, une variable quantitative discrète, représentant le score obtenu en stabilité inférieure.
+- `STABSUP`, une variable quantitative discrète, représentant le score obtenu en stabilité supérieure.
+
+```{r, echo=FALSE}
+pie(table(donnees_creps$POLES), col = c("lightskyblue2", "lightgoldenrod3", "mistyrose4", "lightcoral", "mediumblue", "lightseagreen"),main = "Répartition des athlètes dans les pôles")
+
+barplot(table(factor(donnees_creps$SCORE, levels = 0:20)), main = "Scores obtenus - Tous pôles confondus", ylim = c(0,15), cex.names = 0.6, ylab = "Effectifs", xlab= "Score", col = heat.colors(20))
+```
+
+- Répartition des athlètes dans les pôles : 
+Le diagramme circulaire ci-dessus nous permet d'affirmer que les sportifs testés proviennent de six pôles différents. Mise à part en Basketball, les pôles présentent des effectifs assez comparables.
+On note que c'est en Basket Ball qu'il y a le plus d'athlètes, soit un tiers de l'effectif total des sportifs du CREPS testés. Viennent ensuite, de façon décroissante, la Natation Synchronisée, la Boxe Française, l'Aviron et la Natation. C'est en bowling qu'il y a le moins d'athlètes.
+
+- Scores globaux obtenus :
+On constate que les notes sont très échelonnées de 0 à 19 et prennent quasiment la totalité des valeurs possibles. Le score le plus obtenu au test est la note de 10, soit la moyenne.
+Cependant, on dénote davantage de notes inférieures à la moyenne que de notes supérieures à 10/20.
+12 athlètes ont reçu un score de 8, autant que pour un score de 9. Des pics plus discrets s'affichent pour les scores de 12, 5 (et 14). 
+Très peu d'athlètes obtiennent des notes au moins égales à 13.
+Notre premières impression est telle que l'on imagine ce testing assez compliqué dans l'absolu ; mais il va nous falloir étudier plus en détails cette notation, par pôles et par catégories d'exercices.
+
+### Statistiques bidimensionnelles : distinction des scores obtenus selon les pôles
+#### Étude de la spécificité de chaque pôle
+
+Dans cette partie, nous cherchons à analyser les scores ou intervalles de score les plus obtenus et offrir une comparaison selon les pôles. On essaiera de déterminer une certaine variabilité des profils et de mettre en perspective ces résultats selon les pôles.
+
+```{r, echo=FALSE}
+SCORE <- donnees_creps$SCORE
+POLES <- donnees_creps$POLES
+
+#tab_mean <- tapply(SCORE, POLES, mean) # Moyenne des scores pour chaque pôle
+#tab_median <- tapply(SCORE, POLES, median) # Médiane des scores pour chaque pôle
+#tab_mean
+#tab_median
+```
+
+```{r, echo=FALSE}
+boxplot(SCORE ~ POLES, cex.axis = 0.8, main = "Boxplots parallèles des scores en fonction des pôles", xlab = "Pôles", ylab = "Score")
+```
+
+Les boxplots (ou diagrammes en boîtes) ci-dessus nous permettent d'évaluer la position, l'éventuelle symétrie, ainsi que la dispersion des scores obtenus pour chaque pôle. Sur ces graphiques, 50% des observations sont rassemblées à l'intérieur d'une boîte grisée, le trait plein noir représentant la médiane.
+
+Les médianes sont alignées au score de 9/20 pour les boxplots concernant les athlètes de Bowling, Basketball et Aviron : il y a autant de scores obtenus en-dessous qu'au dessus de cette note, pour ces pôles-ci.
+En aviron, on observe un faible écart inter-quartiles, les scores ne sont pas trop dispersés au sein de ce pôle, le niveau est donc homogène. (mais 2 outliers).
+En Natation Synchronisée, la médiane s'élève à 11/20, la plus élevée parmi tous les pôles. De plus, l'écart interquartile n'est pas très haut. On peut en déduire un niveau homogène et bon, en majorité situé au-dessus de la moyenne de 10/20.
+En conclusion, les scores médians sont plutôt proches mais les scores selon les pôles sont plus dispersés (BF par rapport à AV par exemple).
+L'ensemble de ces analyses doit être mise en relief avec l'effectif d'athlètes pour chaque pôle considéré ; en effet, on dispose de moins d'athlètes pour l'aviron que pour le basketball par exemple.
+
+```{r, echo=FALSE}
+par(mfrow=c(2,2))
+plot(donnees_creps$MOBINF ~donnees_creps$POLES, ylab="Score en mobilite inf", xlab="Poles")
+plot(donnees_creps$MOBSUP ~donnees_creps$POLES, ylab="Score en mobilite sup", xlab="Poles")
+plot(donnees_creps$STABINF ~donnees_creps$POLES, ylab="Score en stabilité inf", xlab="Poles")
+plot(donnees_creps$STABSUP ~donnees_creps$POLES,ylab="Score en stabilité sup", xlab="Poles")
+```
+
+- Pour la mobilité inférieure (note sur 8) : le score médian de tous les pôles se situe aux alentours de 3, i.e 50% des athlètes de ces pôles ont un score inférieur à 3. Le pôle Natation Synchronisée se détache avec une médiane très proche de 6, et une certaine homogénéité des athlètes (faible écart interquartile). (Les nageuses sont plus souples : sont-elles moins blessées à ce niveau-la pour autant?).
+- Pour la mobilité supérieure (note sur 4) : Les pôles Boxe et Bowling sont les plus faibles avec une médiane de 1. On peut également remarquer qu'un grand nombre d'atlètes ont un score approximatif de 1, car la médiane semble assimilable au premier quartile. Ces deux pôles semblent avoir un comportement similaire, même dispersion (cf ont-ils le même type de blessure?).Pour l'Aviron et le Basket, il est plus difficile de conclure, la dispersion est importante, les athlètes non homogènes? Plus grande homogénéité pour la Natation et la Natation Synchronisée, avec une médiane plus haute.
+- Pour la stabilité inférieure (note sur 6) : Encore une fois, on constate une certaine disparité entre les pôles. Les médianes les plus faibles (autour de 2) pour la boxe, la natation et la Natation Synchronisée. Il y a une dispersion plus important pour les trois autres pôles mais ils obtiennent globalement de meilleurs scores.
+- Pour la stabilité supérieure (note sur 2) : 75% des athlètes ont une note inférieure ou égale à 1 pour le basket, la boxe et le bowling. 75% des athlètes ont une note supérieure ou égale à 1 pour l'aviron et la natation. La répartition est symétrique par rapport au score 1 pour la Natation Synchronisée.
+
+Représentons les scores moyens obtenus pour chaque pôle dans les quatre catégories d'exercices sous la forme d'un radarplot :
+
+```{r,fig.height = 7, fig.width = 10}
+
+# Test graphes araignée superposés
+## Récupération des données moyennes, minimales et maximales
+
+Mob_inf = c(8,0,mean(donnees_creps$MOBINF[POLES=="AV"]),mean(donnees_creps$MOBINF[POLES=="BF"]),mean(donnees_creps$MOBINF[POLES=="BK"]),mean(donnees_creps$MOBINF[POLES=="BL"]),mean(donnees_creps$MOBINF[POLES=="NAT"]),mean(donnees_creps$MOBINF[POLES=="NS"]))
+
+Mob_sup = c(4,0,mean(donnees_creps$MOBSUP[POLES=="AV"]),mean(donnees_creps$MOBSUP[POLES=="BF"]),mean(donnees_creps$MOBSUP[POLES=="BK"]),mean(donnees_creps$MOBSUP[POLES=="BL"]),mean(donnees_creps$MOBSUP[POLES=="NAT"]),mean(donnees_creps$MOBSUP[POLES=="NS"]))
+
+Stab_inf = c(6,0,mean(donnees_creps$STABINF[POLES=="AV"]),mean(donnees_creps$STABINF[POLES=="BF"]),mean(donnees_creps$STABINF[POLES=="BK"]),mean(donnees_creps$STABINF[POLES=="BL"]),mean(donnees_creps$STABINF[POLES=="NAT"]),mean(donnees_creps$STABINF[POLES=="NS"]))
+
+Stab_sup = c(2,0,mean(donnees_creps$STABSUP[POLES=="AV"]),mean(donnees_creps$STABSUP[POLES=="BF"]),mean(donnees_creps$STABSUP[POLES=="BK"]),mean(donnees_creps$STABSUP[POLES=="BL"]),mean(donnees_creps$STABSUP[POLES=="NAT"]),mean(donnees_creps$STABSUP[POLES=="NS"]))
+
+data_spider <- cbind(Mob_inf,Mob_sup,Stab_inf,Stab_sup)
+
+rownames(data_spider) <- c("MAX", "MIN", "AV", "BF", "BK", "BL", "NAT", "NS")
+
+colnames(data_spider) <- c("Mob. inf.", "Mob. sup.", "Stab. inf.", "Stab. sup.")
+
+data_spider = as.data.frame(data_spider)
+
+## Définition et affichage du radarchart
+par(mar = c(1, 1, 1, 1))
+radarchart(data_spider, axistype = 1,pcol = c("lightskyblue2", "lightgoldenrod3", "mistyrose4", "lightcoral", "mediumblue", "lightseagreen"),plwd = 2, plty = 1,cglcol = "grey", cglty = 1, cglwd = 0.4, axislabcol = "grey",vlcex = 0.7, vlabels = colnames(data_spider_NAT),caxislabels = NULL, title = "Scores moyens par catégrories d'exercices")
+
+legend(x = "right", legend = rownames(data_spider[-c(1,2),]), horiz = FALSE,bty = "n", pch = 20 , col = c("lightskyblue2", "lightgoldenrod3", "mistyrose4", "lightcoral", "mediumblue", "lightseagreen"),text.col = "black", cex = 1, pt.cex = 1.5)
+```
+
+
+
+```{r, results="hide"}
+# Construction d'un modèle linéaire : tests de modèle d'ANOVA
+#Pas notre sujet? Pas forcément utile?!
+ao.score.pole = lm(SCORE ~ POLES, data = donnees_creps)
+summary(ao.score.pole)
+```
+
+On peut voir que le modèle d'ANOVA testé ici (la variable POLES pour expliquer le score) n'ajuste pas bien les données, car le $R^2$ est faible (proche de 0). Donc l'appartenance à un pôle ne suffit pas à expliquer le score obtenu au test. Pour mieux expliquer le score, il nous faudra donc "complexifier" le modèle", en considérant par exemple d'autres variables.
+
+
+# Validation du protocole 
+
+##Corrélations entre exercices
+
+```{r}
+summary(donnees_creps)
+head(donnees_creps)
+```
+
+```{r}
+exos_quant=donnees_creps[,8:27]
+E<-cor(exos_quant)
+corrplot(E,method="number",number.cex=0.5)
+corrplot(E,method="ellipse",number.cex=0.5)
+
+```
+Le corrélogramme montre que les exercices/positions ne sont pas vraiment lié(e)s entre eux/elles. On peut conclure qu'il n'y a pas de redondance et ainsi que chaque position a son "utilité". En effet, seules les positions D/G sont corrélées, mais ceci paraît logique. Hamstring Stretch D et G sont les plus liées avant Hamstring Curl D/G. Pigeon posé D/G et Arm Clock D/G ont aussi des coefficients de corrélations assez élevés relativement aux autres exercices. On peut également dire que Adductor Stretch est plutôt lié à Hamstring stretch.
+
+Cette étape fait partie des arguments en faveur de la validation du test. 
+
+## Analyse par exercice : Tests de Student de moyenne (moyenne=0, moyenne=1)
+
+```{r,echo=FALSE}
+```
+
+# Analyse test/blessure (certaines zones touchées)
+##quel type de blessure selon les pôles?
+## quelle indisponibilité moyenne?
+## quelle fréquence?
+
+

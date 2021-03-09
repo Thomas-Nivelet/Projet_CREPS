@@ -25,7 +25,7 @@ header-includes:
 ---
 
 ```{r setup, include=FALSE}
-#knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, cache=TRUE)
 ```
 
 **Importation des librairies `R` nécessaires**
@@ -285,6 +285,70 @@ radarchart(data_spider_NS,
            )
 ```
 
+```{r,fig.height = 7, fig.width = 10}
+
+# Test graphes araignée superposés
+## Récupération des données moyennes, minimales et maximales
+ 
+
+Mob_inf = c(8,0,mean(donnees_creps$MOBINF[POLES=="AV"]),mean(donnees_creps$MOBINF[POLES=="BF"]),mean(donnees_creps$MOBINF[POLES=="BK"]),mean(donnees_creps$MOBINF[POLES=="BL"]),mean(donnees_creps$MOBINF[POLES=="NAT"]),mean(donnees_creps$MOBINF[POLES=="NS"]))
+
+ 
+
+Mob_sup = c(4,0,mean(donnees_creps$MOBSUP[POLES=="AV"]),mean(donnees_creps$MOBSUP[POLES=="BF"]),mean(donnees_creps$MOBSUP[POLES=="BK"]),mean(donnees_creps$MOBSUP[POLES=="BL"]),mean(donnees_creps$MOBSUP[POLES=="NAT"]),mean(donnees_creps$MOBSUP[POLES=="NS"]))
+
+ 
+
+Stab_inf = c(6,0,mean(donnees_creps$STABINF[POLES=="AV"]),mean(donnees_creps$STABINF[POLES=="BF"]),mean(donnees_creps$STABINF[POLES=="BK"]),mean(donnees_creps$STABINF[POLES=="BL"]),mean(donnees_creps$STABINF[POLES=="NAT"]),mean(donnees_creps$STABINF[POLES=="NS"]))
+
+ 
+
+Stab_sup = c(2,0,mean(donnees_creps$STABSUP[POLES=="AV"]),mean(donnees_creps$STABSUP[POLES=="BF"]),mean(donnees_creps$STABSUP[POLES=="BK"]),mean(donnees_creps$STABSUP[POLES=="BL"]),mean(donnees_creps$STABSUP[POLES=="NAT"]),mean(donnees_creps$STABSUP[POLES=="NS"]))
+
+ 
+
+data_spider <- cbind(Mob_inf,Mob_sup,Stab_inf,Stab_sup)
+
+rownames(data_spider) <- c("MAX", "MIN", "AV", "BF", "BK", "BL", "NAT", "NS")
+
+colnames(data_spider) <- c("Mob. inf.", "Mob. sup.",
+
+                              "Stab. inf.", "Stab. sup.")
+
+data_spider = as.data.frame(data_spider)
+
+ 
+
+## Définition et affichage du radarchart
+par(mar = c(1, 1, 1, 1))
+radarchart(data_spider,
+
+           axistype = 1,
+
+           pcol = c("lightskyblue2", "lightgoldenrod3", "mistyrose4", "lightcoral", "mediumblue", "lightseagreen"),
+
+           plwd = 2, plty = 1,
+
+           cglcol = "grey", cglty = 1, cglwd = 0.4,
+
+           axislabcol = "grey",
+           vlcex = 0.7, vlabels = colnames(data_spider_NAT),
+           caxislabels = NULL, title = "Scores moyens par catégrories d'exercices"
+           )
+
+legend(
+
+  x = "right", legend = rownames(data_spider[-c(1,2),]), horiz = FALSE,
+
+  bty = "n", pch = 20 , col = c("lightskyblue2", "lightgoldenrod3", "mistyrose4", "lightcoral", "mediumblue", "lightseagreen"),
+
+  text.col = "black", cex = 1, pt.cex = 1.5
+
+  )
+ 
+
+```
+
 # Construction d'un modèle linéaire : tests de modèle d'ANOVA
 
 ```{r}
@@ -346,6 +410,7 @@ De même, pour la stabilité supérieure, on constate que les trois valeurs de n
 
 Les deux graphes ci-dessus permettent une meilleure visualisation que les boxplots présentés plus haut dans le document. 
 
+(Partie blessure)
 # Redéfinition de la variable `Score` en sous-catégories
 
 ```{r}
@@ -792,17 +857,14 @@ SCORE_cat = factor(SCORE_cat, levels = c("Faible", "Moyen", "Bon"))
 ```
 
 ##Analyse par exercice
+
 ```{r}
-donnees_exos <- read_excel("Scores_points.xlsx")
+summary(donnees_creps)
+head(donnees_creps)
 ```
 
 ```{r}
-summary(donnees_exos)
-head(donnees_exos)
-```
-
-```{r}
-exos_quant=donnees_exos[,2:21]
+exos_quant=donnees_creps[,8:27]
 E<-cor(exos_quant)
 corrplot(E,method="number",number.cex=0.5)
 corrplot(E,method="ellipse",number.cex=0.5)
@@ -813,4 +875,19 @@ Le corrélogramme montre que les exercices/positions ne sont pas vraiment lié(e
 Cette étape fait partie des arguments en faveur de la validation du test. 
 
 
+Essai tests de moyennes = 0 et =1.
+```{r}
+# res <- t.test(x, mu=0, alternative="greater")
+# x correspond à la moyenne observée 
+# mu correspond à la moyenne théorique
+
+#x=mean(donnees_creps$nom_exo)
+#res$p.value # Affichage de la p-value
+#res$parameter # Affichage du dégré de liberté
+#res$statistic # Affichage  de la statistique t
+```
+
+```{r}
+mean(donnees_creps$nom_exo)
+```
 
