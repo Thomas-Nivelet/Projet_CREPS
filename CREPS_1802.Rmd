@@ -8,7 +8,7 @@ output:
     toc: yes
 date: "`r Sys.Date()`"
 subtitle: "Mise en place d'un modèle statistique pour validaton du testing TM2S"
-geometry: "left=2cm,right=2cm,top=2cm,bottom=2cm"
+geometry: "left=3cm,right=3cm,top=3cm,bottom=3cm"
 header-includes:
 - \usepackage{authblk}
 - \usepackage[french]{babel}
@@ -30,13 +30,14 @@ knitr::opts_chunk$set(echo = TRUE, cache=TRUE)
 
 **Importation des librairies `R` nécessaires**
 
-```{r}
+```{r, include=FALSE}
 library(readxl)
 library(ggplot2)
 library(ggmosaic)
 library(MASS)
 library(dplyr)
 library(fmsb)
+library(corrplot)
 ```
 
 **Importation des données** 
@@ -72,9 +73,9 @@ Le premier jeu de données à notre disposition contient les scores obtenus au t
 - `STABSUP`, une variable quantitative discrète, représentant le score obtenu en stabilité supérieure.
 
 ```{r}
-pie(table(donnees_creps$POLES), col = c("lightskyblue2", "lightgoldenrod3", "mistyrose4", "lightcoral", "mediumblue", "lightseagreen"),main = "Répartition des athlètes dans les pôles")
+pie(table(donnees_creps$POLES), col = c("lightskyblue2", "lightgoldenrod3", "mistyrose4", "lightcoral", "mediumblue", "lightseagreen", "darkorange2", "brown4"),main = "Répartition des athlètes dans les pôles")
 
-barplot(table(factor(donnees_creps$SCORE, levels = 0:20)), main = "Scores obtenus - Tous pôles confondus", ylim = c(0,15), cex.names = 0.6, ylab = "Effectifs", xlab= "Score", col = heat.colors(20))
+barplot(table(factor(donnees_creps$SCORE, levels = 0:20)), main = "Scores obtenus - Tous pôles confondus", ylim = c(0,20), cex.names = 0.6, ylab = "Effectifs", xlab= "Score", col = heat.colors(20))
 ```
 
 - Répartition des athlètes dans les pôles : 
@@ -349,7 +350,7 @@ legend(
 
 ```
 On peut clairement distinguer que les athlètes de Natation Synchronisée se démarquent sur la mobilité inférieure, ce qui peut s'expliquer par la souplesse requise et améliorée dans ce sport. Tandis que, les athlètes de la Natation, eux, se démarquent en stabilité supérieure ( les membres supérieurs sont plus sollicités pour nager ). 
-En Statibilité Inférieure, ce sont les athlètes de l'Aviron qui tirent leur épingle du jeu (ils obtiennent près de 75% des points). Moins élevés que les nageurs artistiques mais ils obtiennt + de 50% des points en Stabilité Supérieure ce qui paraît logique au vu des mouvements nécessaires à ce sport.
+En Stabilité Inférieure, ce sont les athlètes de l'Aviron qui tirent leur épingle du jeu (ils obtiennent près de 75% des points). Moins élevés que les nageurs artistiques mais ils obtiennt + de 50% des points en Stabilité Supérieure ce qui paraît logique au vu des mouvements nécessaires à ce sport.
 En boxe française, les scores par catégories d'exercices sont plutôt homogènes, les athlètes obtiennent autour de 50% des points dans chacune des catégories.
 Au Basket Ball, les athlètes sont assez bons sur les exercices de mobilité supérieure  et stabilité inférieure puisqu'ils obtiennent près de 50% des points dans chacune des ces 2 catégories tandis que sur les autres, ils sont plutôt autour de 25%.
 Les joueurs de Bowling eux, sont assez bons sur la stabilité inférieure(50% des points) alors qu'ils sont à 40% du total sur les autres catégories. 
@@ -489,11 +490,14 @@ axis(4, ylim=c(0,20),col="blue",col.axis="blue",at=seq(0, 20, by=2), cex.axis = 
 mtext("Score global",side=4,line=2.5, col="blue") 
 par(new=T)
 plot(donnees_bless$BLESS_POURC ~donnees_bless$POLE, ylab="", xlab="", axes= FALSE, medcol = "red", boxcol = "red")
-axis(2 , xlim=c(0,100), col="red",col.axis="red",at=seq(0, 101, by=10), cex.axis = 0.7) 
+axis(2 , xlim=c(0,101), col="red",col.axis="red",at=seq(0, 101, by=10), cex.axis = 0.7) 
 mtext("Pourcentage de blessures",side=2,line=2.5, col = "red")
 axis(1,at=c(1:6), labels=c("AV", "BF", "BK", "BL", "NAT", "NS"), cex.axis = 0.8)
 mtext("Pôles",side=1,line=2.5,col="black") 
 box()
+
+# Manque les pourcentages de blessures pour les deux nouveaux pôles ! Savoir à quoi correspond l'état du sportif 
+# dans le nouvel excel
 ```
 
 Commentaires : 
@@ -513,7 +517,7 @@ Le graphe ci-après représente le nombre de blessures en fonction du score méd
 #plot(a$stats[3,]~moda, main="Valeur médiane du nombre de blessés en fonction du pôle", ylab="médiane du nombre de blessures", xlab="Pôles")
 
 #coord_x=a$stats[3,]
-coord_x=tab_median
+coord_x=tab_median[c(1:4,6:7)]
 coord_y=donnees_bless$BLESS_POURC
 nom=c("AV","BF","BK","BL","NAT","NS")
 reg.med <- lm(coord_y ~ coord_x)
@@ -522,7 +526,7 @@ abline(reg.med, col = "red")
 text(coord_x,coord_y,nom, pos=2, offset=0.5, cex=0.7)
 
 #Plus pertinent avec les scores moyens de chaque pôle??
-coord_x=tab_mean
+coord_x=tab_mean[c(1:4,6:7)]
 coord_y=donnees_bless$BLESS_POURC
 nom=c("AV","BF","BK","BL","NAT","NS")
 reg.moy <- lm(coord_y ~ coord_x)
@@ -546,7 +550,7 @@ On affine notre analyse en scindant selon les catégories d'exercices.
 par(mfrow=c(2,2))
 
 tab_median_mobinf=tapply(donnees_creps$MOBINF, donnees_creps$POLES, median)
-coord_x=tab_median_mobinf
+coord_x=tab_median_mobinf[c(1:4,6:7)]
 coord_y=donnees_bless$BLESS_POURC
 nom=c("AV","BF","BK","BL","NAT","NS")
 plot(coord_x,coord_y, ylab="Pourcentage de blessés", xlab="Score médian en mob inf obtenu dans chaque pôle", main="Pourcentage de blessés en fonction du score médian obtenu pour chaque pôle", cex.main=0.6)
@@ -555,7 +559,7 @@ reg <- lm(coord_y ~ coord_x)
 abline(reg, col = "red")
 
 tab_median_stabsup=tapply(donnees_creps$STABSUP, donnees_creps$POLES, median)
-coord_x=tab_median_stabsup
+coord_x=tab_median_stabsup[c(1:4,6:7)]
 coord_y=donnees_bless$BLESS_POURC
 nom=c("AV","BF","BK","BL","NAT","NS")
 plot(coord_x,coord_y, ylab="Pourcentage de blessés", xlab="Score médian en stab sup obtenu dans chaque pôle", main="Pourcentage de blessés en fonction du score médian obtenu pour chaque pôle", cex.main=0.6)
@@ -564,7 +568,7 @@ reg <- lm(coord_y ~ coord_x)
 abline(reg, col = "red")
 
 tab_median_mobsup=tapply(donnees_creps$MOBSUP, donnees_creps$POLES, median)
-coord_x=tab_median_mobsup
+coord_x=tab_median_mobsup[c(1:4,6:7)]
 coord_y=donnees_bless$BLESS_POURC
 nom=c("AV","BF","BK","BL","NAT","NS")
 plot(coord_x,coord_y, ylab="Pourcentage de blessés", xlab="Score médian en mob sup obtenu dans chaque pôle", main="Pourcentage de blessés en fonction du score médian obtenu pour chaque pôle", cex.main=0.6)
@@ -573,7 +577,7 @@ reg <- lm(coord_y ~ coord_x)
 abline(reg, col = "red")
 
 tab_median_stabinf=tapply(donnees_creps$STABINF, donnees_creps$POLES, median)
-coord_x=tab_median_stabinf
+coord_x=tab_median_stabinf[c(1:4,6:7)]
 coord_y=donnees_bless$BLESS_POURC
 nom=c("AV","BF","BK","BL","NAT","NS")
 plot(coord_x,coord_y, ylab="Pourcentage de blessés", xlab="Score médian en stab inf obtenu dans chaque pôle", main="Pourcentage de blessés en fonction du score médian obtenu pour chaque pôle", cex.main=0.6)
@@ -606,7 +610,7 @@ La médiane sert aussi pour des distributions asymétriques (ce qu'on a ici en g
 par(mfrow=c(2,2))
 
 tab_mean_mobinf=tapply(donnees_creps$MOBINF, donnees_creps$POLES, mean)
-coord_x=tab_mean_mobinf
+coord_x=tab_mean_mobinf[c(1:4,6:7)]
 coord_y=donnees_bless$BLESS_POURC
 nom=c("AV","BF","BK","BL","NAT","NS")
 plot(coord_x,coord_y, ylab="Pourcentage de blessés", xlab="Score moyen en mob inf obtenu dans chaque pôle", main="Pourcentage de blessés en fonction du score moyen obtenu pour chaque pôle", cex.main=0.6)
@@ -615,7 +619,7 @@ reg <- lm(coord_y ~ coord_x)
 abline(reg, col = "red")
 
 tab_mean_stabsup=tapply(donnees_creps$STABSUP, donnees_creps$POLES, mean)
-coord_x=tab_mean_stabsup
+coord_x=tab_mean_stabsup[c(1:4,6:7)]
 coord_y=donnees_bless$BLESS_POURC
 nom=c("AV","BF","BK","BL","NAT","NS")
 plot(coord_x,coord_y, ylab="Pourcentage de blessés", xlab="Score moyen en stab sup obtenu dans chaque pôle", main="Pourcentage de blessés en fonction du score moyen obtenu pour chaque pôle", cex.main=0.6)
@@ -624,7 +628,7 @@ reg <- lm(coord_y ~ coord_x)
 abline(reg, col = "red")
 
 tab_mean_mobsup=tapply(donnees_creps$MOBSUP, donnees_creps$POLES, mean)
-coord_x=tab_mean_mobsup
+coord_x=tab_mean_mobsup[c(1:4,6:7)]
 coord_y=donnees_bless$BLESS_POURC
 nom=c("AV","BF","BK","BL","NAT","NS")
 plot(coord_x,coord_y, ylab="Pourcentage de blessés", xlab="Score moyen en mob sup obtenu dans chaque pôle", main="Pourcentage de blessés en fonction du score moyen obtenu pour chaque pôle", cex.main=0.6)
@@ -633,7 +637,7 @@ reg <- lm(coord_y ~ coord_x)
 abline(reg, col = "red")
 
 tab_mean_stabinf=tapply(donnees_creps$STABINF, donnees_creps$POLES, mean)
-coord_x=tab_mean_stabinf
+coord_x=tab_mean_stabinf[c(1:4,6:7)]
 coord_y=donnees_bless$BLESS_POURC
 nom=c("AV","BF","BK","BL","NAT","NS")
 plot(coord_x,coord_y, ylab="Pourcentage de blessés", xlab="Score moyen en stab inf obtenu dans chaque pôle", main="Pourcentage de blessés en fonction du score moyen obtenu pour chaque pôle", cex.main=0.6)
@@ -893,6 +897,6 @@ Essai tests de moyennes = 0 et =1.
 ```
 
 ```{r}
-mean(donnees_creps$nom_exo)
+#mean(donnees_creps$nom_exo)
 ```
 
