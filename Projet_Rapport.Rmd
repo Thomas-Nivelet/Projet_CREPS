@@ -103,13 +103,13 @@ barplot(table(factor(donnees_creps$SCORE, levels = 0:20)), main = "Scores obtenu
 ```
 
 - Répartition des athlètes dans les pôles : 
-Le diagramme circulaire ci-dessus nous permet d'affirmer que les sportifs testés proviennent de six pôles différents. Mise à part en Basketball, les pôles présentent des effectifs assez comparables.
-On note que c'est en Basket Ball qu'il y a le plus d'athlètes, soit un tiers de l'effectif total des sportifs du CREPS testés. Viennent ensuite, de façon décroissante, la Natation Synchronisée, la Boxe Française, l'Aviron et la Natation. C'est en bowling qu'il y a le moins d'athlètes.
+Le diagramme circulaire ci-dessus nous permet d'affirmer que les sportifs testés proviennent de huit pôles différents. Mise à part en Basketball puis en Baseball où les effectifs sont les plus élevés, les pôles présentent des effectifs assez comparables.
+Viennent ensuite, de façon décroissante, la Natation Synchronisée, la Boxe Française, l'Aviron et la Natation. C'est en bowling qu'il y a le moins d'athlètes.
 
 - Scores globaux obtenus :
-On constate que les notes sont très échelonnées de 0 à 19 et prennent quasiment la totalité des valeurs possibles. Le score le plus obtenu au test est la note de 10, soit la moyenne. L'allure globale du bar plot fait furieusement penser à une courbe gaussienne, avec donc un certain étalement sur 20 valeurs ainsi qu'une légère symétrie.
+On constate que les notes sont très échelonnées de 0 à 19 et prennent quasiment la totalité des valeurs possibles. Le score le plus obtenu au test est la note de 9, soit proche de la moyenne. L'allure globale du bar plot fait furieusement penser à une courbe gaussienne, avec donc un certain étalement sur 20 valeurs ainsi qu'une légère symétrie.
 Cependant, on dénote davantage de notes inférieures à la moyenne que de notes supérieures à 10/20.
-12 athlètes ont reçu un score de 8, autant que pour un score de 9. Des pics plus discrets s'affichent pour les scores de 12, 5 (et 14). 
+13 athlètes ont reçu un score de 8, autant que pour un score de 9. Des pics plus discrets s'affichent pour les scores de 12, 5 (et 14). 
 Très peu d'athlètes obtiennent des notes au moins égales à 13.
 Notre premières impression est telle que l'on imagine ce testing assez compliqué dans l'absolu ; mais il va nous falloir étudier plus en détails cette notation, par pôles et par catégories d'exercices.
 
@@ -134,7 +134,7 @@ boxplot(SCORE ~ POLES, cex.axis = 0.8, main = "Boxplots parallèles des scores e
 
 Les boxplots (ou diagrammes en boîtes) ci-dessus nous permettent d'évaluer la position, l'éventuelle symétrie, ainsi que la dispersion des scores obtenus pour chaque pôle. Sur ces graphiques, 50% des observations sont rassemblées à l'intérieur d'une boîte grisée, le trait plein noir représentant la médiane.
 
-Les médianes sont alignées au score de 9/20 pour les boxplots concernant les athlètes de Bowling, Basketball et Aviron : il y a autant de scores obtenus en-dessous qu'au dessus de cette note, pour ces pôles-ci.
+Les médianes sont alignées au score de 9/20 pour les boxplots concernant les athlètes de Bowling, Basketball, Aviron et Baseball : il y a autant de scores obtenus en-dessous qu'au dessus de cette note, pour ces pôles-ci.
 En aviron, on observe un faible écart inter-quartiles, les scores ne sont pas trop dispersés au sein de ce pôle, le niveau est donc homogène. (mais 2 outliers).
 En Natation Synchronisée, la médiane s'élève à 11/20, la plus élevée parmi tous les pôles. De plus, l'écart interquartile n'est pas très haut. On peut en déduire un niveau homogène et bon, en majorité situé au-dessus de la moyenne de 10/20.
 Les scores des joueurs de rugby à XIII sont très resserrés et proches de la médiane, située à 7. Les résultats globaux de ce pôle apparaissent comme les plus faibles, tous pôles confondus.
