@@ -657,7 +657,7 @@ Dans notre cas, les sports considérés comme sports de contact sont la boxe fra
 Cette nouvelle distinction entre les sports nous permettra d'identifier d'éventuelles corrélations avec les scores obtenues et les répercussions sur les blessures observées chez certains athlètes.
 
 ```{r}
-donnees_creps$Contact=donnees_creps$POLES=="BK"|donnees_creps$POLES=="BF"
+donnees_creps$Contact=donnees_creps$POLES=="BK"|donnees_creps$POLES=="BF"|donnees_creps$POLES=="R"
 donnees_creps
 ```
 ```{r}
@@ -672,8 +672,8 @@ pie(table(donnees_creps$Contact),labels=c("Sans contact","Avec contacts"), main=
 ggplot(data = donnees_creps) + geom_histogram(aes(x = SCORE, fill = Contact), binwidth = 0.5) + scale_x_continuous(breaks=seq(0, 20, by = 1)) + xlab("Score") + ylab("Effectifs") + ggtitle("Effectifs selon les scores obtenus (toutes catégories) selon l'absence ou non de contact") + theme(plot.title =element_text(,,,12)) 
 ```
 Ce sont les athlètes de sports de contact que l'on retrouve le plus dans les scores très faibles, c'est-à-dire inférieurs à 5.
-Entre 6 et 13 (inclus) ce sont plutôt les athlètes de sports sans contact que l'on retrouve en majorité (mais équitables pour les scores de 8 et 10).
-Plus de 13 : bien répartis. Autant d'athlètes SC qui ont 18 que d'athlètes AC cumulés qui ont 16 ou 19 ; proportions équitables en 14.
+Entre 6 et 13 (15??) (inclus) ce sont plutôt les athlètes de sports sans contact que l'on retrouve en majorité (mais équitables pour les scores de 8 et 10).
+Plus de 13 : bien répartis. Autant d'athlètes SC qui ont 18 que d'athlètes AC cumulés qui ont 16 ou 19 ; proportions quasi équitables en 14.
 
 IDEE :
 Nouveaux seuils ?? 0-5 ; 6-13 : 13-20 ?... 
@@ -689,7 +689,7 @@ boxplot(donnees_creps$SCORE ~ donnees_creps$Contact, cex.axis = 0.8, main = "Box
         names=c("Non","Oui"))
 ```
 D'un point de vue global ici, les scores obtenus par les sportifs "sans contact" sont plus élevés que ceux obtenus par les sportifs "avec contacts", comme en témoigne la position des deux boîtes grises.
-On note que les scores des sports sans contact sont plus élevés : 50% des scores sont entre 8 et 12, la médiane est à 9.5 tandis que 50% des scores des sports de contact (BF,BK) s'étendent entre 5 et 10, avec une médiane à 8.
+On note que les scores des sports sans contact sont plus élevés : 50% des scores sont entre 9 et 12, la médiane est à 9.5 tandis que 50% des scores des sports de contact (BF,BK,R) s'étendent entre 5 et 10, avec une médiane à 8.
 75% des athlètes en sports AC ont moins de 10/20.
 75% des athlètes en sports SC ont plus de 8/20.
 Cohérence avec plot du dessus.
@@ -699,13 +699,13 @@ par(mfrow=c(2,2))
 boxplot(donnees_creps$MOBINF ~donnees_creps$Contact, ylab="Score en mobilite inf", xlab="Contact",names=c("Non","Oui"),main="Boxplots parallèles des scores en mob inf selon le contact",cex.main=0.7)
 boxplot(donnees_creps$MOBSUP ~donnees_creps$Contact, ylab="Score en mobilite sup", xlab="Contact",names=c("Non","Oui"),main="Boxplots parallèles des scores en mob sup selon le contact",cex.main=0.7)
 boxplot(donnees_creps$STABINF ~donnees_creps$Contact, ylab="Score en stabilité inf", xlab="Contact",names=c("Non","Oui"),main="Boxplots parallèles des scores en stab inf selon le contact",cex.main=0.7)
-boxplot(donnees_creps$STABSUP ~donnees_creps$Contact,ylab="Score en stabilité sup", xlab="Contact",names=c("Non","Oui"),main="Boxplots parallèles des scores en stab sup selon le contact",cex.main=0.7)
+boxplot(donnees_creps$STABSUP ~donnees_creps$Contact,ylab="Score en stabilité sup", xlab="Contact",names=c("Non","Oui"),main="Boù xplots parallèles des scores en stab sup selon le contact",cex.main=0.7)
 ```
-En mobilité inf :médiane AC =3 // médiane SC=4
+En mobilité inf :médiane AC =2 // médiane SC=3
 75% des athlètes en sports AC ont moins de 4/8 : seulement 25% ont au dessus de la moyenne.
-Tandis que : 50% des athlètes de sports SC ont au moins 4/8.
-En mobilité sup : pas de différence...médiane à 2 
-En stabilité inf : le minimum est à 1 pour les athlètes en sports de contact // à 2 pour les athlètes en sports sans contact 
+Tandis que : 50% des athlètes de sports SC ont au moins 3/8.
+En mobilité sup : médiane AC =1 // médiane SC=2 ; 
+En stabilité inf : médianes alignées à 3. 50% des scores sont entre 1 et 4/6 pour les AC et 50% des scores sont entre 2 et 5 ppur les athlètes des sports SC.
 50% des athlètes de sports AC ont moins de 2/6.
 (A revoir cette section stab inf)
 En Stabilité sup : médianes à 1 quelque soit la catégorie (Avec Cont/SC). Médiane confondue avec 3ième quartile pour les athlètes des sports AC et avec 1er quartile pour athlètes des sports SC.
