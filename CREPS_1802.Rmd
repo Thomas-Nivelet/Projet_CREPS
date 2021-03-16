@@ -507,7 +507,7 @@ Tous les pôles, excepté celui de la NS ont des scores médians de 10, et un po
 
 Piste à creuser : Pourrait-on définir un second seuil à 8. Avoir un score en dessous de 8 (comme pour le pôle Boxe Française ici) augmenterait encore d'un cran le risque de blessures?
 
-### En fonction du score médian de chaque pôle
+### En fonction du score médian (ou score moyen) de chaque pôle
 
 Le graphe ci-après représente le nombre de blessures en fonction du score médian de chaque pôle, sous la forme d'un petit nuage de points. On y superpose une droite de régression linéaire.
 ```{r}
@@ -530,7 +530,7 @@ coord_x=tab_mean[c(1:4,6:7)]
 coord_y=donnees_bless$BLESS_POURC
 nom=c("AV","BF","BK","BL","NAT","NS")
 reg.moy <- lm(coord_y ~ coord_x)
-plot(coord_x,coord_y, ylab="Pourcentage de blessés", xlab="Score moyen obtenu dans chaque pôle", main="Pourcentage de blessés en fonction du score médian obtenu pour chaque pôle", cex.main=0.7)
+plot(coord_x,coord_y, ylab="Pourcentage de blessés", xlab="Score moyen obtenu dans chaque pôle", main="Pourcentage de blessés en fonction du score moyen obtenu pour chaque pôle", cex.main=0.7)
 abline(reg.moy, col = "red")
 text(coord_x,coord_y,nom, pos=2, offset=0.5, cex=0.7)
 
@@ -539,8 +539,18 @@ summary(reg.med)
 summary(reg.moy)
 
 ```
+Pour le score médian: 
 
 Il semblerait que l'on puisse grossièrement tracer une droite de régression linéaire pour ajuster les données (droite qui passe au milieu des points (1 point = 1 individu), les individus étant les pôles). On remarque que le pourcentage de blessés diminue lorsque le score augmente. Ce qui semble être un début de confirmation de validation du testing. (Une tendance opposée aurait été étrange !).
+
+De plus, pour le modèle de régression linéaire en fonction du score médian de chaque pôle, on peut remarquer que la p-valeur du test de comparaison avec le modèle blanc est faible. On peut donc rejeter avec assez de confiance le modèle blanc, ce qui confirme que ce modèle semble assez bien ajuster les données.
+
+Pour le score moyen:
+
+Visuellement, on pourrait également dire que la droite de régression linéaire semble ajuster les données. 
+
+Cependant, la p-valeur du test de comparaison avec le modèle blanc est environ égale à 0.01, ce qui ne nous permet pas de rejeter avec grande confiance le modèle blanc. PAr conséquent le modèle de régression linéaire n'ajuste pas avec confiance les données?
+
 
 On observe une large zone sans données entre 9 et 11 pour la valeur du score médian. On pourrait déjà voir qu'un score de 11 serait un assez bon score permettant un risque moindre de blessures. MAis attention les échantillons sont petits ! Est-ce que l'échantillon de la NS n'est pas "trop spécial" et donc peut-être aberrant ?
 
@@ -738,7 +748,7 @@ Mais p-valeur inférieure à 5% donc on rejette la nullité des paramètres! Don
 
 
 ```{r}
-donnees_bless$Contact=donnees_bless$POLE=="BK"|donnees_bless$POLE=="BF"
+donnees_bless$Contact=donnees_bless$POLE=="BK"|donnees_bless$POLE=="BF"|donnees_bless$POLE=="R"
 donnees_bless$Contact=as.factor(donnees_bless$Contact)
 donnees_creps$Contact=as.factor(donnees_creps$Contact)
 ```
@@ -807,11 +817,12 @@ donnees_indispo <- read_excel("Donnees_Indispo.xlsx")
 ```{r}
 suppressWarnings({
 donnees_indispo$IND=donnees_indispo$TOT_INDISPO
-donnees_indispo$IND[donnees_indispo$TOT_INDISPO<=1]="Inf à 1" 
+donnees_indispo$IND[donnees_indispo$TOT_INDISPO==0]="0"
+donnees_indispo$IND[donnees_indispo$TOT_INDISPO>0 & donnees_indispo$TOT_INDISPO<=1]="Inf à 1" 
 donnees_indispo$IND[donnees_indispo$TOT_INDISPO>1& donnees_indispo$TOT_INDISPO<=3 ]="1 à 3"
 donnees_indispo$IND[donnees_indispo$TOT_INDISPO>3]="Sup à 3"
 
-donnees_indispo$IND = factor(donnees_indispo$IND, levels = c("Sup à 3", "1 à 3", "Inf à 1"))
+donnees_indispo$IND = factor(donnees_indispo$IND, levels = c("Sup à 3", "1 à 3", "Inf à 1", "0"))
 
 head(donnees_indispo)})
 ```
@@ -829,18 +840,27 @@ donnees_creps$SCORE_cat2[SCORE<=20 & SCORE>=14]<-"Bon"
 
 donnees_creps$SCORE_cat2 = factor(donnees_creps$SCORE_cat2, levels = c("Faible", "Moyen", "Bon"))
 
+#donnees_creps$SCORE_cat3 <- donnees_creps$SCORE
+
+#donnees_creps$SCORE_cat3[SCORE<8]<-"Faible"
+#donnees_creps$SCORE_cat3[SCORE<14 & SCORE>=8] <-"Moyen"
+#donnees_creps$SCORE_cat3[SCORE<=20 & SCORE>=14]<-"Bon"
+
+#donnees_creps$SCORE_cat3 = factor(donnees_creps$SCORE_cat3, levels = c("Faible", "Moyen", "Bon"))
+
 donnees_creps$SCORE_cat3 <- donnees_creps$SCORE
 
-donnees_creps$SCORE_cat3[SCORE<8]<-"Faible"
-donnees_creps$SCORE_cat3[SCORE<14 & SCORE>=8] <-"Moyen"
-donnees_creps$SCORE_cat3[SCORE<=20 & SCORE>=14]<-"Bon"
+donnees_creps$SCORE_cat3[SCORE<5]<-"Faible"
+donnees_creps$SCORE_cat3[SCORE<10 & SCORE>=5] <-"Moyen"
+donnees_creps$SCORE_cat3[SCORE<15 & SCORE>=10]<-"Bon"
+donnees_creps$SCORE_cat3[SCORE<=20 & SCORE>=15]<-"Très Bon"
 
-donnees_creps$SCORE_cat3 = factor(donnees_creps$SCORE_cat3, levels = c("Faible", "Moyen", "Bon"))
+donnees_creps$SCORE_cat3 = factor(donnees_creps$SCORE_cat3, levels = c("Faible", "Moyen", "Bon", "Très Bon"))
 
 par (mfrow=c(1,3))
 table.IND <- table(donnees_indispo$POLE, donnees_indispo$IND)
 addmargins(table.IND)
-mosaicplot(table.IND,color=c("#FF3333","#FF9933","#66CC00"), main="Contingence Niv d'indispo / Pôles", xlab = "Pôles", ylab = "Catégories d'indispo") 
+mosaicplot(table.IND,color=c("#FF3333","#FF9933", "#FFCC00","#66CC00"), main="Contingence Niv d'indispo / Pôles", xlab = "Pôles", ylab = "Catégories d'indispo") 
 
 
 table.cat2 <- table(donnees_creps$POLES, donnees_creps$SCORE_cat2)
@@ -849,54 +869,138 @@ mosaicplot(table.cat2,color=c("#FF3333","#FF9933","#66CC00"), main="Contingence 
 
 table.cat3 <- table(donnees_creps$POLES, donnees_creps$SCORE_cat3)
 addmargins(table.cat3)
-mosaicplot(table.cat3,color=c("#FF3333","#FF9933","#66CC00"), main="Contingence Catégorie de score / Pôles", xlab = "Pôles", ylab = "Catégories de scores")
+mosaicplot(table.cat3,color=c("#FF3333","#FF9933", "#FFCC00","#66CC00"), main="Contingence Catégorie de score / Pôles", xlab = "Pôles", ylab = "Catégories de scores")
 ```
-A rajouter les indiv = 0 semaines de blessures pour pouvoir conclure.
 
 ```{r}
-SCORE_cat2 <- donnees_creps$SCORE
+suppressWarnings({
+donnees_indispo$IND_BLESS=donnees_indispo$NB_BLESS
+donnees_indispo$IND_BLESS[donnees_indispo$NB_BLESS==0]="0"
+donnees_indispo$IND_BLESS[donnees_indispo$NB_BLESS>0 & donnees_indispo$NB_BLESS<=1]="1" 
+donnees_indispo$IND_BLESS[donnees_indispo$NB_BLESS>1& donnees_indispo$NB_BLESS<=3 ]="1 à 3"
+donnees_indispo$IND_BLESS[donnees_indispo$NB_BLESS>3]="Sup à 3"
+
+donnees_indispo$IND_BLESS = factor(donnees_indispo$IND_BLESS, levels = c("Sup à 3", "1 à 3", "1", "0"))
+
+head(donnees_indispo)})
+```
+
+```{r}
 SCORE <- donnees_creps$SCORE
 POLES <- donnees_creps$POLES
 
-SCORE_cat2[SCORE<8]<-"Faible"
-SCORE_cat2[SCORE<14 & SCORE>=8] <-"Moyen"
-SCORE_cat2[SCORE<=20 & SCORE>=14]<-"Bon"
 
-SCORE_cat = factor(SCORE_cat, levels = c("Faible", "Moyen", "Bon"))
-```
+donnees_creps$SCORE_cat3 <- donnees_creps$SCORE
 
-##Analyse par exercice
+donnees_creps$SCORE_cat3[SCORE<=5]<-"Faible"
+donnees_creps$SCORE_cat3[SCORE<=10 & SCORE>5] <-"Moyen"
+donnees_creps$SCORE_cat3[SCORE<15 & SCORE>10]<-"Bon"
+donnees_creps$SCORE_cat3[SCORE<=20 & SCORE>=15]<-"Très Bon"
 
-```{r}
-summary(donnees_creps)
-head(donnees_creps)
-```
+donnees_creps$SCORE_cat3 = factor(donnees_creps$SCORE_cat3, levels = c("Faible", "Moyen", "Bon", "Très Bon"))
 
-```{r}
-exos_quant=donnees_creps[,8:27]
-E<-cor(exos_quant)
-corrplot(E,method="number",number.cex=0.5)
-corrplot(E,method="ellipse",number.cex=0.5)
+par (mfrow=c(1,3))
+table.IND <- table(donnees_indispo$POLE, donnees_indispo$IND_BLESS)
+addmargins(table.IND)
+mosaicplot(table.IND,color=c("#FF3333","#FF9933", "#FFCC00","#66CC00"), main="Contingence Niv d'indispo / Pôles", xlab = "Pôles", ylab = "Catégories d'indispo") 
 
-```
-Le corrélogramme montre que les exercices/positions ne sont pas vraiment lié(e)s entre eux/elles. On peut conclure qu'il n'y a pas de redondance et ainsi que chaque position a son "utilité". En effet, seules les positions D/G sont corrélées, mais ceci paraît logique. Hamstring Stretch D et G sont les plus liées avant Hamstring Curl D/G. Pigeon posé D/G et Arm Clock D/G ont aussi des coefficients de corrélations assez élevés relativement aux autres exercices. On peut également dire que Adductor Stretch est plutôt lié à Hamstring stretch.
-
-Cette étape fait partie des arguments en faveur de la validation du test. 
-
-
-Essai tests de moyennes = 0 et =1.
-```{r}
-# res <- t.test(x, mu=0, alternative="greater")
-# x correspond à la moyenne observée 
-# mu correspond à la moyenne théorique
-
-#x=mean(donnees_creps$nom_exo)
-#res$p.value # Affichage de la p-value
-#res$parameter # Affichage du dégré de liberté
-#res$statistic # Affichage  de la statistique t
+table.cat3 <- table(donnees_creps$POLES, donnees_creps$SCORE_cat3)
+addmargins(table.cat3)
+mosaicplot(table.cat3,color=c("#FF3333","#FF9933", "#FFCC00","#66CC00"), main="Contingence Catégorie de score / Pôles", xlab = "Pôles", ylab = "Catégories de scores")
 ```
 
 ```{r}
-#mean(donnees_creps$nom_exo)
+SCORE <- donnees_creps$SCORE
+POLES <- donnees_creps$POLES
+
+suppressWarnings({
+donnees_indispo$IND_BLESS=donnees_indispo$NB_BLESS
+donnees_indispo$IND_BLESS[donnees_indispo$NB_BLESS>=0 & donnees_indispo$NB_BLESS<=1]="Inf a 1" 
+donnees_indispo$IND_BLESS[donnees_indispo$NB_BLESS>1& donnees_indispo$NB_BLESS<3 ]="1 à 3"
+donnees_indispo$IND_BLESS[donnees_indispo$NB_BLESS>=3]="Sup à 3"
+
+donnees_indispo$IND_BLESS = factor(donnees_indispo$IND_BLESS, levels = c("Sup à 3", "1 à 3", "Inf a 1"))
+
+head(donnees_indispo)})
+
+
+donnees_creps$SCORE_cat3 <- donnees_creps$SCORE
+
+donnees_creps$SCORE_cat3[SCORE<7]<-"Faible"
+donnees_creps$SCORE_cat3[SCORE<10 & SCORE>=7] <-"Moyen"
+donnees_creps$SCORE_cat3[SCORE<=20 & SCORE>=10]<-"Bon"
+
+donnees_creps$SCORE_cat3 = factor(donnees_creps$SCORE_cat3, levels = c("Faible", "Moyen", "Bon"))
+
+par (mfrow=c(1,3))
+table.IND <- table(donnees_indispo$POLE, donnees_indispo$IND_BLESS)
+addmargins(table.IND)
+mosaicplot(table.IND,color=c("#FF3333", "#FFCC00","#66CC00"), main="Contingence Niv d'indispo / Pôles", xlab = "Pôles", ylab = "Catégories d'indispo") 
+
+table.cat3 <- table(donnees_creps$POLES, donnees_creps$SCORE_cat3)
+addmargins(table.cat3)
+mosaicplot(table.cat3,color=c("#FF3333", "#FFCC00","#66CC00"), main="Contingence Catégorie de score / Pôles", xlab = "Pôles", ylab = "Catégories de scores")
 ```
+
+
+
+```{r,fig.height = 7, fig.width = 10}
+
+# Test graphes araignée superposés
+## Récupération des données moyennes, minimales et maximales
+POLE=donnees_indispo$POLE 
+
+NB_BLESS = c(max(donnees_indispo$NB_BLESS),min(donnees_indispo$NB_BLESS),mean(donnees_indispo$NB_BLESS[POLES=="AV"]),mean(donnees_indispo$NB_BLESS[POLE=="BF"]),mean(donnees_indispo$NB_BLESS[POLE=="BK"]),mean(donnees_indispo$NB_BLESS[POLE=="BL"]),mean(donnees_indispo$NB_BLESS[POLE=="NAT"]),mean(donnees_indispo$NB_BLESS[POLE=="NS"]))
+ 
+
+Indispo_1 = c(max(donnees_indispo$NB_INDISPO_1),min(donnees_indispo$NB_INDISPO_1),mean(donnees_indispo$NB_INDISPO_1[POLE=="AV"]),mean(donnees_indispo$NB_INDISPO_1[POLE=="BF"]),mean(donnees_indispo$NB_INDISPO_1[POLE=="BK"]),mean(donnees_indispo$NB_INDISPO_1[POLE=="BL"]),mean(donnees_indispo$NB_INDISPO_1[POLE=="NAT"]),mean(donnees_indispo$NB_INDISPO_1[POLE=="NS"]))
+ 
+
+Indispo_2 = c(max(donnees_indispo$NB_INDISPO_2),min(donnees_indispo$NB_INDISPO_2),mean(donnees_indispo$NB_INDISPO_2[POLE=="AV"]),mean(donnees_indispo$NB_INDISPO_2[POLE=="BF"]),mean(donnees_indispo$NB_INDISPO_2[POLE=="BK"]),mean(donnees_indispo$NB_INDISPO_2[POLE=="BL"]),mean(donnees_indispo$NB_INDISPO_2[POLE=="NAT"]),mean(donnees_indispo$NB_INDISPO_2[POLE=="NS"]))
+ 
+
+Indispo_3 = c(max(donnees_indispo$NB_INDISPO_3),min(donnees_indispo$NB_INDISPO_3),mean(donnees_indispo$NB_INDISPO_3[POLE=="AV"]),mean(donnees_indispo$NB_INDISPO_3[POLE=="BF"]),mean(donnees_indispo$NB_INDISPO_3[POLE=="BK"]),mean(donnees_indispo$NB_INDISPO_3[POLE=="BL"]),mean(donnees_indispo$NB_INDISPO_3[POLE=="NAT"]),mean(donnees_indispo$NB_INDISPO_3[POLE=="NS"]))
+
+
+data_spider <- cbind(NB_BLESS,Indispo_1,Indispo_2,Indispo_3)
+
+rownames(data_spider) <- c("MAX", "MIN", "AV", "BF", "BK", "BL", "NAT", "NS")
+
+colnames(data_spider) <- c("NB_BLESS", "Indispo_1","Indispo_2", "Indispo_3")
+
+data_spider = as.data.frame(data_spider)
+
+## Définition et affichage du radarchart
+par(mar = c(1, 1, 1, 1))
+radarchart(data_spider,axistype = 1,pcol = c("lightskyblue2", "lightgoldenrod3", "mistyrose4", "lightcoral", "mediumblue", "lightseagreen"),plwd = 2, plty = 1,cglcol = "grey", cglty = 1, cglwd = 0.4,
+axislabcol = "grey",vlcex = 0.7, vlabels = colnames(data_spider),caxislabels = NULL, title = "Répartitions des indispos par pôle")
+
+legend(x = "right", legend = rownames(data_spider[-c(1,2),]), horiz = FALSE,bty = "n", pch = 20 , col = c("lightskyblue2", "lightgoldenrod3", "mistyrose4", "lightcoral", "mediumblue", "lightseagreen"),text.col = "black", cex = 1, pt.cex = 1.5)
+```
+Sur ce radar chart, on peut voir la répartition des blessures selon les pôles. On remarque notamment par exemple que les boxeurs se blessent souvent (nombre de blessures supérieur à tous les autres pôles), mais principalement sur des blessures de type 1 (blessures qui engendrent moins de temps d'indisponibilité).
+Pour la Natation et la Natation Synchronisée, la répartition des blessures selon leur type semble plutôt uniforme. 
+En ce qui concerne le bowling, il y a plus de blessures de type 2 (blessures "moyennes").
+
+PLAN
+#Stats descpritives
+
+#Validation du protocole
+## Corrélations entre exercices et analyse de student
+## Partie blessure : étude descriptive et régression linéaire
+Etude descriptive: 
+- quel type de blessure selon les pôles?
+- quelle indisponibilité moyenne?
+- quelle fréquence?
+Regression lineaire:
+droites de regression lineaire : pour montrer qu'il y a bien un lien entre le score obtenu et les blessures
+ligne 550-600 environ cf 
+## Definition des seuils
+
+#Prediction de la blessure
+Repartition en classes? Puis attribution d'un individu à une classe
+
+# Ouverture / Limites
+Sans/Avec contact : adpatation du test
+
+
 
