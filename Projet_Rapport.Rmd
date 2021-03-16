@@ -77,7 +77,7 @@ head(donnees_creps)
 dim(donnees_creps)
 ```
 
-Le premier jeu de données à notre disposition contient les scores obtenus au testing TM2S, relatif à la mobilité et à la stabilité su sportif, de 90 athlètes du CREPS, répartis dans 6 pôles sportifs différents : 
+Le premier jeu de données à notre disposition contient les scores obtenus au testing TM2S, relatif à la mobilité et à la stabilité su sportif, de 123 athlètes du CREPS, répartis dans 8 pôles sportifs différents : 
 - Aviron (`AV`), 
 - Baseball (`BS`),
 - Boxe française (`BF`), 
@@ -94,7 +94,7 @@ Plusieurs des variables présentes dans ce premier jeu de données attireront pa
 - `MOBSUP`, une variable quantitative discrète, représentant le score obtenu en mobilité supérieure.
 - `STABINF`, une variable quantitative discrète, représentant le score obtenu en stabilité inférieure.
 - `STABSUP`, une variable quantitative discrète, représentant le score obtenu en stabilité supérieure.
-- Vingt autre variables binaires, correspondant à la réussite (1) ou l'échec (0) à chacun des exercices du test.
+- Vingt autres variables binaires, correspondant à la réussite (1) ou l'échec (0) à chacun des exercices du test.
 
 ```{r, echo=FALSE}
 pie(table(donnees_creps$POLES), col = c("lightskyblue2", "lightgoldenrod3", "mistyrose4", "lightcoral", "mediumblue", "lightseagreen", "darkorange2", "brown4"),main = "Répartition des athlètes dans les pôles")
@@ -104,14 +104,13 @@ barplot(table(factor(donnees_creps$SCORE, levels = 0:20)), main = "Scores obtenu
 
 - Répartition des athlètes dans les pôles : 
 Le diagramme circulaire ci-dessus nous permet d'affirmer que les sportifs testés proviennent de huit pôles différents. Mise à part en Basketball puis en Baseball où les effectifs sont les plus élevés, les pôles présentent des effectifs assez comparables.
-Viennent ensuite, de façon décroissante, la Natation Synchronisée, la Boxe Française, l'Aviron et la Natation. C'est en bowling qu'il y a le moins d'athlètes.
+Viennent ensuite, de façon décroissante, la Natation Synchronisée et le rugby à XIII, la Boxe Française, l'Aviron et la Natation. C'est en bowling qu'il y a le moins d'athlètes.
 
 - Scores globaux obtenus :
-On constate que les notes sont très échelonnées de 0 à 19 et prennent quasiment la totalité des valeurs possibles. Le score le plus obtenu au test est la note de 9, soit proche de la moyenne. L'allure globale du bar plot fait furieusement penser à une courbe gaussienne, avec donc un certain étalement sur 20 valeurs ainsi qu'une légère symétrie.
-Cependant, on dénote davantage de notes inférieures à la moyenne que de notes supérieures à 10/20.
-13 athlètes ont reçu un score de 8, autant que pour un score de 9. Des pics plus discrets s'affichent pour les scores de 12, 5 (et 14). 
+On constate que les notes sont échelonnées de 0 à 19 et prennent quasiment la totalité des valeurs possibles. Le score le plus obtenu au test est la note de 9, soit proche de la moyenne. L'allure globale du bar plot fait penser à une courbe gaussienne.
+Cependant, on remarque davantage de notes inférieures à 9/20 que de notes supérieures à 10/20.
 Très peu d'athlètes obtiennent des notes au moins égales à 13.
-Notre premières impression est telle que l'on imagine ce testing assez compliqué dans l'absolu ; mais il va nous falloir étudier plus en détails cette notation, par pôles et par catégories d'exercices.
+Notre première impression est telle que l'on imagine ce testing assez compliqué dans l'absolu ; mais il va nous falloir étudier plus en détails cette notation, par pôles et par catégories d'exercices.
 
 ### Statistiques bidimensionnelles : distinction des scores obtenus selon les pôles
 #### Étude de la spécificité de chaque pôle
@@ -129,14 +128,14 @@ POLES <- donnees_creps$POLES
 ```
 
 ```{r, echo=FALSE}
-boxplot(SCORE ~ POLES, cex.axis = 0.8, main = "Boxplots parallèles des scores en fonction des pôles", xlab = "Pôles", ylab = "Score")
+boxplot(SCORE ~ POLES, cex.axis = 0.8, main = "Boxplots parallèles des scores en fonction des pôles", xlab = "Pôles", ylab = "Score", ylim = c(0,20))
 ```
 
 Les boxplots (ou diagrammes en boîtes) ci-dessus nous permettent d'évaluer la position, l'éventuelle symétrie, ainsi que la dispersion des scores obtenus pour chaque pôle. Sur ces graphiques, 50% des observations sont rassemblées à l'intérieur d'une boîte grisée, le trait plein noir représentant la médiane.
 
 Les médianes sont alignées au score de 9/20 pour les boxplots concernant les athlètes de Bowling, Basketball, Aviron et Baseball : il y a autant de scores obtenus en-dessous qu'au dessus de cette note, pour ces pôles-ci.
-En aviron, on observe un faible écart inter-quartiles, les scores ne sont pas trop dispersés au sein de ce pôle, le niveau est donc homogène. (mais 2 outliers).
-En Natation Synchronisée, la médiane s'élève à 11/20, la plus élevée parmi tous les pôles. De plus, l'écart interquartile n'est pas très haut. On peut en déduire un niveau homogène et bon, en majorité situé au-dessus de la moyenne de 10/20.
+En aviron, on observe un faible écart inter-quartiles, les scores ne sont pas trop dispersés au sein de ce pôle, le niveau est donc homogène, même si l'on remarque 3 outliers.
+En Natation Synchronisée, la médiane s'élève à 11,5/20, la plus élevée parmi tous les pôles. De plus, l'écart interquartile n'est pas très grand. On peut en déduire un niveau homogène et bon, en majorité situé au-dessus de la moyenne de 10/20.
 Les scores des joueurs de rugby à XIII sont très resserrés et proches de la médiane, située à 7. Les résultats globaux de ce pôle apparaissent comme les plus faibles, tous pôles confondus.
 En conclusion, les scores médians sont plutôt proches mais les scores selon les pôles sont plus dispersés (BF par rapport à AV par exemple).
 L'ensemble de ces analyses doit être mise en relief avec l'effectif d'athlètes pour chaque pôle considéré ; en effet, on dispose de moins d'athlètes pour l'aviron que pour le basketball par exemple.
@@ -149,10 +148,10 @@ plot(donnees_creps$STABINF ~donnees_creps$POLES, ylab="Score en stabilité inf",
 plot(donnees_creps$STABSUP ~donnees_creps$POLES,ylab="Score en stabilité sup", xlab="Poles", cex.axis = 0.85)
 ```
 
-- Pour la mobilité inférieure (note sur 8) : le score médian de tous les pôles se situe aux alentours de 3, i.e 50% des athlètes de ces pôles ont un score inférieur à 3. Le pôle Natation Synchronisée se détache avec une médiane très proche de 6, et une certaine homogénéité des athlètes (faible écart interquartile). (Les nageuses sont plus souples : sont-elles moins blessées à ce niveau-la pour autant ?). Le pôle du Rugby à XIII se détache quant à lui par ses la faiblesse de ses résultats ; on peut ici faire le lien avec leur gabarit, ainsi que le fait qu'ils pratiquent un sport de contact.
-- Pour la mobilité supérieure (note sur 4) : Les pôles Boxe et Bowling sont les plus faibles avec une médiane de 1. On peut également remarquer qu'un grand nombre d'athlètes ont un score approximatif de 1, car la médiane semble assimilable au premier quartile. Ces deux pôles semblent avoir un comportement similaire, même dispersion (cf ont-ils le même type de blessure?).Pour l'Aviron et le Basket, il est plus difficile de conclure, la dispersion est importante, les athlètes non homogènes? Plus grande homogénéité pour la Natation et la Natation Synchronisée, avec une médiane plus haute. A nouveau, les plus mauvais résultats dans cette catégorie sont obtenus par les joueurs de rugby à XIII.
-- Pour la stabilité inférieure (note sur 6) : Encore une fois, on constate une certaine disparité entre les pôles. Les médianes les plus faibles (autour de 2) pour la boxe, la natation et la Natation Synchronisée. Il y a une dispersion plus important pour les trois autres pôles mais ils obtiennent globalement de meilleurs scores.
-- Pour la stabilité supérieure (note sur 2) : 75% des athlètes ont une note inférieure ou égale à 1 pour le basket, la boxe et le bowling. 75% des athlètes ont une note supérieure ou égale à 1 pour l'aviron et la natation. La répartition est symétrique par rapport au score 1 pour la Natation Synchronisée.
+- Pour la mobilité inférieure (note sur 8) : le score médian de tous les pôles se situe aux alentours de 3, i.e. 50% des athlètes de ces pôles ont un score inférieur à 3. Le pôle Natation Synchronisée se détache avec une médiane très proche de 6, et une certaine homogénéité des athlètes (faible écart interquartile). (Les nageuses sont plus souples : sont-elles moins blessées à ce niveau-la pour autant ?). Le pôle du Rugby à XIII se détache quant à lui par la faiblesse de ses résultats ; on peut ici faire le lien avec leur gabarit, ainsi que le fait qu'ils pratiquent un sport de contact.
+- Pour la mobilité supérieure (note sur 4) : La plupart des pôles présentent des résultats assez disparates, avec une médiane à 1 (Aviron, Bowling, Boxe française, Baseball et Rugby à XIII). En bowling, boxe française et baseball, les résultats sont positionnés et dispersés de la même manière (cf. leur boîte). On peut également remarquer qu'un grand nombre d'athlètes ont un score approximatif de 1, car la médiane semble assimilable au premier quartile. A nouveau, les plus mauvais résultats dans cette catégorie sont obtenus par les joueurs de rugby à XIII : 75% des athlètes obtiennent un score de 0 ou 1.
+- Pour la stabilité inférieure (note sur 6) : Encore une fois, on constate une certaine disparité entre les pôles. Les médianes les plus faibles (autour de 2) pour la boxe, la natation et la Natation Synchronisée. Les rugbymen obtiennent de bons scores : 75% ont au moins 4/6. Il y a une dispersion plus importante pour les quatre autres pôles mais ils obtiennent globalement de meilleurs scores.
+- Pour la stabilité supérieure (note sur 2) : 75% des athlètes ont une note inférieure ou égale à 1 pour le basket, la boxe et le bowling. La plupart des athlètes ont une note supérieure ou égale à 1 en aviron, baseball et natation. La répartition est symétrique par rapport à 1 en Natation Synchronisée. Les notes des rugbymen sont quasiment toutes agglomérées en 1.
 
 Représentons les scores moyens obtenus pour chaque pôle dans les quatre catégories d'exercices sous la forme d'un radarplot :
 
@@ -179,15 +178,15 @@ data_spider = as.data.frame(data_spider)
 
 ## Définition et affichage du radarchart
 par(mar = c(1, 1, 1, 1))
-radarchart(data_spider, axistype = 1,pcol = c("lightskyblue2", "lightgoldenrod3", "mistyrose4", "lightcoral", "mediumblue", "lightseagreen",  "darkorange2", "brown4"),plwd = 2, plty = 1,cglcol = "grey", cglty = 1, cglwd = 0.4, axislabcol = "grey",vlcex = 0.7, vlabels = colnames(data_spider),caxislabels = NULL, title = "Scores moyens par catégrories d'exercices")
+radarchart(data_spider, axistype = 1,pcol = c("lightskyblue2", "lightgoldenrod3", "mistyrose4", "lightcoral", "mediumblue", "lightseagreen",  "darkorange2", "brown4"),plwd = 2, plty = 1,cglcol = "grey", cglty = 1, cglwd = 0.4, axislabcol = "grey",vlcex = 1.2, vlabels = colnames(data_spider), caxislabels = NULL, title = "Scores moyens par catégrories d'exercices", calcex = 1)
 
 legend(x = "right", legend = rownames(data_spider[-c(1,2),]), horiz = FALSE,bty = "n", pch = 20 , col = c("lightskyblue2", "lightgoldenrod3", "mistyrose4", "lightcoral", "mediumblue", "lightseagreen", "darkorange2", "brown4"),text.col = "black", cex = 1, pt.cex = 1.5)
 ```
-On peut clairement distinguer que les athlètes de Natation Synchronisée se démarquent sur la mobilité inférieure, ce qui peut s'expliquer par la souplesse requise et améliorée dans ce sport. Tandis que, les athlètes de la Natation, eux, se démarquent en stabilité supérieure ( les membres supérieurs sont plus sollicités pour nager ). 
-En Stabilité Inférieure, ce sont les athlètes de l'Aviron qui tirent leur épingle du jeu (ils obtiennent près de 75% des points). Moins élevés que les nageurs artistiques mais ils obtiennent + de 50% des points en Stabilité Supérieure ce qui paraît logique au vu des mouvements nécessaires à ce sport.
-En boxe française, les scores par catégories d'exercices sont plutôt homogènes, les athlètes obtiennent autour de 50% des points dans chacune des catégories.
-Au Basket Ball, les athlètes sont assez bons sur les exercices de mobilité supérieure  et stabilité inférieure puisqu'ils obtiennent près de 50% des points dans chacune des ces 2 catégories tandis que sur les autres, ils sont plutôt autour de 25%.
-Les joueurs de Bowling eux, sont assez bons sur la stabilité inférieure (50% des points) alors qu'ils sont à 40% du total sur les autres catégories. 
+On peut clairement distinguer que les athlètes de Natation Synchronisée se démarquent sur la mobilité inférieure, ce qui peut s'expliquer par la souplesse requise et améliorée dans ce sport. Tandis que, les athlètes de la Natation, eux, se démarquent en stabilité supérieure (les membres supérieurs sont plus sollicités pour nager). 
+En Stabilité Inférieure, ce sont les athlètes de l'Aviron, du Baseball et du Rugby à XIII qui tirent leur épingle du jeu (ils obtiennent près de 75% des points). 
+En boxe française, les scores par catégories d'exercices sont plutôt homogènes, les athlètes obtiennent près de 50% des points dans chacune des catégories.
+Au Basket Ball, les athlètes sont assez bons sur les exercices de mobilité supérieure et stabilité inférieure puisqu'ils obtiennent près de 50% des points dans chacune des ces 2 catégories tandis que sur les autres, ils sont plutôt autour de 25%.
+Les joueurs de Bowling eux, sont assez bons sur la stabilité inférieure (50% des points) alors qu'ils sont à 40% du total sur les autres catégories.
 Enfin, les joueurs de rugby à XIII présentent les moins bons résultats tous pôles confondus en mobilité, tandis qu'il sont dans le tiers supérieur en stabilité inférieure, et dans la moyenne en stabilité supérieure.
 les joueurs de baseball ont des résultats globalement dans la moyenne en mobilité, et sont même dans les meilleurs en stabilité.
 
@@ -487,4 +486,146 @@ Cela apporte un nouvel argument en faveur de la validation du protocole de test 
 ## quelle indisponibilité moyenne?
 ## quelle fréquence?
 
+# Ouverture
+## Étude de l'apparition de blessures en fonction de la nature du sport
+
+On définit la nouvelle variable `Contact` dans notre jeu de données, permettant de savoir si le sport pratiqué par l'individu en question est un sport de contact ou non.
+Dans notre cas, les sports considérés comme sports de contact sont la boxe française et le basket-ball.
+Cette nouvelle distinction entre les sports nous permettra d'identifier d'éventuelles corrélations avec les scores obtenues et les répercussions sur les blessures observées chez certains athlètes.
+
+```{r}
+donnees_creps$Contact=donnees_creps$POLES=="BK"|donnees_creps$POLES=="BF"|donnees_creps$POLES=="R"
+donnees_creps
+```
+```{r}
+AC<-(sum(donnees_creps$Contact)/count(donnees_creps))*100
+
+SC<-(sum(donnees_creps$Contact==FALSE)/count(donnees_creps))*100
+
+pie(table(donnees_creps$Contact),labels=c("Sans contact","Avec contacts"), main="Répartition des athlètes selon la nature du sport : avec/sans contact")
+
+```
+```{r}
+ggplot(data = donnees_creps) + geom_histogram(aes(x = SCORE, fill = Contact), binwidth = 0.5) + scale_x_continuous(breaks=seq(0, 20, by = 1)) + xlab("Score") + ylab("Effectifs") + ggtitle("Effectifs selon les scores obtenus (toutes catégories) selon l'absence ou non de contact") + theme(plot.title =element_text(,,,12)) 
+```
+Ce sont les athlètes de sports de contact que l'on retrouve le plus dans les scores très faibles, c'est-à-dire inférieurs à 5.
+Entre 6 et 13 (15??) (inclus) ce sont plutôt les athlètes de sports sans contact que l'on retrouve en majorité (mais équitables pour les scores de 8 et 10).
+Plus de 13 : bien répartis. Autant d'athlètes SC qui ont 18 que d'athlètes AC cumulés qui ont 16 ou 19 ; proportions quasi équitables en 14.
+
+IDEE :
+Nouveaux seuils ?? 0-5 ; 6-13 : 13-20 ?... 
+Ou proposer 2 catégories de seuils selon AC/SC : et ainsi le jugement serait différent 
+(ex : "faible" pour un basketteur(AC) serait "très faible" pour une nageuse synchr(SC))
+On pourrait définir de nouveaux seuils pour de nouvelles catégories de scores selon la nature du sport (avec / sans contacts).
+
+
+```{r}
+boxplot(donnees_creps$SCORE ~ donnees_creps$Contact, cex.axis = 0.8, main = "Boxplots parallèles des scores en fonction de l'absence ou non de contact", 
+        cex.main = 0.9,
+        ylim=c(0,20),
+        xlab = "Contact", ylab = "Score",
+        names=c("Non","Oui"))
+```
+D'un point de vue global ici, les scores obtenus par les sportifs "sans contact" sont plus élevés que ceux obtenus par les sportifs "avec contacts", comme en témoigne la position des deux boîtes grises.
+On note que les scores des sports sans contact sont plus élevés : 50% des scores sont entre 9 et 12, la médiane est à 9.5 tandis que 50% des scores des sports de contact (BF,BK,R) s'étendent entre 5 et 10, avec une médiane à 8.
+75% des athlètes en sports AC ont moins de 10/20.
+75% des athlètes en sports SC ont plus de 8/20.
+Cohérence avec plot du dessus.
+
+```{r}
+par(mfrow=c(2,2))
+boxplot(donnees_creps$MOBINF ~donnees_creps$Contact, ylab="Score en mobilite inf", xlab="Contact",names=c("Non","Oui"),main="Boxplots parallèles des scores en mob inf selon le contact",cex.main=0.7)
+boxplot(donnees_creps$MOBSUP ~donnees_creps$Contact, ylab="Score en mobilite sup", xlab="Contact",names=c("Non","Oui"),main="Boxplots parallèles des scores en mob sup selon le contact",cex.main=0.7)
+boxplot(donnees_creps$STABINF ~donnees_creps$Contact, ylab="Score en stabilité inf", xlab="Contact",names=c("Non","Oui"),main="Boxplots parallèles des scores en stab inf selon le contact",cex.main=0.7)
+boxplot(donnees_creps$STABSUP ~donnees_creps$Contact,ylab="Score en stabilité sup", xlab="Contact",names=c("Non","Oui"),main="Boù xplots parallèles des scores en stab sup selon le contact",cex.main=0.7)
+```
+En mobilité inf :médiane AC =2 // médiane SC=3
+75% des athlètes en sports AC ont moins de 4/8 : seulement 25% ont au dessus de la moyenne.
+Tandis que : 50% des athlètes de sports SC ont au moins 3/8.
+En mobilité sup : médiane AC =1 // médiane SC=2 ; 
+En stabilité inf : médianes alignées à 3. 50% des scores sont entre 1 et 4/6 pour les AC et 50% des scores sont entre 2 et 5 ppur les athlètes des sports SC.
+50% des athlètes de sports AC ont moins de 2/6.
+(A revoir cette section stab inf)
+En Stabilité sup : médianes à 1 quelque soit la catégorie (Avec Cont/SC). Médiane confondue avec 3ième quartile pour les athlètes des sports AC et avec 1er quartile pour athlètes des sports SC.
+
+```{r}
+Contact=donnees_creps$Contact
+tab_mean2 <- tapply(SCORE, Contact, mean) # moyenne des scores pour chaque pôle
+tab_median2 <- tapply(SCORE, Contact, median) # médiane des scores pour chaque pôle
+tab_mean2
+tab_median2
+```
+```{r}
+donnees_creps$Contact=as.factor(donnees_creps$Contact)
+
+ao.score.contact = lm(SCORE ~ Contact, data = donnees_creps)
+summary(ao.score.contact)
+```
+Test de significativité de la varible Contact: p-valeur=0.0744. On ne rejette pas avec certitude la nullité du paramètre, mais on peut tout de même la rejeter en se fixant un seuil de risque égal à 10% (ou même 8%). Donc la variable Contact semble être utile pour expliquer le score global.
+
+
+```{r}
+#essai
+ao.score_mob_inf.contact = lm(donnees_creps$MOBINF ~ Contact, data = donnees_creps)
+summary(ao.score_mob_inf.contact)
+
+```
+R^2 très bas...
+Mais p-valeur inférieure à 5% donc on rejette la nullité des paramètres! Donc bon signe? car veut dire que la variable contact est utile pour expliquer la différence des scores?
+
+
+
+```{r}
+donnees_bless$Contact=donnees_bless$POLE=="BK"|donnees_bless$POLE=="BF"
+donnees_bless$Contact=as.factor(donnees_bless$Contact)
+donnees_creps$Contact=as.factor(donnees_creps$Contact)
+```
+
+```{r}
+plot(donnees_creps$SCORE ~donnees_creps$Contact, main="Score global en fonction du type de pôle", labels=c("Sans contact", "Avec contact"), ylab="Score global", xlab="Type de pôle")
+plot(donnees_bless$BLESS_POURC ~donnees_bless$Contact, main="Pourcentage de blessures en fonction du type de pôle", labels=c("Sans contact", "Avec contact"), ylab="Pourcentage de blessures", xlab="Type de pôle")
+```
+
+```{r}
+par(mar=c(4,4,3,5))
+plot(donnees_bless$BLESS_POURC ~donnees_bless$Contact, ylab="", xlab="", axes= FALSE, medcol = "red", boxcol = "red")
+axis(2 , xlim=c(0,100), col="red",col.axis="red",at=seq(0, 101, by=10), cex.axis = 0.7) 
+mtext("Pourcentage de blessures",side=2,line=2.5, col = "red")
+axis(1,at=c(1:2), labels=c("Sans contact", "Avec contact"), cex.axis = 0.8)
+mtext("Types de Pôles",side=1,line=2.5,col="black") 
+par(new=T)
+plot(donnees_creps$SCORE ~donnees_creps$Contact, main="Comparaison entre les scores obtenus et le pourcentage de blessés dans chaque type de pôle", cex.main=0.75, ylab="", xlab="", axes = FALSE,col="blue")
+axis(4, ylim=c(0,20),col="blue",col.axis="blue",at=seq(0, 20, by=2), cex.axis = 0.8) 
+mtext("Score global",side=4,line=2.5, col="blue") 
+box()
+```
+
+On a pu voir avec les anova effectuées juste avant qu'il y avait un lien entre le score obtenu et le type de pôle.
+Graphiquement une légère corrélation semble apparaître. Est-elle légitime/significative?
+
+```{r}
+ao.score.contact = lm(BLESS_POURC ~ Contact, data = donnees_bless)
+summary(ao.score.contact)
+```
+R^2 pas si horrible que ça!.
+Mais On voit que la p-valeur du test de significativité de la variable Contact est grande. Donc on ne peut pas rejeter l'hypothèse de sa nullité. La variable Contact ne peut pas expliquer le pourcentage de blessure. On peut aussi le voir avec la p-valeur du F-test de comparaison avec le modèle blanc qui est elle aussi très grande!
+
+Donc: cf si on obtient les mêmes conclusions avec les nouvelles données et le temps d'indispo par pôles au lieu du pourcentage de blessure! (fichier avec tous les détails par personne et faire un total et ramener en pourcentage par rapport au nombre de personnes dans la pôle). Si la variable contact n'a toujours aucune influence, alors ne sert vraiment pas à expliquer la blessure.
+
+PB ici pour cette anova: on a que deux individus "avec contact", et quatre individus "sans contact", ce qui ne fait vraiment pas bcp..
+
+Mais est-ce que ce serait tout de même justifié de changer sensiblement les seuils de catégorisation des scores en fonction de cette variable? (comme Alexia avait suggéré). Piste à creuser, remarquer si il y a une différence dans les scores (cela semble être le cas avec les anova), et une différence dans le "score qui suffit à se blesser"?
+
+
+Faire une ANOVA à plusieurs facteurs?! Avec le facteur Pole et le facteur Contact?! Pour expliquer le score? et les blessures?
+Pour expliquer les blessures: en fait c'est pas juste de faire une anova, car le pourcentage de blessures est calculé par pôle, donc faire une anova du pourcentage de blessures par pole en fonction des poles c'est pas logique ? plutôt une régression linéaire?? (ok je m'embrouille je crois je reprendrai ça à tête reposée)
+Mais si on fait ça avec les temps d'indispo sur le nouveau fichier du coup y a plus ce problème! A faire..
+
+Transformer le score en variable explicative! Car jusqu'ici on a simplement comparer des études réalisées séparément sur les variables réponses correspondant au score et à la blessure.
+Pb: sans le score par individu c'est compliqué..
+Mais il serait possible de construire une variable correspondant au "score moyen par pôle"? et d'éventuellement faire une ANCOVA pour la variable réponse "Temps d'indispo" (par pôle), avec les variables explicatives (Pôle, Score moyen)? ou pas logique du tout?
+
+Donc travail avec les nouvelles données à faire!
+
++cf cette histoire de seuils à fixer? de manière empirique? avec les nouvelles données?
 
