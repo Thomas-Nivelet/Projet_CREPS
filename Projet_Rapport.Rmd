@@ -62,7 +62,7 @@ donnees_creps <- read_excel("Donnees_CREPS_1.xlsx")
 ## Première prise en main des données
 ### Statistiques unidimensionnelles : étude générale des pôles et des scores obtenus
 
-```{r, include=FALSE}
+```{r,include=FALSE}
 # Redéfinition de la variable qualitative à bon escient (en facteurs)
 donnees_creps$POLES <- as.factor(donnees_creps$POLES)
 
@@ -97,9 +97,9 @@ Plusieurs des variables présentes dans ce premier jeu de données attireront pa
 - Vingt autres variables binaires, correspondant à la réussite (1) ou l'échec (0) à chacun des exercices du test.
 
 ```{r, echo=FALSE}
-pie(table(donnees_creps$POLES), col = c("lightskyblue2", "lightgoldenrod3", "mistyrose4", "lightcoral", "mediumblue", "lightseagreen", "darkorange2", "brown4"),main = "Répartition des athlètes dans les pôles")
+pie(table(donnees_creps$POLES), col = c("lightskyblue2", "lightgoldenrod3", "mistyrose4", "lightcoral", "mediumblue", "lightseagreen", "darkorange2", "brown4"),main = "Athletes distribution by poles")
 
-barplot(table(factor(donnees_creps$SCORE, levels = 0:20)), main = "Scores obtenus - Tous pôles confondus", ylim = c(0,20), cex.names = 0.6, ylab = "Effectifs", xlab= "Score", col = heat.colors(20))
+barplot(table(factor(donnees_creps$SCORE, levels = 0:20)), main = "Obtained scores - all sports combined ", ylim = c(0,20), cex.names = 0.6, ylab = "Number", xlab= "Score", col = heat.colors(20))
 ```
 
 - Répartition des athlètes dans les pôles : 
@@ -128,7 +128,7 @@ POLES <- donnees_creps$POLES
 ```
 
 ```{r, echo=FALSE}
-boxplot(SCORE ~ POLES, cex.axis = 0.8, main = "Boxplots parallèles des scores en fonction des pôles", xlab = "Pôles", ylab = "Score", ylim = c(0,20))
+boxplot(SCORE ~ POLES, cex.axis = 0.8, main = "Score against poles Box Plots", xlab = "Poles", ylab = "Score", ylim = c(0,20))
 ```
 
 Les boxplots (ou diagrammes en boîtes) ci-dessus nous permettent d'évaluer la position, l'éventuelle symétrie, ainsi que la dispersion des scores obtenus pour chaque pôle. Sur ces graphiques, 50% des observations sont rassemblées à l'intérieur d'une boîte grisée, le trait plein noir représentant la médiane.
@@ -142,10 +142,11 @@ L'ensemble de ces analyses doit être mise en relief avec l'effectif d'athlètes
 
 ```{r, echo=FALSE}
 par(mfrow=c(2,2))
-plot(donnees_creps$MOBINF ~donnees_creps$POLES, ylab="Score en mobilité inf", xlab="Poles", cex.axis = 0.85)
-plot(donnees_creps$MOBSUP ~donnees_creps$POLES, ylab="Score en mobilité sup", xlab="Poles", cex.axis = 0.85)
-plot(donnees_creps$STABINF ~donnees_creps$POLES, ylab="Score en stabilité inf", xlab="Poles", cex.axis = 0.85)
-plot(donnees_creps$STABSUP ~donnees_creps$POLES,ylab="Score en stabilité sup", xlab="Poles", cex.axis = 0.85)
+plot(donnees_creps$MOBINF ~donnees_creps$POLES, ylab="Lower mobility score", xlab="Poles", cex.axis = 0.85)
+plot(donnees_creps$MOBSUP ~donnees_creps$POLES, ylab="Upper mobilty score", xlab="Poles", cex.axis = 0.85)
+plot(donnees_creps$STABINF ~donnees_creps$POLES, ylab="Lower stability score", xlab="Poles", cex.axis = 0.85)
+plot(donnees_creps$STABSUP ~donnees_creps$POLES,ylab="Upper stability score", xlab="Poles", cex.axis = 0.85)
+mtext("Score versus poles Box Plots per exercises category",side = 3, line = -1,font=2, outer = TRUE)
 ```
 
 - Pour la mobilité inférieure (note sur 8) : le score médian de tous les pôles se situe aux alentours de 3, i.e. 50% des athlètes de ces pôles ont un score inférieur à 3. Le pôle Natation Synchronisée se détache avec une médiane très proche de 6, et une certaine homogénéité des athlètes (faible écart interquartile). (Les nageuses sont plus souples : sont-elles moins blessées à ce niveau-la pour autant ?). Le pôle du Rugby à XIII se détache quant à lui par la faiblesse de ses résultats ; on peut ici faire le lien avec leur gabarit, ainsi que le fait qu'ils pratiquent un sport de contact.
@@ -172,13 +173,13 @@ data_spider <- cbind(Mob_inf,Mob_sup,Stab_inf,Stab_sup)
 
 rownames(data_spider) <- c("MAX", "MIN", "AV", "BF", "BK", "BL", "BS", "NAT", "NS", "R")
 
-colnames(data_spider) <- c("Mob. inf.", "Mob. sup.", "Stab. inf.", "Stab. sup.")
+colnames(data_spider) <- c("Low. Mob.", "Upp. Mob", "Low. Stab.", "Upp. Stab")
 
 data_spider = as.data.frame(data_spider)
 
 ## Définition et affichage du radarchart
 par(mar = c(1, 1, 1, 1))
-radarchart(data_spider, axistype = 1,pcol = c("lightskyblue2", "lightgoldenrod3", "mistyrose4", "lightcoral", "mediumblue", "lightseagreen",  "darkorange2", "brown4"),plwd = 2, plty = 1,cglcol = "grey", cglty = 1, cglwd = 0.4, axislabcol = "grey",vlcex = 1.2, vlabels = colnames(data_spider), caxislabels = NULL, title = "Scores moyens par catégrories d'exercices", calcex = 1)
+radarchart(data_spider, axistype = 1,pcol = c("lightskyblue2", "lightgoldenrod3", "mistyrose4", "lightcoral", "mediumblue", "lightseagreen",  "darkorange2", "brown4"),plwd = 2, plty = 1,cglcol = "grey", cglty = 1, cglwd = 0.4, axislabcol = "grey",vlcex = 1.2, vlabels = colnames(data_spider), caxislabels = NULL, title = "Average score for each exercise category", calcex = 1)
 
 legend(x = "right", legend = rownames(data_spider[-c(1,2),]), horiz = FALSE,bty = "n", pch = 20 , col = c("lightskyblue2", "lightgoldenrod3", "mistyrose4", "lightcoral", "mediumblue", "lightseagreen", "darkorange2", "brown4"),text.col = "black", cex = 1, pt.cex = 1.5)
 ```
@@ -213,8 +214,7 @@ head(donnees_creps)
 exos_quant=donnees_creps[,8:27]
 E<-cor(exos_quant)
 corrplot(E,method="number",number.cex=0.5)
-corrplot(E,method="ellipse",number.cex=0.5)
-
+corrplot(E,method="ellipse",number.cex=0.5, main="correlogram between each testing exercise", cex.main=0.8)
 ```
 Le corrélogramme montre que les exercices/positions ne sont pas vraiment lié(e)s entre eux/elles. On peut conclure qu'il n'y a pas de redondance et ainsi que chaque position a son "utilité". En effet, seules les positions D/G sont corrélées, mais ceci paraît logique. 
 
@@ -502,11 +502,11 @@ AC<-(sum(donnees_creps$Contact)/count(donnees_creps))*100
 
 SC<-(sum(donnees_creps$Contact==FALSE)/count(donnees_creps))*100
 
-pie(table(donnees_creps$Contact),labels=c("Sans contact","Avec contacts"), main="Répartition des athlètes selon la nature du sport : avec/sans contact")
+pie(table(donnees_creps$Contact),labels=c("Without contact","With contacts"), main="Athletes distribution according to sport category : with/without contacts")
 
 ```
 ```{r}
-ggplot(data = donnees_creps) + geom_histogram(aes(x = SCORE, fill = Contact), binwidth = 0.5) + scale_x_continuous(breaks=seq(0, 20, by = 1)) + xlab("Score") + ylab("Effectifs") + ggtitle("Effectifs selon les scores obtenus (toutes catégories) selon l'absence ou non de contact") + theme(plot.title =element_text(,,,12)) 
+ggplot(data = donnees_creps) + geom_histogram(aes(x = SCORE, fill = Contact), binwidth = 0.5) + scale_x_continuous(breaks=seq(0, 20, by = 1)) + xlab("Score") + ylab("Effectifs") + ggtitle("Athletes number versus obtained score (all poles) according to contact presence or not") + theme(plot.title =element_text(,,,12)) 
 ```
 Ce sont les athlètes de sports de contact que l'on retrouve le plus dans les scores très faibles, c'est-à-dire inférieurs à 5.
 Entre 6 et 13 (15??) (inclus) ce sont plutôt les athlètes de sports sans contact que l'on retrouve en majorité (mais équitables pour les scores de 8 et 10).
@@ -520,11 +520,11 @@ On pourrait définir de nouveaux seuils pour de nouvelles catégories de scores 
 
 
 ```{r}
-boxplot(donnees_creps$SCORE ~ donnees_creps$Contact, cex.axis = 0.8, main = "Boxplots parallèles des scores en fonction de l'absence ou non de contact", 
+boxplot(donnees_creps$SCORE ~ donnees_creps$Contact, cex.axis = 0.8, main = "Scores versus pole type Box Plots", 
         cex.main = 0.9,
         ylim=c(0,20),
         xlab = "Contact", ylab = "Score",
-        names=c("Non","Oui"))
+        names=c("No","Yes"))
 ```
 D'un point de vue global ici, les scores obtenus par les sportifs "sans contact" sont plus élevés que ceux obtenus par les sportifs "avec contacts", comme en témoigne la position des deux boîtes grises.
 On note que les scores des sports sans contact sont plus élevés : 50% des scores sont entre 9 et 12, la médiane est à 9.5 tandis que 50% des scores des sports de contact (BF,BK,R) s'étendent entre 5 et 10, avec une médiane à 8.
@@ -534,10 +534,11 @@ Cohérence avec plot du dessus.
 
 ```{r}
 par(mfrow=c(2,2))
-boxplot(donnees_creps$MOBINF ~donnees_creps$Contact, ylab="Score en mobilite inf", xlab="Contact",names=c("Non","Oui"),main="Boxplots parallèles des scores en mob inf selon le contact",cex.main=0.7)
-boxplot(donnees_creps$MOBSUP ~donnees_creps$Contact, ylab="Score en mobilite sup", xlab="Contact",names=c("Non","Oui"),main="Boxplots parallèles des scores en mob sup selon le contact",cex.main=0.7)
-boxplot(donnees_creps$STABINF ~donnees_creps$Contact, ylab="Score en stabilité inf", xlab="Contact",names=c("Non","Oui"),main="Boxplots parallèles des scores en stab inf selon le contact",cex.main=0.7)
-boxplot(donnees_creps$STABSUP ~donnees_creps$Contact,ylab="Score en stabilité sup", xlab="Contact",names=c("Non","Oui"),main="Boù xplots parallèles des scores en stab sup selon le contact",cex.main=0.7)
+boxplot(donnees_creps$MOBINF ~donnees_creps$Contact, ylab="Lower Mobility Score", xlab="Contact",names=c("No","Yes"))
+boxplot(donnees_creps$MOBSUP ~donnees_creps$Contact, ylab="Upper Mobility Score", xlab="Contact",names=c("No","Yes"))
+boxplot(donnees_creps$STABINF ~donnees_creps$Contact, ylab="Lower Stability Score", xlab="Contact",names=c("No","Yes"))
+boxplot(donnees_creps$STABSUP ~donnees_creps$Contact,ylab="Upper Stability Score", xlab="Contact",names=c("No","Yes"))
+mtext("Score versus pole type Box plots per exercises category",side = 3, line = -1,font=2, outer = TRUE)
 ```
 En mobilité inf :médiane AC =2 // médiane SC=3
 75% des athlètes en sports AC ont moins de 4/8 : seulement 25% ont au dessus de la moyenne.
@@ -582,8 +583,8 @@ donnees_creps$Contact=as.factor(donnees_creps$Contact)
 ```
 
 ```{r}
-plot(donnees_creps$SCORE ~donnees_creps$Contact, main="Score global en fonction du type de pôle", labels=c("Sans contact", "Avec contact"), ylab="Score global", xlab="Type de pôle")
-plot(donnees_bless$BLESS_POURC ~donnees_bless$Contact, main="Pourcentage de blessures en fonction du type de pôle", labels=c("Sans contact", "Avec contact"), ylab="Pourcentage de blessures", xlab="Type de pôle")
+plot(donnees_creps$SCORE ~donnees_creps$Contact, main="Score versus pole type Box plots", labels=c("No", "Yes"), ylab="Score", xlab="Contact")
+plot(donnees_bless$BLESS_POURC ~donnees_bless$Contact, main="Injuries percentage versus type pole Box plots", labels=c("No", "Yes"), ylab="Injuries percentage", xlab="Contact")
 ```
 
 ```{r}
@@ -591,12 +592,12 @@ par(mar=c(4,4,3,5))
 plot(donnees_bless$BLESS_POURC ~donnees_bless$Contact, ylab="", xlab="", axes= FALSE, medcol = "red", boxcol = "red")
 axis(2 , xlim=c(0,100), col="red",col.axis="red",at=seq(0, 101, by=10), cex.axis = 0.7) 
 mtext("Pourcentage de blessures",side=2,line=2.5, col = "red")
-axis(1,at=c(1:2), labels=c("Sans contact", "Avec contact"), cex.axis = 0.8)
-mtext("Types de Pôles",side=1,line=2.5,col="black") 
-par(new=T)
-plot(donnees_creps$SCORE ~donnees_creps$Contact, main="Comparaison entre les scores obtenus et le pourcentage de blessés dans chaque type de pôle", cex.main=0.75, ylab="", xlab="", axes = FALSE,col="blue")
+axis(1,at=c(1:2), labels=c("No", "Yes"), cex.axis = 0.8)
+mtext("Contact",side=1,line=2.5,col="black") 
+#par(new=T)
+plot(donnees_creps$SCORE ~donnees_creps$Contact, main="Comparison between Score and casualties percentage by pole type", cex.main=0.75, ylab="", xlab="", axes = FALSE,col="blue")
 axis(4, ylim=c(0,20),col="blue",col.axis="blue",at=seq(0, 20, by=2), cex.axis = 0.8) 
-mtext("Score global",side=4,line=2.5, col="blue") 
+mtext("Score",side=4,line=2.5, col="blue") 
 box()
 ```
 
