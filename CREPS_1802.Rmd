@@ -896,29 +896,6 @@ donnees_indispo$IND_BLESS = factor(donnees_indispo$IND_BLESS, levels = c("Sup à
 head(donnees_indispo)})
 ```
 
-```{r}
-SCORE <- donnees_creps$SCORE
-POLES <- donnees_creps$POLES
-
-
-donnees_creps$SCORE_cat3 <- donnees_creps$SCORE
-
-donnees_creps$SCORE_cat3[SCORE<=5]<-"Faible"
-donnees_creps$SCORE_cat3[SCORE<=10 & SCORE>5] <-"Moyen"
-donnees_creps$SCORE_cat3[SCORE<15 & SCORE>10]<-"Bon"
-donnees_creps$SCORE_cat3[SCORE<=20 & SCORE>=15]<-"Très Bon"
-
-donnees_creps$SCORE_cat3 = factor(donnees_creps$SCORE_cat3, levels = c("Faible", "Moyen", "Bon", "Très Bon"))
-
-par (mfrow=c(1,3))
-table.IND <- table(donnees_indispo$POLE, donnees_indispo$IND_BLESS)
-addmargins(table.IND)
-mosaicplot(table.IND,color=c("#FF3333","#FF9933", "#FFCC00","#66CC00"), main="Contingence Niv d'indispo / Pôles", xlab = "Pôles", ylab = "Catégories d'indispo") 
-
-table.cat3 <- table(donnees_creps$POLES, donnees_creps$SCORE_cat3)
-addmargins(table.cat3)
-mosaicplot(table.cat3,color=c("#FF3333","#FF9933", "#FFCC00","#66CC00"), main="Contingence Catégorie de score / Pôles", xlab = "Pôles", ylab = "Catégories de scores")
-```
 
 ```{r}
 SCORE <- donnees_creps$SCORE
@@ -926,37 +903,33 @@ POLES <- donnees_creps$POLES
 
 suppressWarnings({
 donnees_indispo$IND_BLESS=donnees_indispo$NB_BLESS
-donnees_indispo$IND_BLESS[donnees_indispo$NB_BLESS>=0 & donnees_indispo$NB_BLESS<=1]="Inf a 1" 
-donnees_indispo$IND_BLESS[donnees_indispo$NB_BLESS>1& donnees_indispo$NB_BLESS<3 ]="1 à 3"
-donnees_indispo$IND_BLESS[donnees_indispo$NB_BLESS>=3]="Sup à 3"
+donnees_indispo$IND_BLESS[donnees_indispo$NB_BLESS>=0 & donnees_indispo$NB_BLESS<=1]="Low. th. 1" 
+donnees_indispo$IND_BLESS[donnees_indispo$NB_BLESS>1& donnees_indispo$NB_BLESS<3 ]="1 to 3"
+donnees_indispo$IND_BLESS[donnees_indispo$NB_BLESS>=3]="Upp. th. 3"
 
-donnees_indispo$IND_BLESS = factor(donnees_indispo$IND_BLESS, levels = c("Sup à 3", "1 à 3", "Inf a 1"))
+donnees_indispo$IND_BLESS = factor(donnees_indispo$IND_BLESS, levels = c("Upp. th. 3", "1 to 3", "Low. th. 1"))
 
 head(donnees_indispo)})
 
 
 donnees_creps$SCORE_cat3 <- donnees_creps$SCORE
 
-donnees_creps$SCORE_cat3[SCORE<7]<-"Faible"
-donnees_creps$SCORE_cat3[SCORE<10 & SCORE>=7] <-"Moyen"
-donnees_creps$SCORE_cat3[SCORE<=20 & SCORE>=10]<-"Bon"
+donnees_creps$SCORE_cat3[SCORE<7]<-"Low"
+donnees_creps$SCORE_cat3[SCORE<10 & SCORE>=7] <-"Middling"
+donnees_creps$SCORE_cat3[SCORE<=20 & SCORE>=10]<-"Good"
 
-donnees_creps$SCORE_cat3 = factor(donnees_creps$SCORE_cat3, levels = c("Faible", "Moyen", "Bon"))
+donnees_creps$SCORE_cat3 = factor(donnees_creps$SCORE_cat3, levels = c("Low", "Middling", "Good"))
 
 par (mfrow=c(1,3))
 table.IND <- table(donnees_indispo$POLE, donnees_indispo$IND_BLESS)
 addmargins(table.IND)
-mosaicplot(table.IND,color=c("#FF3333", "#FFCC00","#66CC00"), main="Contingence Niv d'indispo / Pôles", xlab = "Pôles", ylab = "Catégories d'indispo") 
+mosaicplot(table.IND,color=c("#FF3333", "#FFCC00","#66CC00"), main="Contingency table Unavailability categories/Poles", xlab = "Poles", ylab = "Unavailability categories") 
 
 table.cat3 <- table(donnees_creps$POLES, donnees_creps$SCORE_cat3)
 addmargins(table.cat3)
-mosaicplot(table.cat3,color=c("#FF3333", "#FFCC00","#66CC00"), main="Contingence Catégorie de score / Pôles", xlab = "Pôles", ylab = "Catégories de scores")
+mosaicplot(table.cat3,color=c("#FF3333", "#FFCC00","#66CC00"), main="Contingency table Score categories/Poles", xlab = "Poles", ylab = "Score categories")
 ```
-
-
-
-```{r,fig.height = 7, fig.width = 10}
-
+```{r}
 # Test graphes araignée superposés
 ## Récupération des données moyennes, minimales et maximales
 POLE=donnees_indispo$POLE 
@@ -987,7 +960,7 @@ data_spider = as.data.frame(data_spider)
 par(mar = c(1, 1, 1, 1))
 
 radarchart(data_spider,axistype = 1,pcol = c("lightskyblue2", "lightgoldenrod3", "mistyrose4", "lightcoral", "mediumblue", "lightseagreen"),plwd = 2, plty = 1,cglcol = "grey", cglty = 1, cglwd = 0.4,
-axislabcol = "grey",vlcex = 0.7, vlabels = colnames(data_spider),caxislabels = NULL, title = "Répartitions des indispos par pôle")
+axislabcol = "grey",vlcex = 0.7, vlabels = colnames(data_spider),caxislabels = NULL, title = " Unavailability category distribution per pole")
 
 legend(x = "right", legend = rownames(data_spider[-c(1,2),]), horiz = FALSE,bty = "n", pch = 20 , col = c("lightskyblue2", "lightgoldenrod3", "mistyrose4", "lightcoral", "mediumblue", "lightseagreen"),text.col = "black", cex = 1, pt.cex = 1.5)
 ```
