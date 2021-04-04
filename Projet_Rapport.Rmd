@@ -57,6 +57,8 @@ library(corrplot)
 ```{r, include=FALSE}
 # Importation du fichier de données depuis un .xlsx
 donnees_creps <- read_excel("Donnees_CREPS_1.xlsx")
+#rowing=aviron 
+
 ```
 
 ## Première prise en main des données
@@ -78,13 +80,13 @@ dim(donnees_creps)
 ```
 
 Le premier jeu de données à notre disposition contient les scores obtenus au testing TM2S, relatif à la mobilité et à la stabilité su sportif, de 123 athlètes du CREPS, répartis dans 8 pôles sportifs différents : 
-- Aviron (`AV`), 
+- Aviron (`RW`), 
 - Baseball (`BS`),
-- Boxe française (`BF`), 
+- Boxe française (`FB`), 
 - Basketball (`BK`), 
 - Bowling (`BL`), 
-- Natation (`NAT`), 
-- Natation synchronisée (`NS`), 
+- Natation (`S`), 
+- Natation synchronisée (`SS`), 
 - Rugby à XIII (`R`),
 Plusieurs des variables présentes dans ce premier jeu de données attireront particulièrement notre attention dans la suite du projet :
 
@@ -97,7 +99,7 @@ Plusieurs des variables présentes dans ce premier jeu de données attireront pa
 - Vingt autres variables binaires, correspondant à la réussite (1) ou l'échec (0) à chacun des exercices du test.
 
 ```{r, echo=FALSE}
-pie(table(donnees_creps$POLES), col = c("lightskyblue2", "lightgoldenrod3", "mistyrose4", "lightcoral", "mediumblue", "lightseagreen", "darkorange2", "brown4"),main = "Athletes distribution by poles")
+pie(table(donnees_creps$POLES), col = c("lightskyblue2", "lightgoldenrod3", "mistyrose4", "lightcoral", "mediumblue", "lightseagreen", "darkorange2", "brown4"),main = "Athletes distribution by pole")
 
 barplot(table(factor(donnees_creps$SCORE, levels = 0:20)), main = "Obtained scores - all sports combined ", ylim = c(0,20), cex.names = 0.6, ylab = "Number", xlab= "Score", col = heat.colors(20))
 ```
@@ -161,17 +163,17 @@ Représentons les scores moyens obtenus pour chaque pôle dans les quatre catég
 # Test graphes araignée superposés
 ## Récupération des données moyennes, minimales et maximales
 
-Mob_inf = c(8,0,mean(donnees_creps$MOBINF[POLES=="AV"]),mean(donnees_creps$MOBINF[POLES=="BF"]),mean(donnees_creps$MOBINF[POLES=="BK"]),mean(donnees_creps$MOBINF[POLES=="BL"]),mean(donnees_creps$MOBINF[POLES=="BS"]),mean(donnees_creps$MOBINF[POLES=="NAT"]),mean(donnees_creps$MOBINF[POLES=="NS"]),mean(donnees_creps$MOBINF[POLES=="R"]))
+Mob_inf = c(8,0,mean(donnees_creps$MOBINF[POLES=="RW"]),mean(donnees_creps$MOBINF[POLES=="FB"]),mean(donnees_creps$MOBINF[POLES=="BK"]),mean(donnees_creps$MOBINF[POLES=="BL"]),mean(donnees_creps$MOBINF[POLES=="BS"]),mean(donnees_creps$MOBINF[POLES=="S"]),mean(donnees_creps$MOBINF[POLES=="SS"]),mean(donnees_creps$MOBINF[POLES=="R"]))
 
-Mob_sup = c(4,0,mean(donnees_creps$MOBSUP[POLES=="AV"]),mean(donnees_creps$MOBSUP[POLES=="BF"]),mean(donnees_creps$MOBSUP[POLES=="BK"]),mean(donnees_creps$MOBSUP[POLES=="BL"]),mean(donnees_creps$MOBSUP[POLES=="BS"]),mean(donnees_creps$MOBSUP[POLES=="NAT"]),mean(donnees_creps$MOBSUP[POLES=="NS"]),mean(donnees_creps$MOBSUP[POLES=="R"]))
+Mob_sup = c(4,0,mean(donnees_creps$MOBSUP[POLES=="RW"]),mean(donnees_creps$MOBSUP[POLES=="FB"]),mean(donnees_creps$MOBSUP[POLES=="BK"]),mean(donnees_creps$MOBSUP[POLES=="BL"]),mean(donnees_creps$MOBSUP[POLES=="BS"]),mean(donnees_creps$MOBSUP[POLES=="S"]),mean(donnees_creps$MOBSUP[POLES=="SS"]),mean(donnees_creps$MOBSUP[POLES=="R"]))
 
-Stab_inf = c(6,0,mean(donnees_creps$STABINF[POLES=="AV"]),mean(donnees_creps$STABINF[POLES=="BF"]),mean(donnees_creps$STABINF[POLES=="BK"]),mean(donnees_creps$STABINF[POLES=="BL"]),mean(donnees_creps$STABINF[POLES=="BS"]),mean(donnees_creps$STABINF[POLES=="NAT"]),mean(donnees_creps$STABINF[POLES=="NS"]),mean(donnees_creps$STABINF[POLES=="R"]))
+Stab_inf = c(6,0,mean(donnees_creps$STABINF[POLES=="RW"]),mean(donnees_creps$STABINF[POLES=="FB"]),mean(donnees_creps$STABINF[POLES=="BK"]),mean(donnees_creps$STABINF[POLES=="BL"]),mean(donnees_creps$STABINF[POLES=="BS"]),mean(donnees_creps$STABINF[POLES=="S"]),mean(donnees_creps$STABINF[POLES=="SS"]),mean(donnees_creps$STABINF[POLES=="R"]))
 
-Stab_sup = c(2,0,mean(donnees_creps$STABSUP[POLES=="AV"]),mean(donnees_creps$STABSUP[POLES=="BF"]),mean(donnees_creps$STABSUP[POLES=="BK"]),mean(donnees_creps$STABSUP[POLES=="BL"]),mean(donnees_creps$STABSUP[POLES=="BS"]),mean(donnees_creps$STABSUP[POLES=="NAT"]),mean(donnees_creps$STABSUP[POLES=="NS"]),mean(donnees_creps$STABSUP[POLES=="R"]))
+Stab_sup = c(2,0,mean(donnees_creps$STABSUP[POLES=="RW"]),mean(donnees_creps$STABSUP[POLES=="FB"]),mean(donnees_creps$STABSUP[POLES=="BK"]),mean(donnees_creps$STABSUP[POLES=="BL"]),mean(donnees_creps$STABSUP[POLES=="BS"]),mean(donnees_creps$STABSUP[POLES=="S"]),mean(donnees_creps$STABSUP[POLES=="SS"]),mean(donnees_creps$STABSUP[POLES=="R"]))
 
 data_spider <- cbind(Mob_inf,Mob_sup,Stab_inf,Stab_sup)
 
-rownames(data_spider) <- c("MAX", "MIN", "AV", "BF", "BK", "BL", "BS", "NAT", "NS", "R")
+rownames(data_spider) <- c("MAX", "MIN", "RW", "FB", "BK", "BL", "BS", "S", "SS", "R")
 
 colnames(data_spider) <- c("Low. Mob.", "Upp. Mob", "Low. Stab.", "Upp. Stab")
 
@@ -214,7 +216,7 @@ head(donnees_creps)
 exos_quant=donnees_creps[,8:27]
 E<-cor(exos_quant)
 corrplot(E,method="number",number.cex=0.5)
-corrplot(E,method="ellipse",number.cex=0.5, main="correlogram between each testing exercise", cex.main=0.8)
+corrplot(E,method="ellipse",number.cex=0.5)
 ```
 Le corrélogramme montre que les exercices/positions ne sont pas vraiment lié(e)s entre eux/elles. On peut conclure qu'il n'y a pas de redondance et ainsi que chaque position a son "utilité". En effet, seules les positions D/G sont corrélées, mais ceci paraît logique. 
 
@@ -506,7 +508,7 @@ pie(table(donnees_creps$Contact),labels=c("Without contact","With contacts"), ma
 
 ```
 ```{r}
-ggplot(data = donnees_creps) + geom_histogram(aes(x = SCORE, fill = Contact), binwidth = 0.5) + scale_x_continuous(breaks=seq(0, 20, by = 1)) + xlab("Score") + ylab("Effectifs") + ggtitle("Athletes number versus obtained score (all poles) according to contact presence or not") + theme(plot.title =element_text(,,,12)) 
+ggplot(data = donnees_creps) + geom_histogram(aes(x = SCORE, fill = Contact), binwidth = 0.5) + scale_x_continuous(breaks=seq(0, 20, by = 1)) + xlab("Score") + ylab("Effectifs") + ggtitle("Athletes number versus obtained score (all poles) according to pole type") + theme(plot.title =element_text(,,,12)) 
 ```
 Ce sont les athlètes de sports de contact que l'on retrouve le plus dans les scores très faibles, c'est-à-dire inférieurs à 5.
 Entre 6 et 13 (15??) (inclus) ce sont plutôt les athlètes de sports sans contact que l'on retrouve en majorité (mais équitables pour les scores de 8 et 10).
@@ -588,17 +590,19 @@ plot(donnees_bless$BLESS_POURC ~donnees_bless$Contact, main="Injuries percentage
 ```
 
 ```{r}
-par(mar=c(4,4,3,5))
+par(mfrow=c(1,2))
 plot(donnees_bless$BLESS_POURC ~donnees_bless$Contact, ylab="", xlab="", axes= FALSE, medcol = "red", boxcol = "red")
 axis(2 , xlim=c(0,100), col="red",col.axis="red",at=seq(0, 101, by=10), cex.axis = 0.7) 
-mtext("Pourcentage de blessures",side=2,line=2.5, col = "red")
+mtext("Injuries Percentage",side=2,line=2.5, col = "red")
 axis(1,at=c(1:2), labels=c("No", "Yes"), cex.axis = 0.8)
 mtext("Contact",side=1,line=2.5,col="black") 
-#par(new=T)
-plot(donnees_creps$SCORE ~donnees_creps$Contact, main="Comparison between Score and injured people percentage by pole type", cex.main=0.75, ylab="", xlab="", axes = FALSE,col="blue")
+plot(donnees_creps$SCORE ~donnees_creps$Contact, ylab="", xlab="", axes = FALSE,col="blue")
 axis(4, ylim=c(0,20),col="blue",col.axis="blue",at=seq(0, 20, by=2), cex.axis = 0.8) 
 mtext("Score",side=4,line=2.5, col="blue") 
+axis(1,at=c(1:2), labels=c("No", "Yes"), cex.axis = 0.8)
+mtext("Contact",side=1,line=2.5,col="black") 
 box()
+mtext("Comparison between Score and injured people percentage by pole type",side=3,line=-1,font=2)
 ```
 
 On a pu voir avec les anova effectuées juste avant qu'il y avait un lien entre le score obtenu et le type de pôle.
