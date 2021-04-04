@@ -147,23 +147,23 @@ Représentons les scores moyens obtenus pour chaque pôle dans les quatre catég
 ```{r}
 # Récupération des moyennes et définition des valeurs par catégorie
 ## AV
-Mob_inf_AV = c(8,0,mean(donnees_creps$MOBINF[POLES=="AV"]))
-Mob_sup_AV = c(4,0,mean(donnees_creps$MOBSUP[POLES=="AV"]))
-Stab_inf_AV = c(6,0,mean(donnees_creps$STABINF[POLES=="AV"]))
-Stab_sup_AV = c(2,0,mean(donnees_creps$STABSUP[POLES=="AV"]))
+Mob_inf_AV = c(8,0,mean(donnees_creps$MOBINF[POLES=="RW"]))
+Mob_sup_AV = c(4,0,mean(donnees_creps$MOBSUP[POLES=="RW"]))
+Stab_inf_AV = c(6,0,mean(donnees_creps$STABINF[POLES=="RW"]))
+Stab_sup_AV = c(2,0,mean(donnees_creps$STABSUP[POLES=="RW"]))
 data_spider_AV <- cbind(Mob_inf_AV,Mob_sup_AV,Stab_inf_AV,Stab_sup_AV)
-rownames(data_spider_AV) <- c("MAX", "MIN", "AV")
+rownames(data_spider_AV) <- c("MAX", "MIN", "RW")
 colnames(data_spider_AV) <- c("Mob. inf.", "Mob. sup.", 
                               "Stab. inf.", "Stab. sup.")
 data_spider_AV = as.data.frame(data_spider_AV)
 
 ## BF
-Mob_inf_BF = c(8,0,mean(donnees_creps$MOBINF[POLES=="BF"]))
-Mob_sup_BF = c(4,0,mean(donnees_creps$MOBSUP[POLES=="BF"]))
-Stab_inf_BF = c(6,0,mean(donnees_creps$STABINF[POLES=="BF"]))
-Stab_sup_BF = c(2,0,mean(donnees_creps$STABSUP[POLES=="BF"]))
+Mob_inf_BF = c(8,0,mean(donnees_creps$MOBINF[POLES=="FB"]))
+Mob_sup_BF = c(4,0,mean(donnees_creps$MOBSUP[POLES=="FB"]))
+Stab_inf_BF = c(6,0,mean(donnees_creps$STABINF[POLES=="FB"]))
+Stab_sup_BF = c(2,0,mean(donnees_creps$STABSUP[POLES=="FB"]))
 data_spider_BF <- cbind(Mob_inf_BF,Mob_sup_BF,Stab_inf_BF,Stab_sup_BF)
-rownames(data_spider_BF) <- c("MAX", "MIN", "BF")
+rownames(data_spider_BF) <- c("MAX", "MIN", "FB")
 colnames(data_spider_BF) <- c("Mob. inf.", "Mob. sup.", 
                               "Stab. inf.", "Stab. sup.")
 data_spider_BF = as.data.frame(data_spider_BF)
@@ -191,23 +191,23 @@ colnames(data_spider_BL) <- c("Mob. inf.", "Mob. sup.",
 data_spider_BL = as.data.frame(data_spider_BL)
 
 ## NAT
-Mob_inf_NAT = c(8,0,mean(donnees_creps$MOBINF[POLES=="NAT"]))
-Mob_sup_NAT = c(4,0,mean(donnees_creps$MOBSUP[POLES=="NAT"]))
-Stab_inf_NAT = c(6,0,mean(donnees_creps$STABINF[POLES=="NAT"]))
-Stab_sup_NAT = c(2,0,mean(donnees_creps$STABSUP[POLES=="NAT"]))
+Mob_inf_NAT = c(8,0,mean(donnees_creps$MOBINF[POLES=="S"]))
+Mob_sup_NAT = c(4,0,mean(donnees_creps$MOBSUP[POLES=="S"]))
+Stab_inf_NAT = c(6,0,mean(donnees_creps$STABINF[POLES=="S"]))
+Stab_sup_NAT = c(2,0,mean(donnees_creps$STABSUP[POLES=="S"]))
 data_spider_NAT <- cbind(Mob_inf_NAT,Mob_sup_NAT,Stab_inf_NAT,Stab_sup_NAT)
-rownames(data_spider_NAT) <- c("MAX", "MIN", "NAT")
+rownames(data_spider_NAT) <- c("MAX", "MIN", "S")
 colnames(data_spider_NAT) <- c("Mob. inf.", "Mob. sup.", 
                               "Stab. inf.", "Stab. sup.")
 data_spider_NAT = as.data.frame(data_spider_NAT)
 
 ## NS
-Mob_inf_NS = c(8,0,mean(donnees_creps$MOBINF[POLES=="NS"]))
-Mob_sup_NS = c(4,0,mean(donnees_creps$MOBSUP[POLES=="NS"]))
-Stab_inf_NS = c(6,0,mean(donnees_creps$STABINF[POLES=="NS"]))
-Stab_sup_NS = c(2,0,mean(donnees_creps$STABSUP[POLES=="NS"]))
+Mob_inf_NS = c(8,0,mean(donnees_creps$MOBINF[POLES=="SS"]))
+Mob_sup_NS = c(4,0,mean(donnees_creps$MOBSUP[POLES=="SS"]))
+Stab_inf_NS = c(6,0,mean(donnees_creps$STABINF[POLES=="SS"]))
+Stab_sup_NS = c(2,0,mean(donnees_creps$STABSUP[POLES=="SS"]))
 data_spider_NS <- cbind(Mob_inf_NS,Mob_sup_NS,Stab_inf_NS,Stab_sup_NS)
-rownames(data_spider_NS) <- c("MAX", "MIN", "NS")
+rownames(data_spider_NS) <- c("MAX", "MIN", "SS")
 colnames(data_spider_NS) <- c("Mob. inf.", "Mob. sup.", 
                               "Stab. inf.", "Stab. sup.")
 data_spider_NS = as.data.frame(data_spider_NS)
@@ -292,25 +292,25 @@ radarchart(data_spider_NS,
 ## Récupération des données moyennes, minimales et maximales
  
 
-Mob_inf = c(8,0,mean(donnees_creps$MOBINF[POLES=="AV"]),mean(donnees_creps$MOBINF[POLES=="BF"]),mean(donnees_creps$MOBINF[POLES=="BK"]),mean(donnees_creps$MOBINF[POLES=="BL"]),mean(donnees_creps$MOBINF[POLES=="NAT"]),mean(donnees_creps$MOBINF[POLES=="NS"]))
+Mob_inf = c(8,0,mean(donnees_creps$MOBINF[POLES=="RW"]),mean(donnees_creps$MOBINF[POLES=="FB"]),mean(donnees_creps$MOBINF[POLES=="BK"]),mean(donnees_creps$MOBINF[POLES=="BL"]),mean(donnees_creps$MOBINF[POLES=="S"]),mean(donnees_creps$MOBINF[POLES=="SS"]))
 
  
 
-Mob_sup = c(4,0,mean(donnees_creps$MOBSUP[POLES=="AV"]),mean(donnees_creps$MOBSUP[POLES=="BF"]),mean(donnees_creps$MOBSUP[POLES=="BK"]),mean(donnees_creps$MOBSUP[POLES=="BL"]),mean(donnees_creps$MOBSUP[POLES=="NAT"]),mean(donnees_creps$MOBSUP[POLES=="NS"]))
+Mob_sup = c(4,0,mean(donnees_creps$MOBSUP[POLES=="RW"]),mean(donnees_creps$MOBSUP[POLES=="BF"]),mean(donnees_creps$MOBSUP[POLES=="BK"]),mean(donnees_creps$MOBSUP[POLES=="BL"]),mean(donnees_creps$MOBSUP[POLES=="S"]),mean(donnees_creps$MOBSUP[POLES=="SS"]))
 
  
 
-Stab_inf = c(6,0,mean(donnees_creps$STABINF[POLES=="AV"]),mean(donnees_creps$STABINF[POLES=="BF"]),mean(donnees_creps$STABINF[POLES=="BK"]),mean(donnees_creps$STABINF[POLES=="BL"]),mean(donnees_creps$STABINF[POLES=="NAT"]),mean(donnees_creps$STABINF[POLES=="NS"]))
+Stab_inf = c(6,0,mean(donnees_creps$STABINF[POLES=="RW"]),mean(donnees_creps$STABINF[POLES=="BF"]),mean(donnees_creps$STABINF[POLES=="BK"]),mean(donnees_creps$STABINF[POLES=="BL"]),mean(donnees_creps$STABINF[POLES=="S"]),mean(donnees_creps$STABINF[POLES=="SS"]))
 
  
 
-Stab_sup = c(2,0,mean(donnees_creps$STABSUP[POLES=="AV"]),mean(donnees_creps$STABSUP[POLES=="BF"]),mean(donnees_creps$STABSUP[POLES=="BK"]),mean(donnees_creps$STABSUP[POLES=="BL"]),mean(donnees_creps$STABSUP[POLES=="NAT"]),mean(donnees_creps$STABSUP[POLES=="NS"]))
+Stab_sup = c(2,0,mean(donnees_creps$STABSUP[POLES=="RW"]),mean(donnees_creps$STABSUP[POLES=="FB"]),mean(donnees_creps$STABSUP[POLES=="BK"]),mean(donnees_creps$STABSUP[POLES=="BL"]),mean(donnees_creps$STABSUP[POLES=="S"]),mean(donnees_creps$STABSUP[POLES=="SS"]))
 
  
 
 data_spider <- cbind(Mob_inf,Mob_sup,Stab_inf,Stab_sup)
 
-rownames(data_spider) <- c("MAX", "MIN", "AV", "BF", "BK", "BL", "NAT", "NS")
+rownames(data_spider) <- c("MAX", "MIN", "RW", "FB", "BK", "BL", "S", "SS")
 
 colnames(data_spider) <- c("Mob. inf.", "Mob. sup.",
 
@@ -488,7 +488,7 @@ par(mar=c(4,4,3,5))
 plot(donnees_creps$SCORE ~donnees_creps$POLES, main="Comparaison entre les scores obtenus et le pourcentage de blessés dans chaque pôle", cex.main=0.75, ylab="", xlab="", axes = FALSE,col="blue")
 axis(4, ylim=c(0,20),col="blue",col.axis="blue",at=seq(0, 20, by=2), cex.axis = 0.8) 
 mtext("Score global",side=4,line=2.5, col="blue") 
-par(new=T)
+#par(new=T)
 plot(donnees_bless$BLESS_POURC ~donnees_bless$POLE, ylab="", xlab="", axes= FALSE, medcol = "red", boxcol = "red")
 axis(2 , xlim=c(0,101), col="red",col.axis="red",at=seq(0, 101, by=10), cex.axis = 0.7) 
 mtext("Pourcentage de blessures",side=2,line=2.5, col = "red")
@@ -520,18 +520,18 @@ Le graphe ci-après représente le nombre de blessures en fonction du score méd
 #coord_x=tab_median[c(1:4,6:7)]
 coord_x=tab_median
 coord_y=donnees_bless$BLESS_POURC
-nom=c("AV","BF","BK","BL","BS","NAT","NS","R")
+nom=c("RW","FB","BK","BL","BS","S","SS","R")
 reg.med <- lm(coord_y ~ coord_x)
-plot(coord_x,coord_y, ylab="Pourcentage de blessés", xlab="Score médian obtenu dans chaque pôle", main="Pourcentage de blessés en fonction du score médian obtenu pour chaque pôle", cex.main=0.7)
+plot(coord_x,coord_y, ylab="Injured percentage", xlab="Median Score for each pole", main="Injured percentage VS median score for each pole", cex.main=0.7)
 abline(reg.med, col = "red")
 text(coord_x,coord_y,nom, pos=2, offset=0.5, cex=0.7)
 
 #Plus pertinent avec les scores moyens de chaque pôle??
 coord_x=tab_mean
 coord_y=donnees_bless$BLESS_POURC
-nom=c("AV","BF","BK","BL","BS","NAT","NS","R")
+nom=c("RW","FB","BK","BL","BS","S","SS","R")
 reg.moy <- lm(coord_y ~ coord_x)
-plot(coord_x,coord_y, ylab="Pourcentage de blessés", xlab="Score moyen obtenu dans chaque pôle", main="Pourcentage de blessés en fonction du score moyen obtenu pour chaque pôle", cex.main=0.7)
+plot(coord_x,coord_y,  ylab="Injured percentage", xlab="Average score for each pole", main="Injured percentage VS average score for each pole", cex.main=0.7)
 abline(reg.moy, col = "red")
 text(coord_x,coord_y,nom, pos=2, offset=0.5, cex=0.7)
 
@@ -565,7 +565,7 @@ par(mfrow=c(2,2))
 tab_median_mobinf=tapply(donnees_creps$MOBINF, donnees_creps$POLES, median)
 coord_x=tab_median_mobinf
 coord_y=donnees_bless$BLESS_POURC
-nom=c("AV","BF","BK","BL","BS","NAT","NS","R")
+nom=c("RW","FB","BK","BL","BS","S","SS","R")
 plot(coord_x,coord_y, ylab="Pourcentage de blessés", xlab="Score médian en mob inf obtenu dans chaque pôle", main="Pourcentage de blessés en fonction du score médian obtenu pour chaque pôle", cex.main=0.6)
 text(coord_x,coord_y,nom, pos=2, offset=0.5, cex=0.7)
 reg <- lm(coord_y ~ coord_x)
@@ -575,7 +575,7 @@ summary(reg)
 tab_median_stabsup=tapply(donnees_creps$STABSUP, donnees_creps$POLES, median)
 coord_x=tab_median_stabsup
 coord_y=donnees_bless$BLESS_POURC
-nom=c("AV","BF","BK","BL","BS","NAT","NS","R")
+nom=c("RW","FB","BK","BL","BS","S","SS","R")
 plot(coord_x,coord_y, ylab="Pourcentage de blessés", xlab="Score médian en stab sup obtenu dans chaque pôle", main="Pourcentage de blessés en fonction du score médian obtenu pour chaque pôle", cex.main=0.6)
 text(coord_x,coord_y,nom, pos=4, offset=0.5, cex=0.7)
 reg <- lm(coord_y ~ coord_x)
@@ -585,7 +585,7 @@ summary(reg)
 tab_median_mobsup=tapply(donnees_creps$MOBSUP, donnees_creps$POLES, median)
 coord_x=tab_median_mobsup
 coord_y=donnees_bless$BLESS_POURC
-nom=c("AV","BF","BK","BL","BS","NAT","NS","R")
+nom=c("RW","FB","BK","BL","BS","S","SS","R")
 plot(coord_x,coord_y, ylab="Pourcentage de blessés", xlab="Score médian en mob sup obtenu dans chaque pôle", main="Pourcentage de blessés en fonction du score médian obtenu pour chaque pôle", cex.main=0.6)
 text(coord_x,coord_y,nom, pos=4, offset=0.5, cex=0.7)
 reg <- lm(coord_y ~ coord_x)
@@ -595,7 +595,7 @@ summary(reg)
 tab_median_stabinf=tapply(donnees_creps$STABINF, donnees_creps$POLES, median)
 coord_x=tab_median_stabinf
 coord_y=donnees_bless$BLESS_POURC
-nom=c("AV","BF","BK","BL","BS","NAT","NS","R")
+nom=c("RW","FB","BK","BL","BS","S","SS","R")
 plot(coord_x,coord_y, ylab="Pourcentage de blessés", xlab="Score médian en stab inf obtenu dans chaque pôle", main="Pourcentage de blessés en fonction du score médian obtenu pour chaque pôle", cex.main=0.6)
 text(coord_x,coord_y,nom, pos=4, offset=0.5, cex=0.7)
 reg <- lm(coord_y ~ coord_x)
@@ -629,7 +629,7 @@ par(mfrow=c(2,2))
 tab_mean_mobinf=tapply(donnees_creps$MOBINF, donnees_creps$POLES, mean)
 coord_x=tab_mean_mobinf
 coord_y=donnees_bless$BLESS_POURC
-nom=c("AV","BF","BK","BL","BS", "NAT","NS","R")
+nom=c("RW","FB","BK","BL","BS", "S","SS","R")
 plot(coord_x,coord_y, ylab="Pourcentage de blessés", xlab="Score moyen en mob inf obtenu dans chaque pôle", main="Pourcentage de blessés en fonction du score moyen obtenu pour chaque pôle", cex.main=0.6)
 text(coord_x,coord_y,nom, pos=2, offset=0.5, cex=0.7)
 reg <- lm(coord_y ~ coord_x)
@@ -639,7 +639,7 @@ summary(reg)
 tab_mean_stabsup=tapply(donnees_creps$STABSUP, donnees_creps$POLES, mean)
 coord_x=tab_mean_stabsup
 coord_y=donnees_bless$BLESS_POURC
-nom=c("AV","BF","BK","BL","BS", "NAT","NS","R")
+nom=c("RW","FB","BK","BL","BS", "S","SS","R")
 plot(coord_x,coord_y, ylab="Pourcentage de blessés", xlab="Score moyen en stab sup obtenu dans chaque pôle", main="Pourcentage de blessés en fonction du score moyen obtenu pour chaque pôle", cex.main=0.6)
 text(coord_x,coord_y,nom, pos=4, offset=0.5, cex=0.7)
 reg <- lm(coord_y ~ coord_x)
@@ -649,7 +649,7 @@ summary(reg)
 tab_mean_mobsup=tapply(donnees_creps$MOBSUP, donnees_creps$POLES, mean)
 coord_x=tab_mean_mobsup
 coord_y=donnees_bless$BLESS_POURC
-nom=c("AV","BF","BK","BL","BS", "NAT","NS","R")
+nom=c("RW","FB","BK","BL","BS", "S","SS","R")
 plot(coord_x,coord_y, ylab="Pourcentage de blessés", xlab="Score moyen en mob sup obtenu dans chaque pôle", main="Pourcentage de blessés en fonction du score moyen obtenu pour chaque pôle", cex.main=0.6)
 text(coord_x,coord_y,nom, pos=4, offset=0.5, cex=0.7)
 reg <- lm(coord_y ~ coord_x)
@@ -659,7 +659,7 @@ summary(reg)
 tab_mean_stabinf=tapply(donnees_creps$STABINF, donnees_creps$POLES, mean)
 coord_x=tab_mean_stabinf
 coord_y=donnees_bless$BLESS_POURC
-nom=c("AV","BF","BK","BL","BS", "NAT","NS","R")
+nom=c("RW","FB","BK","BL","BS", "S","SS","R")
 plot(coord_x,coord_y, ylab="Pourcentage de blessés", xlab="Score moyen en stab inf obtenu dans chaque pôle", main="Pourcentage de blessés en fonction du score moyen obtenu pour chaque pôle", cex.main=0.6)
 text(coord_x,coord_y,nom, pos=4, offset=0.5, cex=0.5)
 reg <- lm(coord_y ~ coord_x)
@@ -678,7 +678,7 @@ Dans notre cas, les sports considérés comme sports de contact sont la boxe fra
 Cette nouvelle distinction entre les sports nous permettra d'identifier d'éventuelles corrélations avec les scores obtenues et les répercussions sur les blessures observées chez certains athlètes.
 
 ```{r}
-donnees_creps$Contact=donnees_creps$POLES=="BK"|donnees_creps$POLES=="BF"|donnees_creps$POLES=="R"
+donnees_creps$Contact=donnees_creps$POLES=="BK"|donnees_creps$POLES=="FB"|donnees_creps$POLES=="R"
 donnees_creps
 ```
 ```{r}
@@ -777,7 +777,7 @@ axis(2 , xlim=c(0,100), col="red",col.axis="red",at=seq(0, 101, by=10), cex.axis
 mtext("Pourcentage de blessures",side=2,line=2.5, col = "red")
 axis(1,at=c(1:2), labels=c("Sans contact", "Avec contact"), cex.axis = 0.8)
 mtext("Types de Pôles",side=1,line=2.5,col="black") 
-par(new=T)
+#par(new=T)
 plot(donnees_creps$SCORE ~donnees_creps$Contact, main="Comparaison entre les scores obtenus et le pourcentage de blessés dans chaque type de pôle", cex.main=0.75, ylab="", xlab="", axes = FALSE,col="blue")
 axis(4, ylim=c(0,20),col="blue",col.axis="blue",at=seq(0, 20, by=2), cex.axis = 0.8) 
 mtext("Score global",side=4,line=2.5, col="blue") 
@@ -868,7 +868,6 @@ donnees_creps$SCORE_cat3[SCORE<=20 & SCORE>=15]<-"Très Bon"
 
 donnees_creps$SCORE_cat3 = factor(donnees_creps$SCORE_cat3, levels = c("Faible", "Moyen", "Bon", "Très Bon"))
 
-par (mfrow=c(1,3))
 table.IND <- table(donnees_indispo$POLE, donnees_indispo$IND)
 addmargins(table.IND)
 mosaicplot(table.IND,color=c("#FF3333","#FF9933", "#FFCC00","#66CC00"), main="Contingence Niv d'indispo / Pôles", xlab = "Pôles", ylab = "Catégories d'indispo") 
@@ -894,6 +893,31 @@ donnees_indispo$IND_BLESS[donnees_indispo$NB_BLESS>3]="Sup à 3"
 donnees_indispo$IND_BLESS = factor(donnees_indispo$IND_BLESS, levels = c("Sup à 3", "1 à 3", "1", "0"))
 
 head(donnees_indispo)})
+```
+
+```{r}
+SCORE <- donnees_creps$SCORE
+POLES <- donnees_creps$POLES
+
+
+
+
+donnees_creps$SCORE_cat3 <- donnees_creps$SCORE
+
+donnees_creps$SCORE_cat3[SCORE<5]<-"Low"
+donnees_creps$SCORE_cat3[SCORE<=10 & SCORE>5] <-"Middling"
+donnees_creps$SCORE_cat3[SCORE>10 & SCORE<15]<-"Good"
+donnees_creps$SCORE_cat3[ SCORE>15]<-"Very Good"
+
+donnees_creps$SCORE_cat3 = factor(donnees_creps$SCORE_cat3, levels = c("Low", "Middling", "Good"))
+
+table.IND <- table(donnees_indispo$POLE, donnees_indispo$IND_BLESS)
+addmargins(table.IND)
+mosaicplot(table.IND,color=c("#FF3333", "#FFCC00","#66CC00"), main="Contingency table Unavailability categories/Poles", xlab = "Poles", ylab = "Unavailability categories") 
+
+table.cat3 <- table(donnees_creps$POLES, donnees_creps$SCORE_cat3)
+addmargins(table.cat3)
+mosaicplot(table.cat3,color=c("#FF3333", "#FFCC00","#66CC00"), main="Contingency table Score categories/Poles", xlab = "Poles", ylab = "Score categories")
 ```
 
 
@@ -937,19 +961,19 @@ POLE=donnees_indispo$POLE
 #NB_BLESS = c(max(donnees_indispo$NB_BLESS),min(donnees_indispo$NB_BLESS),mean(donnees_indispo$NB_BLESS[POLES=="AV"]),mean(donnees_indispo$NB_BLESS[POLE=="BF"]),mean(donnees_indispo$NB_BLESS[POLE=="BK"]),mean(donnees_indispo$NB_BLESS[POLE=="BL"]),mean(donnees_indispo$NB_BLESS[POLE=="NAT"]),mean(donnees_indispo$NB_BLESS[POLE=="NS"]))
  
 
-Indispo_1 = c(max(donnees_indispo$NB_INDISPO_1),min(donnees_indispo$NB_INDISPO_1),mean(donnees_indispo$NB_INDISPO_1[POLE=="AV"]),mean(donnees_indispo$NB_INDISPO_1[POLE=="BF"]),mean(donnees_indispo$NB_INDISPO_1[POLE=="BK"]),mean(donnees_indispo$NB_INDISPO_1[POLE=="BL"]), mean(donnees_indispo$NB_INDISPO_1[POLE=="BS"]),mean(donnees_indispo$NB_INDISPO_1[POLE=="NAT"]),mean(donnees_indispo$NB_INDISPO_1[POLE=="NS"]), mean(donnees_indispo$NB_INDISPO_1[POLE=="R"]))
+Indispo_1 = c(max(donnees_indispo$NB_INDISPO_1),min(donnees_indispo$NB_INDISPO_1),mean(donnees_indispo$NB_INDISPO_1[POLE=="RW"]),mean(donnees_indispo$NB_INDISPO_1[POLE=="FB"]),mean(donnees_indispo$NB_INDISPO_1[POLE=="BK"]),mean(donnees_indispo$NB_INDISPO_1[POLE=="BL"]), mean(donnees_indispo$NB_INDISPO_1[POLE=="BS"]),mean(donnees_indispo$NB_INDISPO_1[POLE=="S"]),mean(donnees_indispo$NB_INDISPO_1[POLE=="SS"]), mean(donnees_indispo$NB_INDISPO_1[POLE=="R"]))
  
 
-Indispo_2 = c(max(donnees_indispo$NB_INDISPO_2),min(donnees_indispo$NB_INDISPO_2),mean(donnees_indispo$NB_INDISPO_2[POLE=="AV"]),mean(donnees_indispo$NB_INDISPO_2[POLE=="BF"]),mean(donnees_indispo$NB_INDISPO_2[POLE=="BK"]),mean(donnees_indispo$NB_INDISPO_2[POLE=="BL"]),mean(donnees_indispo$NB_INDISPO_2[POLE=="BS"]), mean(donnees_indispo$NB_INDISPO_2[POLE=="NAT"]),mean(donnees_indispo$NB_INDISPO_2[POLE=="NS"]),mean(donnees_indispo$NB_INDISPO_2[POLE=="R"]))
+Indispo_2 = c(max(donnees_indispo$NB_INDISPO_2),min(donnees_indispo$NB_INDISPO_2),mean(donnees_indispo$NB_INDISPO_2[POLE=="RW"]),mean(donnees_indispo$NB_INDISPO_2[POLE=="FB"]),mean(donnees_indispo$NB_INDISPO_2[POLE=="BK"]),mean(donnees_indispo$NB_INDISPO_2[POLE=="BL"]),mean(donnees_indispo$NB_INDISPO_2[POLE=="BS"]), mean(donnees_indispo$NB_INDISPO_2[POLE=="S"]),mean(donnees_indispo$NB_INDISPO_2[POLE=="SS"]),mean(donnees_indispo$NB_INDISPO_2[POLE=="R"]))
  
 
-Indispo_3 = c(max(donnees_indispo$NB_INDISPO_3),min(donnees_indispo$NB_INDISPO_3),mean(donnees_indispo$NB_INDISPO_3[POLE=="AV"]),mean(donnees_indispo$NB_INDISPO_3[POLE=="BF"]),mean(donnees_indispo$NB_INDISPO_3[POLE=="BK"]),mean(donnees_indispo$NB_INDISPO_3[POLE=="BL"]),mean(donnees_indispo$NB_INDISPO_3[POLE=="BS"]),mean(donnees_indispo$NB_INDISPO_3[POLE=="NAT"]),mean(donnees_indispo$NB_INDISPO_3[POLE=="NS"]),mean(donnees_indispo$NB_INDISPO_3[POLE=="R"]))
+Indispo_3 = c(max(donnees_indispo$NB_INDISPO_3),min(donnees_indispo$NB_INDISPO_3),mean(donnees_indispo$NB_INDISPO_3[POLE=="RW"]),mean(donnees_indispo$NB_INDISPO_3[POLE=="FB"]),mean(donnees_indispo$NB_INDISPO_3[POLE=="BK"]),mean(donnees_indispo$NB_INDISPO_3[POLE=="BL"]),mean(donnees_indispo$NB_INDISPO_3[POLE=="BS"]),mean(donnees_indispo$NB_INDISPO_3[POLE=="S"]),mean(donnees_indispo$NB_INDISPO_3[POLE=="SS"]),mean(donnees_indispo$NB_INDISPO_3[POLE=="R"]))
 
 
 #data_spider <- cbind(NB_BLESS,Indispo_1,Indispo_2,Indispo_3)
 data_spider <- cbind(Indispo_1,Indispo_2,Indispo_3)
 
-rownames(data_spider) <- c("MAX", "MIN", "AV", "BF", "BK", "BL", "BS", "NAT", "NS", "R")
+rownames(data_spider) <- c("MAX", "MIN", "RW", "FB", "BK", "BL", "BS", "S", "SS", "R")
 
 #colnames(data_spider) <- c("NB_BLESS", "Indispo_1","Indispo_2", "Indispo_3")
 colnames(data_spider) <- c("Indispo_1","Indispo_2", "Indispo_3")
@@ -969,25 +993,25 @@ Pour la Natation et la Natation Synchronisée, la répartition des blessures sel
 En ce qui concerne le bowling, il y a plus de blessures de type 2 (blessures "moyennes").
 
 ```{r}
-Moy_ind_1= c(mean(donnees_indispo$NB_INDISPO_1[POLE=="AV"]),mean(donnees_indispo$NB_INDISPO_1[POLE=="BF"]),mean(donnees_indispo$NB_INDISPO_1[POLE=="BK"]), mean(donnees_indispo$NB_INDISPO_1[POLE=="BL"]), mean(donnees_indispo$NB_INDISPO_1[POLE=="BS"]), mean(donnees_indispo$NB_INDISPO_1[POLE=="NAT"]), mean(donnees_indispo$NB_INDISPO_1[POLE=="NS"]), mean(donnees_indispo$NB_INDISPO_1[POLE=="R"]))
+Moy_ind_1= c(mean(donnees_indispo$NB_INDISPO_1[POLE=="RW"]),mean(donnees_indispo$NB_INDISPO_1[POLE=="FB"]),mean(donnees_indispo$NB_INDISPO_1[POLE=="BK"]), mean(donnees_indispo$NB_INDISPO_1[POLE=="BL"]), mean(donnees_indispo$NB_INDISPO_1[POLE=="BS"]), mean(donnees_indispo$NB_INDISPO_1[POLE=="S"]), mean(donnees_indispo$NB_INDISPO_1[POLE=="SS"]), mean(donnees_indispo$NB_INDISPO_1[POLE=="R"]))
 print(Moy_ind_1)
 
-Moy_ind_2= c(mean(donnees_indispo$NB_INDISPO_2[POLE=="AV"]),mean(donnees_indispo$NB_INDISPO_2[POLE=="BF"]),mean(donnees_indispo$NB_INDISPO_2[POLE=="BK"]), mean(donnees_indispo$NB_INDISPO_2[POLE=="BL"]), mean(donnees_indispo$NB_INDISPO_2[POLE=="BS"]), mean(donnees_indispo$NB_INDISPO_2[POLE=="NAT"]), mean(donnees_indispo$NB_INDISPO_2[POLE=="NS"]), mean(donnees_indispo$NB_INDISPO_2[POLE=="R"]))
+Moy_ind_2= c(mean(donnees_indispo$NB_INDISPO_2[POLE=="RW"]),mean(donnees_indispo$NB_INDISPO_2[POLE=="FB"]),mean(donnees_indispo$NB_INDISPO_2[POLE=="BK"]), mean(donnees_indispo$NB_INDISPO_2[POLE=="BL"]), mean(donnees_indispo$NB_INDISPO_2[POLE=="BS"]), mean(donnees_indispo$NB_INDISPO_2[POLE=="S"]), mean(donnees_indispo$NB_INDISPO_2[POLE=="SS"]), mean(donnees_indispo$NB_INDISPO_2[POLE=="R"]))
 print(Moy_ind_2)
 
-Moy_ind_3= c(mean(donnees_indispo$NB_INDISPO_3[POLE=="AV"]),mean(donnees_indispo$NB_INDISPO_3[POLE=="BF"]),mean(donnees_indispo$NB_INDISPO_3[POLE=="BK"]), mean(donnees_indispo$NB_INDISPO_3[POLE=="BL"]), mean(donnees_indispo$NB_INDISPO_3[POLE=="BS"]), mean(donnees_indispo$NB_INDISPO_3[POLE=="NAT"]), mean(donnees_indispo$NB_INDISPO_3[POLE=="NS"]), mean(donnees_indispo$NB_INDISPO_3[POLE=="R"]))
+Moy_ind_3= c(mean(donnees_indispo$NB_INDISPO_3[POLE=="RW"]),mean(donnees_indispo$NB_INDISPO_3[POLE=="FB"]),mean(donnees_indispo$NB_INDISPO_3[POLE=="BK"]), mean(donnees_indispo$NB_INDISPO_3[POLE=="BL"]), mean(donnees_indispo$NB_INDISPO_3[POLE=="BS"]), mean(donnees_indispo$NB_INDISPO_3[POLE=="S"]), mean(donnees_indispo$NB_INDISPO_3[POLE=="SS"]), mean(donnees_indispo$NB_INDISPO_3[POLE=="R"]))
 print(Moy_ind_3)
 
 abscisse=c(Moy_ind_1, Moy_ind_2, Moy_ind_3)
 abscisse
 
-ordonnee_AV=c(mean(donnees_indispo$NB_INDISPO_1[POLE=="AV"]), mean(donnees_indispo$NB_INDISPO_2[POLE=="AV"]), mean(donnees_indispo$NB_INDISPO_2[POLE=="AV"]))
-ordonnee_BF=c(mean(donnees_indispo$NB_INDISPO_1[POLE=="BF"]), mean(donnees_indispo$NB_INDISPO_2[POLE=="BF"]), mean(donnees_indispo$NB_INDISPO_2[POLE=="BF"]))
+ordonnee_AV=c(mean(donnees_indispo$NB_INDISPO_1[POLE=="RW"]), mean(donnees_indispo$NB_INDISPO_2[POLE=="RW"]), mean(donnees_indispo$NB_INDISPO_2[POLE=="RW"]))
+ordonnee_BF=c(mean(donnees_indispo$NB_INDISPO_1[POLE=="FB"]), mean(donnees_indispo$NB_INDISPO_2[POLE=="FB"]), mean(donnees_indispo$NB_INDISPO_2[POLE=="FB"]))
 ordonnee_BK=c(mean(donnees_indispo$NB_INDISPO_1[POLE=="BK"]), mean(donnees_indispo$NB_INDISPO_2[POLE=="BK"]), mean(donnees_indispo$NB_INDISPO_2[POLE=="BK"]))
 ordonnee_BL=c(mean(donnees_indispo$NB_INDISPO_1[POLE=="BL"]), mean(donnees_indispo$NB_INDISPO_2[POLE=="BL"]), mean(donnees_indispo$NB_INDISPO_2[POLE=="BL"]))
 ordonnee_BS=c(mean(donnees_indispo$NB_INDISPO_1[POLE=="BS"]), mean(donnees_indispo$NB_INDISPO_2[POLE=="BS"]), mean(donnees_indispo$NB_INDISPO_2[POLE=="BS"]))
-ordonnee_NAT=c(mean(donnees_indispo$NB_INDISPO_1[POLE=="NAT"]), mean(donnees_indispo$NB_INDISPO_2[POLE=="NAT"]), mean(donnees_indispo$NB_INDISPO_2[POLE=="NAT"]))
-ordonnee_NS=c(mean(donnees_indispo$NB_INDISPO_1[POLE=="NS"]), mean(donnees_indispo$NB_INDISPO_2[POLE=="NS"]), mean(donnees_indispo$NB_INDISPO_2[POLE=="NS"]))
+ordonnee_NAT=c(mean(donnees_indispo$NB_INDISPO_1[POLE=="S"]), mean(donnees_indispo$NB_INDISPO_2[POLE=="S"]), mean(donnees_indispo$NB_INDISPO_2[POLE=="S"]))
+ordonnee_NS=c(mean(donnees_indispo$NB_INDISPO_1[POLE=="SS"]), mean(donnees_indispo$NB_INDISPO_2[POLE=="SS"]), mean(donnees_indispo$NB_INDISPO_2[POLE=="SS"]))
 ordonnee_R=c(mean(donnees_indispo$NB_INDISPO_1[POLE=="R"]), mean(donnees_indispo$NB_INDISPO_2[POLE=="R"]), mean(donnees_indispo$NB_INDISPO_2[POLE=="R"]))
 #plot(ordonnee_AV ~ seq(1:3), type="l", col="red")
 #abline(ordonne_BF ~seq(1:3), type="l", col="orange")
@@ -997,16 +1021,16 @@ x=matrix(data=c(1,2,3), nrow=3, ncol=1)
 y=matrix(data=c(ordonnee_AV, ordonnee_BF, ordonnee_BK, ordonnee_BL, ordonnee_BS, ordonnee_NAT, ordonnee_NS, ordonnee_R), nrow = 3, ncol = 8)
 
 #par(mar=c(5,5,2,2))
-matplot(x,y,type="l", ylim=range(y), col=c("black","red", "green3","blue","cyan","magenta", "yellow","gray"), lty=1:3, xaxt="n", ylab="Moyenne du nombre de blessures", xlab="Type d'indisponibilité", main="Moyenne du nombre de blessures par athlète d'un pôle selon le type d'indisponibilité", cex.main=0.8)
-legend('topright',legend = c("AV", "BF", "BK", "BL", "BS", "NAT", "NS", "R"), col = c("black","red", "green3","blue","cyan","magenta", "yellow","gray"), lty = 1:3, lwd = 1 )
+matplot(x,y,type="l", ylim=range(y), col=c("black","red", "green3","blue","cyan","magenta", "yellow","gray"), lty=1:3, xaxt="n", ylab="Mean of Injuries", xlab="Unavailability category", main="Number of injuries mean VS Unavailability category per athlete, for each pole", cex.main=0.8)
+legend('topright',legend = c("RW", "FB", "BK", "BL", "BS", "S", "SS", "R"), col = c("black","red", "green3","blue","cyan","magenta", "yellow","gray"), lty = 1:3, lwd = 1 )
 xtick=seq(1,3, by=1)
-axis(side=1, at=xtick, labels=c("Indispo 1", "Indispo 2", "Indispo 3"))
+axis(side=1, at=xtick, labels=c("Unavailab 1", "Unavailab 2", "Unavailab 3"))
 ```
 
 ```{r}
 mean(donnees_indispo$NB_INDISPO_2[POLE=="BK"]+donnees_indispo$NB_INDISPO_1[POLE=="BK"]+donnees_indispo$NB_INDISPO_3[POLE=="BK"])
 
-mean(donnees_indispo$NB_INDISPO_2[POLE=="BF"]+donnees_indispo$NB_INDISPO_1[POLE=="BF"]+donnees_indispo$NB_INDISPO_3[POLE=="BF"])
+mean(donnees_indispo$NB_INDISPO_2[POLE=="FB"]+donnees_indispo$NB_INDISPO_1[POLE=="FB"]+donnees_indispo$NB_INDISPO_3[POLE=="FB"])
 ```
 
 
