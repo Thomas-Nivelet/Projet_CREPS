@@ -520,18 +520,18 @@ Le graphe ci-après représente le nombre de blessures en fonction du score méd
 #coord_x=tab_median[c(1:4,6:7)]
 coord_x=tab_median
 coord_y=donnees_bless$BLESS_POURC
-nom=c("RW","FB","BK","BL","BS","S","SS","R")
+nom=c("BK","BL","BS","FB","R","RW","S","SS")
 reg.med <- lm(coord_y ~ coord_x)
-plot(coord_x,coord_y, ylab="Injured percentage", xlab="Median Score for each pole", main="Injured percentage VS median score for each pole", cex.main=0.7)
+plot(coord_x,coord_y, ylab="Injured percentage", xlab="Median Score for each centre", main="Injured percentage VS median score for each centre", cex.main=0.7)
 abline(reg.med, col = "red")
 text(coord_x,coord_y,nom, pos=2, offset=0.5, cex=0.7)
 
 #Plus pertinent avec les scores moyens de chaque pôle??
 coord_x=tab_mean
 coord_y=donnees_bless$BLESS_POURC
-nom=c("RW","FB","BK","BL","BS","S","SS","R")
+nom=c("BK","BL","BS","FB","R","RW","S","SS")
 reg.moy <- lm(coord_y ~ coord_x)
-plot(coord_x,coord_y,  ylab="Injured percentage", xlab="Average score for each pole", main="Injured percentage VS average score for each pole", cex.main=0.7)
+plot(coord_x,coord_y,  ylab="Injured percentage", xlab="Average score for each centre", main="Injured percentage VS average score for each centre", cex.main=0.7)
 abline(reg.moy, col = "red")
 text(coord_x,coord_y,nom, pos=2, offset=0.5, cex=0.7)
 
@@ -565,7 +565,7 @@ par(mfrow=c(2,2))
 tab_median_mobinf=tapply(donnees_creps$MOBINF, donnees_creps$POLES, median)
 coord_x=tab_median_mobinf
 coord_y=donnees_bless$BLESS_POURC
-nom=c("RW","FB","BK","BL","BS","S","SS","R")
+nom=c("BK","BL","BS","FB","R","RW","S","SS")
 plot(coord_x,coord_y, ylab="Pourcentage de blessés", xlab="Score médian en mob inf obtenu dans chaque pôle", main="Pourcentage de blessés en fonction du score médian obtenu pour chaque pôle", cex.main=0.6)
 text(coord_x,coord_y,nom, pos=2, offset=0.5, cex=0.7)
 reg <- lm(coord_y ~ coord_x)
@@ -575,7 +575,7 @@ summary(reg)
 tab_median_stabsup=tapply(donnees_creps$STABSUP, donnees_creps$POLES, median)
 coord_x=tab_median_stabsup
 coord_y=donnees_bless$BLESS_POURC
-nom=c("RW","FB","BK","BL","BS","S","SS","R")
+nom=c("BK","BL","BS","FB","R","RW","S","SS")
 plot(coord_x,coord_y, ylab="Pourcentage de blessés", xlab="Score médian en stab sup obtenu dans chaque pôle", main="Pourcentage de blessés en fonction du score médian obtenu pour chaque pôle", cex.main=0.6)
 text(coord_x,coord_y,nom, pos=4, offset=0.5, cex=0.7)
 reg <- lm(coord_y ~ coord_x)
@@ -585,7 +585,7 @@ summary(reg)
 tab_median_mobsup=tapply(donnees_creps$MOBSUP, donnees_creps$POLES, median)
 coord_x=tab_median_mobsup
 coord_y=donnees_bless$BLESS_POURC
-nom=c("RW","FB","BK","BL","BS","S","SS","R")
+nom=c("BK","BL","BS","FB","R","RW","S","SS")
 plot(coord_x,coord_y, ylab="Pourcentage de blessés", xlab="Score médian en mob sup obtenu dans chaque pôle", main="Pourcentage de blessés en fonction du score médian obtenu pour chaque pôle", cex.main=0.6)
 text(coord_x,coord_y,nom, pos=4, offset=0.5, cex=0.7)
 reg <- lm(coord_y ~ coord_x)
@@ -595,7 +595,7 @@ summary(reg)
 tab_median_stabinf=tapply(donnees_creps$STABINF, donnees_creps$POLES, median)
 coord_x=tab_median_stabinf
 coord_y=donnees_bless$BLESS_POURC
-nom=c("RW","FB","BK","BL","BS","S","SS","R")
+nom=c("BK","BL","BS","FB","R","RW","S","SS")
 plot(coord_x,coord_y, ylab="Pourcentage de blessés", xlab="Score médian en stab inf obtenu dans chaque pôle", main="Pourcentage de blessés en fonction du score médian obtenu pour chaque pôle", cex.main=0.6)
 text(coord_x,coord_y,nom, pos=4, offset=0.5, cex=0.7)
 reg <- lm(coord_y ~ coord_x)
@@ -1021,10 +1021,10 @@ x=matrix(data=c(1,2,3), nrow=3, ncol=1)
 y=matrix(data=c(ordonnee_AV, ordonnee_BF, ordonnee_BK, ordonnee_BL, ordonnee_BS, ordonnee_NAT, ordonnee_NS, ordonnee_R), nrow = 3, ncol = 8)
 
 #par(mar=c(5,5,2,2))
-matplot(x,y,type="l", ylim=range(y), col=c("black","red", "green3","blue","cyan","magenta", "yellow","gray"), lty=1:3, xaxt="n", ylab="Mean of Injuries", xlab="Unavailability category", main="Number of injuries mean VS Unavailability category per athlete, for each pole", cex.main=0.8)
+matplot(x,y,type="l", ylim=range(y), col=c("black","red", "green3","blue","cyan","magenta", "yellow","gray"), lty=1:3, xaxt="n", ylab="Mean of Injuries", xlab="Downtime category", main="Average number of injuries per downtime category, for each centre", cex.main=0.8)
 legend('topright',legend = c("RW", "FB", "BK", "BL", "BS", "S", "SS", "R"), col = c("black","red", "green3","blue","cyan","magenta", "yellow","gray"), lty = 1:3, lwd = 1 )
 xtick=seq(1,3, by=1)
-axis(side=1, at=xtick, labels=c("Unavailab 1", "Unavailab 2", "Unavailab 3"))
+axis(side=1, at=xtick, labels=c("Downtime 1", "Downtime 2", "Downtime 3"))
 ```
 
 ```{r}
