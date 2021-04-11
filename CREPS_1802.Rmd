@@ -566,7 +566,7 @@ tab_median_mobinf=tapply(donnees_creps$MOBINF, donnees_creps$POLES, median)
 coord_x=tab_median_mobinf
 coord_y=donnees_bless$BLESS_POURC
 nom=c("BK","BL","BS","FB","R","RW","S","SS")
-plot(coord_x,coord_y, ylab="Pourcentage de blessés", xlab="Score médian en mob inf obtenu dans chaque pôle", main="Pourcentage de blessés en fonction du score médian obtenu pour chaque pôle", cex.main=0.6)
+plot(coord_x,coord_y, ylab="Injured Percentage", xlab="Average lower mobility score for each centre", main="Injured percentage depending on the average lower mobility score for each centre", cex.main=0.6)
 text(coord_x,coord_y,nom, pos=2, offset=0.5, cex=0.7)
 reg <- lm(coord_y ~ coord_x)
 abline(reg, col = "red")
@@ -576,7 +576,7 @@ tab_median_stabsup=tapply(donnees_creps$STABSUP, donnees_creps$POLES, median)
 coord_x=tab_median_stabsup
 coord_y=donnees_bless$BLESS_POURC
 nom=c("BK","BL","BS","FB","R","RW","S","SS")
-plot(coord_x,coord_y, ylab="Pourcentage de blessés", xlab="Score médian en stab sup obtenu dans chaque pôle", main="Pourcentage de blessés en fonction du score médian obtenu pour chaque pôle", cex.main=0.6)
+plot(coord_x,coord_y, ylab="Injured Percentage", xlab="Average upper stability score for each centre", main="Injured percentage depending on the average upper stability score for each centre", cex.main=0.6)
 text(coord_x,coord_y,nom, pos=4, offset=0.5, cex=0.7)
 reg <- lm(coord_y ~ coord_x)
 abline(reg, col = "red")
@@ -586,7 +586,7 @@ tab_median_mobsup=tapply(donnees_creps$MOBSUP, donnees_creps$POLES, median)
 coord_x=tab_median_mobsup
 coord_y=donnees_bless$BLESS_POURC
 nom=c("BK","BL","BS","FB","R","RW","S","SS")
-plot(coord_x,coord_y, ylab="Pourcentage de blessés", xlab="Score médian en mob sup obtenu dans chaque pôle", main="Pourcentage de blessés en fonction du score médian obtenu pour chaque pôle", cex.main=0.6)
+plot(coord_x,coord_y, ylab="Injured Percentage", xlab="Average upper mobility score for each centre", main="Injured percentage depending on the average upper mobility score for each centre", cex.main=0.6)
 text(coord_x,coord_y,nom, pos=4, offset=0.5, cex=0.7)
 reg <- lm(coord_y ~ coord_x)
 abline(reg, col = "red")
@@ -596,7 +596,7 @@ tab_median_stabinf=tapply(donnees_creps$STABINF, donnees_creps$POLES, median)
 coord_x=tab_median_stabinf
 coord_y=donnees_bless$BLESS_POURC
 nom=c("BK","BL","BS","FB","R","RW","S","SS")
-plot(coord_x,coord_y, ylab="Pourcentage de blessés", xlab="Score médian en stab inf obtenu dans chaque pôle", main="Pourcentage de blessés en fonction du score médian obtenu pour chaque pôle", cex.main=0.6)
+plot(coord_x,coord_y, ylab="Injured Percentage", xlab="Average lower stability score for each centre", main="Injured percentage depending on the average lower stability score for each centre", cex.main=0.6)
 text(coord_x,coord_y,nom, pos=4, offset=0.5, cex=0.7)
 reg <- lm(coord_y ~ coord_x)
 abline(reg, col = "red")
