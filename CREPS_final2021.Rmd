@@ -1,0 +1,98 @@
+---
+title: "Projet CREPS"
+output:
+  pdf_document:
+    fig_height: 4
+    fig_width: 5.5
+    number_sections: yes
+    toc: yes
+date: "`r Sys.Date()`"
+subtitle: "Mise en place d'un modèle statistique pour validaton du testing TM2S"
+geometry: "left=3cm,right=3cm,top=3cm,bottom=3cm"
+header-includes:
+- \usepackage{authblk}
+- \usepackage[french]{babel}
+- \usepackage{fancyhdr}
+- \pagestyle{fancy}
+- \renewcommand\headrulewidth{1pt}
+- \fancyhead[L]{\scshape \leftmark}
+- \fancyhead[R]{\bfseries Projet tutoré}
+- \fancyfoot[L]{INSA Toulouse}
+- \author{\bfseries Célia DULUC, Thomas NIVELET, Alexia GHOZLAND}
+- \affil{4\textsuperscript{e} année MA}
+- \affil{INSA Toulouse}
+- \affil{\small Année universitaire 2020-2021}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, cache=TRUE)
+```
+
+**Importation des librairies `R` nécessaires**
+
+```{r, include=FALSE}
+library(readxl)
+library(ggplot2)
+library(ggmosaic)
+library(MASS)
+library(dplyr)
+library(fmsb)
+library(corrplot)
+```
+
+**Importation des données** 
+
+```{r}
+# Importation du fichier de données depuis un .xlsx
+donnees_creps21 <- read_excel("donnees_finales_2021.xlsx")
+```
+
+# Statistiques descriptives : première prise en main des données
+## Statistiques unidimensionnelles : étude générale des pôles et des scores obtenus
+
+```{r}
+# Redéfinition de la variable qualitative à bon escient (en facteurs)
+donnees_creps21$POLES <- as.factor(donnees_creps21$POLES)
+
+# Vérification du contenu et présentation sommaire des variables
+summary(donnees_creps21)
+head(donnees_creps21)
+```
+```{r}
+
+pie(table(donnees_creps21$POLES), col = c("lightskyblue2", "lightgoldenrod3", "mistyrose4", "lightcoral", "mediumblue", "lightseagreen", "darkorange2", "brown4"),main = "Répartition des athlètes dans les pôles")
+
+barplot(table(factor(donnees_creps21$SCORE, levels = 0:20)), main = "Scores obtenus - Tous pôles confondus", ylim = c(0,20), cex.names = 0.6, ylab = "Effectifs", xlab= "Score", col = heat.colors(20))
+
+dim(donnees_creps21)
+```
+Données concernant les athlètes du CREPS de la saison 2020-2021 qui ont pu passer le TM2S, soit 86 athlètes.
+```{r}
+SCORE <- donnees_creps21$SCORE
+POLES <- donnees_creps21$POLES
+
+tab_mean <- tapply(SCORE, POLES, mean) # Moyenne des scores pour chaque pôle
+tab_median <- tapply(SCORE, POLES, median) # Médiane des scores pour chaque pôle
+tab_mean
+tab_median
+```
+```{r}
+boxplot(donnees_creps21$SCORE ~ donnees_creps21$POLES, cex.axis = 0.8, main = "Boxplots parallèles des scores en fonction des pôles", xlab = "Pôles", ylab = "Score")
+```
+```{r}
+par(mfrow=c(1,2))
+plot(donnees_creps21$SCORE_MOB ~donnees_creps21$POLES, ylab="Score en mobilité", xlab="Poles")
+plot(donnees_creps21$SCORE_STAB ~donnees_creps21$POLES, ylab="Score en stabilité", xlab="Poles")
+```
+```{r}
+#essai
+coord_x=donnees_creps21$SCORE
+coord_y=donnees_creps21$BLESS
+reg.moy <- lm(coord_y ~ coord_x)
+nom=donnees_creps21$INDIV #ou rien mettre et ça donne des numéros de 1 à 86 (plus propre) mais du coup on sait pas quel pôle...
+plot(coord_x,coord_y,  ylab="Injuries size", xlab="Score", main="Injured percentage VS average score for each centre", cex.main=0.7)
+abline(reg.moy, col = "red")
+text(coord_x,coord_y,nom, pos=2, offset=0.5, cex=0.7)
+```
+
+
