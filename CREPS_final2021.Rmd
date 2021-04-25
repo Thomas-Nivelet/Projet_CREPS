@@ -88,11 +88,72 @@ plot(donnees_creps21$SCORE_STAB ~donnees_creps21$POLES, ylab="Score en stabilit�
 #essai
 coord_x=donnees_creps21$SCORE
 coord_y=donnees_creps21$BLESS
-reg.moy <- lm(coord_y ~ coord_x)
+reg <- lm(coord_y ~ coord_x)
 nom=donnees_creps21$INDIV #ou rien mettre et ça donne des numéros de 1 à 86 (plus propre) mais du coup on sait pas quel pôle...
-plot(coord_x,coord_y,  ylab="Injuries size", xlab="Score", main="Injured percentage VS average score for each centre", cex.main=0.7)
-abline(reg.moy, col = "red")
-text(coord_x,coord_y,nom, pos=2, offset=0.5, cex=0.7)
+plot(coord_x,coord_y,  ylab="Number of injuries", xlab="Score", main="Number of injuries VS score", cex.main=0.7)
+abline(reg, col = "red")
+#text(coord_x,coord_y,nom, pos=2, offset=0.5, cex=0.7)
+summary(reg)
+```
+On réalise un test de Fisher de sous-modèle : modèle blanc (simplement ajusté par une constante contre le modèle de régression linéaire).
+La p-valeur est largement supérieure à un seuil de 0.05%. 
+On ne peut donc pas rejeter le modèle blanc. Autrement dit, le modèle de régression linéaire n'ajuste pas les données. On ne peut pas conclure que le score au TM2S explique le nombre de blessures qu'un athlète se fait au cours d'une saison.
+
+```{r}
+#essai
+coord_x=donnees_creps21$SCORE
+coord_y_1=donnees_creps21$INDISPO_1
+reg1 <- lm(coord_y_1 ~ coord_x)
+nom=donnees_creps21$INDIV #ou rien mettre et ça donne des numéros de 1 à 86 (plus propre) mais du coup on sait pas quel pôle...
+plot(coord_x,coord_y_1,  ylab="Number of injuries of type 1", xlab="Score", main="Number of injuries of type 1 VS score", cex.main=0.7)
+abline(reg1, col = "red")
+#text(coord_x,coord_y,nom, pos=2, offset=0.5, cex=0.7)
+summary(reg1)
 ```
 
+```{r}
+#essai
+coord_x=donnees_creps21$SCORE
+coord_y_2=donnees_creps21$INDISPO_2
+reg2 <- lm(coord_y_2 ~ coord_x)
+nom=donnees_creps21$INDIV #ou rien mettre et ça donne des numéros de 1 à 86 (plus propre) mais du coup on sait pas quel pôle...
+plot(coord_x,coord_y_2,  ylab="Number of injuries of type 2", xlab="Score", main="Number of injuries of type 2 VS score", cex.main=0.7)
+abline(reg2, col = "red")
+#text(coord_x,coord_y,nom, pos=2, offset=0.5, cex=0.7)
+summary(reg2)
+```
+
+```{r}
+#essai
+coord_x=donnees_creps21$SCORE
+coord_y_3=donnees_creps21$INDISPO_3
+reg3 <- lm(coord_y_3 ~ coord_x)
+nom=donnees_creps21$INDIV #ou rien mettre et ça donne des numéros de 1 à 86 (plus propre) mais du coup on sait pas quel pôle...
+plot(coord_x,coord_y_3,  ylab="Number of injuries of type 3", xlab="Score", main="Number of injuries of type 3 VS score", cex.main=0.7)
+abline(reg3, col = "red")
+#text(coord_x,coord_y,nom, pos=2, offset=0.5, cex=0.7)
+summary(reg3)
+```
+
+Au vu des résultats ci-dessus, les scores au TM2S ne semblent pas non plus liés à la fréquence d'un type de blessures en particulier.
+
+
+Réflexion: Pourquoi ces résultats (non significatifs) ?
+- Trop de blessures sont liés à des chocs, des contacts, des situations communes (pas de sport mais chute à vélo par exemple?) ? Donc au final, le score au test ne peut pas influer sur l'occurence de blessures. Ce serait top de pouvoir distinguer même si c'est réellement presque impossible.
+- saison peu représentative avec le Covid??? Pas de réelles compétitions?
+- un temps total d'arrêt en semaine aurait été plus représentatif que le nombre de blessures? Car une blessure n'a pas forcément le même poids. Même si la distinction en 3 types de blessures est fournie, il est difficile d'aggréger les résultats.
+- ???
+
+
+ESSAYER régression linéaire multiple! Expliquer le score en fonction de trois variables INDISPO_i (i=1,2,3) pour voir si un lien apparaît. (même si c'est un peu "à l'envers").
+```{r}
+#essai
+coord_y_Score=donnees_creps21$SCORE
+coord_x_1=donnees_creps21$INDISPO_1
+coord_x_2=donnees_creps21$INDISPO_2
+coord_x_3=donnees_creps21$INDISPO_3
+reg4 <- lm(coord_y_Score ~ coord_x_1 + coord_x_2 + coord_x_3) #modèle additif
+summary(reg4)
+```
+OK bon beh mauvaise idée -> modèle tout pourri (p-valeur énorme).
 
