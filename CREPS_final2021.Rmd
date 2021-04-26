@@ -22,6 +22,9 @@ header-includes:
 - \affil{4\textsuperscript{e} année MA}
 - \affil{INSA Toulouse}
 - \affil{\small Année universitaire 2020-2021}
+editor_options: 
+  markdown: 
+    wrap: sentence
 ---
 
 ```{r setup, include=FALSE}
@@ -40,7 +43,7 @@ library(fmsb)
 library(corrplot)
 ```
 
-**Importation des données** 
+**Importation des données**
 
 ```{r}
 # Importation du fichier de données depuis un .xlsx
@@ -48,6 +51,7 @@ donnees_creps21 <- read_excel("donnees_finales_2021.xlsx")
 ```
 
 # Statistiques descriptives : première prise en main des données
+
 ## Statistiques unidimensionnelles : étude générale des pôles et des scores obtenus
 
 ```{r}
@@ -58,6 +62,7 @@ donnees_creps21$POLES <- as.factor(donnees_creps21$POLES)
 summary(donnees_creps21)
 head(donnees_creps21)
 ```
+
 ```{r}
 
 pie(table(donnees_creps21$POLES), col = c("lightskyblue2", "lightgoldenrod3", "mistyrose4", "lightcoral", "mediumblue", "lightseagreen", "darkorange2", "brown4"),main = "Répartition des athlètes dans les pôles")
@@ -66,7 +71,9 @@ barplot(table(factor(donnees_creps21$SCORE, levels = 0:20)), main = "Scores obte
 
 dim(donnees_creps21)
 ```
+
 Données concernant les athlètes du CREPS de la saison 2020-2021 qui ont pu passer le TM2S, soit 86 athlètes.
+
 ```{r}
 SCORE <- donnees_creps21$SCORE
 POLES <- donnees_creps21$POLES
@@ -76,14 +83,17 @@ tab_median <- tapply(SCORE, POLES, median) # Médiane des scores pour chaque pô
 tab_mean
 tab_median
 ```
+
 ```{r}
 boxplot(donnees_creps21$SCORE ~ donnees_creps21$POLES, cex.axis = 0.8, main = "Boxplots parallèles des scores en fonction des pôles", xlab = "Pôles", ylab = "Score")
 ```
+
 ```{r}
 par(mfrow=c(1,2))
 plot(donnees_creps21$SCORE_MOB ~donnees_creps21$POLES, ylab="Score en mobilité", xlab="Poles")
 plot(donnees_creps21$SCORE_STAB ~donnees_creps21$POLES, ylab="Score en stabilité", xlab="Poles")
 ```
+
 ```{r}
 #essai
 coord_x=donnees_creps21$SCORE
@@ -95,9 +105,12 @@ abline(reg, col = "red")
 #text(coord_x,coord_y,nom, pos=2, offset=0.5, cex=0.7)
 summary(reg)
 ```
+
 On réalise un test de Fisher de sous-modèle : modèle blanc (simplement ajusté par une constante contre le modèle de régression linéaire).
-La p-valeur est largement supérieure à un seuil de 0.05%. 
-On ne peut donc pas rejeter le modèle blanc. Autrement dit, le modèle de régression linéaire n'ajuste pas les données. On ne peut pas conclure que le score au TM2S explique le nombre de blessures qu'un athlète se fait au cours d'une saison.
+La p-valeur est largement supérieure à un seuil de 0.05%.
+On ne peut donc pas rejeter le modèle blanc.
+Autrement dit, le modèle de régression linéaire n'ajuste pas les données.
+On ne peut pas conclure que le score au TM2S explique le nombre de blessures qu'un athlète se fait au cours d'une saison.
 
 ```{r}
 #essai
@@ -105,7 +118,7 @@ coord_x=donnees_creps21$SCORE
 coord_y_1=donnees_creps21$INDISPO_1
 reg1 <- lm(coord_y_1 ~ coord_x)
 nom=donnees_creps21$INDIV #ou rien mettre et ça donne des numéros de 1 à 86 (plus propre) mais du coup on sait pas quel pôle...
-plot(coord_x,coord_y_1,  ylab="Number of injuries of type 1", xlab="Score", main="Number of injuries of type 1 VS score", cex.main=0.7)
+plot(coord_x,coord_y_1,  ylab="Number of injuries of type 1", xlab="Score", main="Number of injuries of type 1 VS score", cex.main=1.1)
 abline(reg1, col = "red")
 #text(coord_x,coord_y,nom, pos=2, offset=0.5, cex=0.7)
 summary(reg1)
@@ -117,7 +130,7 @@ coord_x=donnees_creps21$SCORE
 coord_y_2=donnees_creps21$INDISPO_2
 reg2 <- lm(coord_y_2 ~ coord_x)
 nom=donnees_creps21$INDIV #ou rien mettre et ça donne des numéros de 1 à 86 (plus propre) mais du coup on sait pas quel pôle...
-plot(coord_x,coord_y_2,  ylab="Number of injuries of type 2", xlab="Score", main="Number of injuries of type 2 VS score", cex.main=0.7)
+plot(coord_x,coord_y_2,  ylab="Number of injuries of type 2", xlab="Score", main="Number of injuries of type 2 VS score", cex.main=1)
 abline(reg2, col = "red")
 #text(coord_x,coord_y,nom, pos=2, offset=0.5, cex=0.7)
 summary(reg2)
@@ -137,15 +150,21 @@ summary(reg3)
 
 Au vu des résultats ci-dessus, les scores au TM2S ne semblent pas non plus liés à la fréquence d'un type de blessures en particulier.
 
-
 Réflexion: Pourquoi ces résultats (non significatifs) ?
-- Trop de blessures sont liés à des chocs, des contacts, des situations communes (pas de sport mais chute à vélo par exemple?) ? Donc au final, le score au test ne peut pas influer sur l'occurence de blessures. Ce serait top de pouvoir distinguer même si c'est réellement presque impossible.
-- saison peu représentative avec le Covid??? Pas de réelles compétitions?
-- un temps total d'arrêt en semaine aurait été plus représentatif que le nombre de blessures? Car une blessure n'a pas forcément le même poids. Même si la distinction en 3 types de blessures est fournie, il est difficile d'aggréger les résultats.
+- Trop de blessures sont liés à des chocs, des contacts, des situations communes (pas de sport mais chute à vélo par exemple?) ?
+Donc au final, le score au test ne peut pas influer sur l'occurence de blessures.
+Ce serait top de pouvoir distinguer même si c'est réellement presque impossible.
+- saison peu représentative avec le Covid???
+Pas de réelles compétitions?
+- un temps total d'arrêt en semaine aurait été plus représentatif que le nombre de blessures?
+Car une blessure n'a pas forcément le même poids.
+Même si la distinction en 3 types de blessures est fournie, il est difficile d'aggréger les résultats.
 - ???
 
+ESSAYER régression linéaire multiple!
+Expliquer le score en fonction de trois variables INDISPO_i (i=1,2,3) pour voir si un lien apparaît.
+(même si c'est un peu "à l'envers").
 
-ESSAYER régression linéaire multiple! Expliquer le score en fonction de trois variables INDISPO_i (i=1,2,3) pour voir si un lien apparaît. (même si c'est un peu "à l'envers").
 ```{r}
 #essai
 coord_y_Score=donnees_creps21$SCORE
@@ -155,5 +174,50 @@ coord_x_3=donnees_creps21$INDISPO_3
 reg4 <- lm(coord_y_Score ~ coord_x_1 + coord_x_2 + coord_x_3) #modèle additif
 summary(reg4)
 ```
-OK bon beh mauvaise idée -> modèle tout pourri (p-valeur énorme).
 
+OK bon beh mauvaise idée -\> modèle tout pourri (p-valeur énorme).
+
+### Ajustement modèle log-linéaire (comptage des blessures)
+
+Un autre moyen, peut être plus adapté dans notre contexte, serait d'ajuster un modèle de régression loglinéaire (ou régression de Poisson), pour compter le nombre de blessures en fonction du score obtenu au TM2s.
+On est dans le cadre d'un modèle linéaire généralisé, ce qui serait peut être plus adapté, vu que notre variable réponse (le nombre de blessures) est en réalité discrète, elle apparaît comme une variable de comptage.
+
+-   Rappeler l'écriture du modèle ?
+    Fonction de lien ?
+
+```{r}
+modpois = glm(coord_y ~  coord_x, data = donnees_creps21, family = poisson)
+summary(modpois)
+```
+
+```{r}
+plot(modpois)
+```
+
+Le modèle blanc est donné par la commande suivante :
+
+```{r}
+whitemod <- glm(coord_y ~  1, data = donnees_creps21, family = poisson)
+```
+
+On effectue un test de sous-modèle (c'est ici un test de rapport de vraisemblance) :
+
+```{r}
+anova(whitemod,modpois, test="Chisq")
+```
+
+Le test de rapport de vraisemblance nous donne une $p$-valeur de 0.1045, donc supérieure au seuil de 0.05.
+On ne peut donc pas rejeter le modèle blanc.
+Autrement dit, le modèle de régression loglinéaire simple n'ajuste pas les données.
+On ne peut pas conclure que le score au TM2S explique le nombre de blessures qu'un athlète connaît au cours d'une saison, et ce, même si la \$p\$-valeur est plus faible qu'avec le modèle de régression linéaire.
+Le comptage via un modèle de régression loglinéaire serait donc plus adapté qu'un modèle de régression linéaire simple ??
+
+Inconvénient/Limite : Les scores sont des valeurs "discrètes" ????
+Dispose-t-on d'assez de valeurs ???
+Il faudrait pouvoir différencier les blessures avec donc d'autres variables : qualitatives, pour une ANOVA?
+Blessures sont parfois des chocs, des coups, des blessures minimes, et d'autres sont musculaires, touchent les ligaments, donc l'indispo est bien plus longue... Trop simpliste de tout mélanger ?
+
+Faire la même chose, en précisant avec les scores en stabilité et en mobilité ?
+Types de blessures à discriminer ??
+
+Revoir en s'inspirant des TPs d'EMS du S1
