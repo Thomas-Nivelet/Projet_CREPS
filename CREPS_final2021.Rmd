@@ -182,11 +182,10 @@ OK bon beh mauvaise idée -\> modèle tout pourri (p-valeur énorme).
 Un autre moyen, peut être plus adapté dans notre contexte, serait d'ajuster un modèle de régression loglinéaire (ou régression de Poisson), pour compter le nombre de blessures en fonction du score obtenu au TM2s.
 On est dans le cadre d'un modèle linéaire généralisé, ce qui serait peut être plus adapté, vu que notre variable réponse (le nombre de blessures) est en réalité discrète, elle apparaît comme une variable de comptage.
 
--   Rappeler l'écriture du modèle ?
-    Fonction de lien ?
+-   Rappeler l'écriture du modèle ? Fonction de lien ?
 
 ```{r}
-modpois = glm(coord_y ~  coord_x, data = donnees_creps21, family = poisson)
+modpois = glm(BLESS ~  SCORE, data = donnees_creps21, family = poisson)
 summary(modpois)
 ```
 
@@ -212,6 +211,10 @@ Autrement dit, le modèle de régression loglinéaire simple n'ajuste pas les do
 On ne peut pas conclure que le score au TM2S explique le nombre de blessures qu'un athlète connaît au cours d'une saison, et ce, même si la \$p\$-valeur est plus faible qu'avec le modèle de régression linéaire.
 Le comptage via un modèle de régression loglinéaire serait donc plus adapté qu'un modèle de régression linéaire simple ??
 
+Toutefois, si l'on se place à un risque de $10\%$, on se trouve dans une zone grise, donc ce modèle n'apparaît pas complètement hors sujet... Nous faudrait-il peut être davantage de données ?
+Baseball et Rugby ?
+Regarder spécifiquement les types d'indispo ?
+
 Inconvénient/Limite : Les scores sont des valeurs "discrètes" ????
 Dispose-t-on d'assez de valeurs ???
 Il faudrait pouvoir différencier les blessures avec donc d'autres variables : qualitatives, pour une ANOVA?
@@ -220,8 +223,83 @@ Blessures sont parfois des chocs, des coups, des blessures minimes, et d'autres 
 Faire la même chose, en précisant avec les scores en stabilité et en mobilité ?
 Types de blessures à discriminer ??
 
-Revoir en s'inspirant des TPs d'EMS du S1
+-   Reprenons notre étude sur le modèle log-linéaire, et ajustons le modèle complet.
+    Par le biais de ce modèle, on cherche à expliquer le nombre de blessures par le score total obtenu au TM2S, ainsi que le pôle auquel appartient l'athlète, avec des interactions entre ces deux variables explicatives.
 
+```{r}
+modpoiscomplet <- glm(BLESS ~  SCORE*POLES, data = donnees_creps21, family = poisson)
+summary(modpoiscomplet)
+```
+
+Au vu des résultats, pas beaucoup de paramètres associés aux variables semblent très significatifs... Commençons par voir si l'on peut annuler les interactions présentes dans le modèle complet, par un test de sous-modèle de rapport de vraisemblance :
+
+```{r}
+# On ajuste le modèle additif (sans interactions):
+modpoisadd <- glm(BLESS ~  SCORE+POLES, data = donnees_creps21, family = poisson)
+summary(modpoisadd)
+```
+
+Test de sous-modèle de rapport de vraisemblance :
+
+```{r}
+anova(modpoisadd,modpoiscomplet,test="Chisq")
+```
+
+D'après la sortie précédente, on obtient une $p$-valeur supérieure à $5\%$ (proche même de $20\%$), on ne rejette donc pas l'hypothèse nulle.
+On peut simplifier le modèle en annulant les interactions.
+
+En cascade, voyons si l'on peut annuler l'effet des pôles... La commande suivante nous permet d'ajuster un modèle log-linéaire pour expliquer le nombre de blessures en fonction uniquement du score général au TM2S
+
+```{r}
+modpoisscore <- glm(BLESS ~  SCORE, data = donnees_creps21, family = poisson)
+summary(modpoisscore)
+```
+
+Test de sous-modèle :
+
+```{r}
+anova(modpoisscore,modpoisadd,test="Chisq")
+```
+
+On obtient une $p$-valeur très inférieure à $5\%$ , on ne peut donc *a priori* pas simplifier le modèle, il y a bien un effet de l'appartenance au pôle sur les blessures que connaissent les athlètes.
+Toutefois, on a pu remarquer que certains pôles influaient de manière plus significative que le score au TM2S (cf. les \$p\$- valeurs des tests de nullité des paramètres dans les sorties), ce qui explique pourquoi l'on ne peut pas simplifier le modèle ici.
+Ainsi, le modèle ne permet pas non plus de bien ajuster les données ici.
+
+Et si l'on restreignait notre étude aux indisponibilités de type 3...
+
+```{r}
+modpoiscomplet3 <- glm(INDISPO_3 ~  SCORE*POLES, data = donnees_creps21, family = poisson)
+summary(modpoiscomplet3)
+```
+
+```{r}
+modpoisadd3 <- glm(INDISPO_3 ~  SCORE+POLES, data = donnees_creps21, family = poisson)
+summary(modpoisadd3)
+```
+
+```{r}
+anova(modpoisadd3,modpoiscomplet3,test="Chisq")
+```
+
+Avec certitude, on peut à nouveau annuler les interactions...
+
+```{r}
+modpoisscore3 <- glm(INDISPO_3 ~  SCORE, data = donnees_creps21, family = poisson)
+summary(modpoisscore3)
+```
+
+```{r}
+anova(modpoisscore3,modpoisadd3, test="Chisq")
+```
+
+On peut cette fois simplifier le modèle, il n'y a visiblement pas d'effet "appartenance au pôle sportif" sur le nombre de blessures.
+Comparons ce modèle au modèle blanc.
+
+```{r}
+anova(glm(INDISPO_3 ~ 1, data = donnees_creps21, family = poisson),modpoisscore3, test="Chisq")
+```
+
+On obtient une $p$-valeur de 0.3, ce modèle ne semble pas performance pour expliquer les indisponibilités de type 3.
 
 Etude sur les maintiens:
 
@@ -230,11 +308,12 @@ Etude sur les maintiens:
 donnees_maintiens21 <- read_excel("CREPS_Maintien.xlsx")
 ```
 
-Pour comparer le nombre de blessures avant la mise en place des routines correctives (épidémiologie 2019-2020) avec le nombre de blessures après la mise en place de celles-ci (épidémiologie 2020-2021) :
-Il suffit d’effectuer un t-test « pairé ». On fait ce test « pairé » car on dispose de deux mesures sur un même échantillon (on parle donc d’échantillons dépendants).
-On va en fait comparer les moyennes sur ces deux sets de mesures. On émet l’hypothèse qu’elles sont égales (i.e. il n’y a pas eu d’effet des routines correctives), et on la compare à l’hypothèse que la moyenne de blessures après routine corrective est inférieure à la moyenne avant l’application de la routine de travail (i.e. la routine corrective a porté ses fruits).
+Pour comparer le nombre de blessures avant la mise en place des routines correctives (épidémiologie 2019-2020) avec le nombre de blessures après la mise en place de celles-ci (épidémiologie 2020-2021) : Il suffit d'effectuer un t-test « pairé ».
+On fait ce test « pairé » car on dispose de deux mesures sur un même échantillon (on parle donc d'échantillons dépendants).
+On va en fait comparer les moyennes sur ces deux sets de mesures.
+On émet l'hypothèse qu'elles sont égales (i.e. il n'y a pas eu d'effet des routines correctives), et on la compare à l'hypothèse que la moyenne de blessures après routine corrective est inférieure à la moyenne avant l'application de la routine de travail (i.e. la routine corrective a porté ses fruits).
 
-On veut comparer l’hypothèse selon laquelle la différence significative (donc la moyenne des deux échantillons est égale), à celle selon laquelle la différence est significative (donc dans notre cas la moyenne de blessures avant le test est supérieure à la moyenne de blessures après le test).
+On veut comparer l'hypothèse selon laquelle la différence significative (donc la moyenne des deux échantillons est égale), à celle selon laquelle la différence est significative (donc dans notre cas la moyenne de blessures avant le test est supérieure à la moyenne de blessures après le test).
 
 ```{r}
 # Test de student apparié 
@@ -244,7 +323,9 @@ comp_bless$p.value # Affichage de la p-value
 #alternative="greater" is the alternative that x has a larger mean than y. 
 ```
 
-La p-valeur est grande. Il n’y a  donc pas de différence significative. On ne peut pas dire que les routines correctives ont permis de diminuer significativement le nombre de blessures.
+La p-valeur est grande.
+Il n'y a donc pas de différence significative.
+On ne peut pas dire que les routines correctives ont permis de diminuer significativement le nombre de blessures.
 
 On peut tout de même s'assurer que l'on ne constate pas une tendance inverse (i.e. la différence a été dans le sens inverse à celui voulu : plus de blessures après la mise en place des routines correctives).
 
@@ -254,13 +335,12 @@ comp_bless_inv <- t.test(donnees_maintiens21$NB_BLESS_21, donnees_maintiens21$NB
 comp_bless_inv$p.value # Affichage de la p-value
 ```
 
-La p-valeur est encore une fois très grande (quoique plus faible qu'avant?!). Il n'y a donc pas eu d'effet inverse non plus!
+La p-valeur est encore une fois très grande (quoique plus faible qu'avant?!).
+Il n'y a donc pas eu d'effet inverse non plus!
 
 Les routines correctives n'ont pas permis d'influer sur le nombre de blessures de chaque athlète.
 
-
 On peut essayer avec seulement les blessures de niveau 3 (car ce sont elles que l'on cherche à réduire en priorité):
-
 
 ```{r}
 # Test de student apparié 
@@ -268,8 +348,8 @@ comp_bless_seuil3 <- t.test(donnees_maintiens21$INDISPO_3_19, donnees_maintiens2
 comp_bless_seuil3$p.value # Affichage de la p-value
 ```
 
-La p-valeur ne nous donne pas de résultats significatifs. Mais on peut cependant noter qu'elle nous donne de biens meilleurs résultats que dans le cas général du nombre de blessures!
-
+La p-valeur ne nous donne pas de résultats significatifs.
+Mais on peut cependant noter qu'elle nous donne de biens meilleurs résultats que dans le cas général du nombre de blessures!
 
 ```{r}
 #Pour apprécier le nombre de blessures de seuil 3 sur chacune des années
@@ -310,15 +390,14 @@ for (i in donnees_maintiens21$INDISPO_1_19){
 }
 tot_ind_1_19
 ```
-En effet, il y a plus de blessures de seuil 1 sur la saison 2020-2021 que sur la saison 2019-2020!
 
+En effet, il y a plus de blessures de seuil 1 sur la saison 2020-2021 que sur la saison 2019-2020!
 
 ```{r}
 # Test de student apparié 
 comp_bless_seuil2 <- t.test(donnees_maintiens21$INDISPO_2_19, donnees_maintiens21$INDISPO_2_21, paired=TRUE, alternative="greater")
 comp_bless_seuil2$p.value # Affichage de la p-value
 ```
-
 
 ```{r}
 #Pour apprécier le nombre de blessures de seuil 3 sur chacune des années
@@ -335,10 +414,13 @@ for (i in donnees_maintiens21$INDISPO_2_19){
 tot_ind_2_19
 ```
 
-
 Remarque: nous avons ici comparer l'évolution des blessures et indisponibilités entre les deux saisons passées.
 Cependant, pouvons-nous réellement conclure l'efficacité des routines correctives avec cela?
-En effet, une routine corrective est spécifique. C'est-à-dire que selon le score obtenu au premier test, elle vise certaines parties du corps uniquement. 
+En effet, une routine corrective est spécifique.
+C'est-à-dire que selon le score obtenu au premier test, elle vise certaines parties du corps uniquement.
 Les blessures pourraient se trouver à d'autres endroits que ceux corrigés par la routine.
-Néanmoins, on rappelle que les routines correctives sont mises en place selon les faiblesses censées être mises en avant. Si le nombre de blessures n'est pas réduit, peut-être que les routines correctives ne ciblaient pas tous les points faibles d'un athlète? Et par extension, le test TM2S ne parvenait peut-être pas à mettre en évidence les faiblesses d'un athlète?
-Propos à nuancer: il faut un long moment pour corriger des défauts de mobilité/stabilité. Ainsi, il serait intéressant de comparer le nombre de blessures sur plusieurs saisons!
+Néanmoins, on rappelle que les routines correctives sont mises en place selon les faiblesses censées être mises en avant.
+Si le nombre de blessures n'est pas réduit, peut-être que les routines correctives ne ciblaient pas tous les points faibles d'un athlète?
+Et par extension, le test TM2S ne parvenait peut-être pas à mettre en évidence les faiblesses d'un athlète?
+Propos à nuancer: il faut un long moment pour corriger des défauts de mobilité/stabilité.
+Ainsi, il serait intéressant de comparer le nombre de blessures sur plusieurs saisons!
