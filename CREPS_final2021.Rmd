@@ -221,3 +221,124 @@ Faire la même chose, en précisant avec les scores en stabilité et en mobilit�
 Types de blessures à discriminer ??
 
 Revoir en s'inspirant des TPs d'EMS du S1
+
+
+Etude sur les maintiens:
+
+```{r}
+# Importation du fichier de données depuis un .xlsx
+donnees_maintiens21 <- read_excel("CREPS_Maintien.xlsx")
+```
+
+Pour comparer le nombre de blessures avant la mise en place des routines correctives (épidémiologie 2019-2020) avec le nombre de blessures après la mise en place de celles-ci (épidémiologie 2020-2021) :
+Il suffit d’effectuer un t-test « pairé ». On fait ce test « pairé » car on dispose de deux mesures sur un même échantillon (on parle donc d’échantillons dépendants).
+On va en fait comparer les moyennes sur ces deux sets de mesures. On émet l’hypothèse qu’elles sont égales (i.e. il n’y a pas eu d’effet des routines correctives), et on la compare à l’hypothèse que la moyenne de blessures après routine corrective est inférieure à la moyenne avant l’application de la routine de travail (i.e. la routine corrective a porté ses fruits).
+
+On veut comparer l’hypothèse selon laquelle la différence significative (donc la moyenne des deux échantillons est égale), à celle selon laquelle la différence est significative (donc dans notre cas la moyenne de blessures avant le test est supérieure à la moyenne de blessures après le test).
+
+```{r}
+# Test de student apparié 
+comp_bless <- t.test(donnees_maintiens21$NB_BLESS_19, donnees_maintiens21$NB_BLESS_21, paired=TRUE, alternative="greater")
+comp_bless$p.value # Affichage de la p-value
+
+#alternative="greater" is the alternative that x has a larger mean than y. 
+```
+
+La p-valeur est grande. Il n’y a  donc pas de différence significative. On ne peut pas dire que les routines correctives ont permis de diminuer significativement le nombre de blessures.
+
+On peut tout de même s'assurer que l'on ne constate pas une tendance inverse (i.e. la différence a été dans le sens inverse à celui voulu : plus de blessures après la mise en place des routines correctives).
+
+```{r}
+# Test de student apparié 
+comp_bless_inv <- t.test(donnees_maintiens21$NB_BLESS_21, donnees_maintiens21$NB_BLESS_19, paired=TRUE, alternative="greater")
+comp_bless_inv$p.value # Affichage de la p-value
+```
+
+La p-valeur est encore une fois très grande (quoique plus faible qu'avant?!). Il n'y a donc pas eu d'effet inverse non plus!
+
+Les routines correctives n'ont pas permis d'influer sur le nombre de blessures de chaque athlète.
+
+
+On peut essayer avec seulement les blessures de niveau 3 (car ce sont elles que l'on cherche à réduire en priorité):
+
+
+```{r}
+# Test de student apparié 
+comp_bless_seuil3 <- t.test(donnees_maintiens21$INDISPO_3_19, donnees_maintiens21$INDISPO_3_21, paired=TRUE, alternative="greater")
+comp_bless_seuil3$p.value # Affichage de la p-value
+```
+
+La p-valeur ne nous donne pas de résultats significatifs. Mais on peut cependant noter qu'elle nous donne de biens meilleurs résultats que dans le cas général du nombre de blessures!
+
+
+```{r}
+#Pour apprécier le nombre de blessures de seuil 3 sur chacune des années
+tot_ind_3_21=0
+for (i in donnees_maintiens21$INDISPO_3_21){
+  tot_ind_3_21 = tot_ind_3_21 + i
+}
+tot_ind_3_21
+
+tot_ind_3_19=0
+for (i in donnees_maintiens21$INDISPO_3_19){
+  tot_ind_3_19 = tot_ind_3_19 + i
+}
+tot_ind_3_19
+```
+
+Par curiosité, voyons ce que cela peut donner sur les blessures de seuil 1 et 2.
+
+```{r}
+# Test de student apparié 
+comp_bless_seuil1 <- t.test(donnees_maintiens21$INDISPO_1_19, donnees_maintiens21$INDISPO_1_21, paired=TRUE, alternative="greater")
+comp_bless_seuil1$p.value # Affichage de la p-value
+```
+
+Les résultats semblent catastrophiques ici!
+
+```{r}
+#Pour apprécier le nombre de blessures de seuil 3 sur chacune des années
+tot_ind_1_21=0
+for (i in donnees_maintiens21$INDISPO_1_21){
+  tot_ind_1_21 = tot_ind_1_21 + i
+}
+tot_ind_1_21
+
+tot_ind_1_19=0
+for (i in donnees_maintiens21$INDISPO_1_19){
+  tot_ind_1_19 = tot_ind_1_19 + i
+}
+tot_ind_1_19
+```
+En effet, il y a plus de blessures de seuil 1 sur la saison 2020-2021 que sur la saison 2019-2020!
+
+
+```{r}
+# Test de student apparié 
+comp_bless_seuil2 <- t.test(donnees_maintiens21$INDISPO_2_19, donnees_maintiens21$INDISPO_2_21, paired=TRUE, alternative="greater")
+comp_bless_seuil2$p.value # Affichage de la p-value
+```
+
+
+```{r}
+#Pour apprécier le nombre de blessures de seuil 3 sur chacune des années
+tot_ind_2_21=0
+for (i in donnees_maintiens21$INDISPO_2_21){
+  tot_ind_2_21 = tot_ind_2_21 + i
+}
+tot_ind_2_21
+
+tot_ind_2_19=0
+for (i in donnees_maintiens21$INDISPO_2_19){
+  tot_ind_2_19 = tot_ind_2_19 + i
+}
+tot_ind_2_19
+```
+
+
+Remarque: nous avons ici comparer l'évolution des blessures et indisponibilités entre les deux saisons passées.
+Cependant, pouvons-nous réellement conclure l'efficacité des routines correctives avec cela?
+En effet, une routine corrective est spécifique. C'est-à-dire que selon le score obtenu au premier test, elle vise certaines parties du corps uniquement. 
+Les blessures pourraient se trouver à d'autres endroits que ceux corrigés par la routine.
+Néanmoins, on rappelle que les routines correctives sont mises en place selon les faiblesses censées être mises en avant. Si le nombre de blessures n'est pas réduit, peut-être que les routines correctives ne ciblaient pas tous les points faibles d'un athlète? Et par extension, le test TM2S ne parvenait peut-être pas à mettre en évidence les faiblesses d'un athlète?
+Propos à nuancer: il faut un long moment pour corriger des défauts de mobilité/stabilité. Ainsi, il serait intéressant de comparer le nombre de blessures sur plusieurs saisons!
