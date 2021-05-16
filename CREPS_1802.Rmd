@@ -953,7 +953,7 @@ table.cat3 <- table(donnees_creps$POLES, donnees_creps$SCORE_cat3)
 addmargins(table.cat3)
 mosaicplot(table.cat3,color=c("#FF3333", "#FFCC00","#66CC00"), main="Contingency table Score categories/Poles", xlab = "Poles", ylab = "Score categories")
 ```
-```{r}
+```{r, fig.height = 25, fig.width = 25}
 # Test graphes araignée superposés
 ## Récupération des données moyennes, minimales et maximales
 POLE=donnees_indispo$POLE 
@@ -976,23 +976,25 @@ data_spider <- cbind(Indispo_1,Indispo_2,Indispo_3)
 rownames(data_spider) <- c("MAX", "MIN", "RW", "FB", "BK", "BL", "BS", "S", "SS", "R")
 
 #colnames(data_spider) <- c("NB_BLESS", "Indispo_1","Indispo_2", "Indispo_3")
-colnames(data_spider) <- c("Indispo_1","Indispo_2", "Indispo_3")
+colnames(data_spider) <- c("Downtime_1","Downtime_2", "Downtime_3")
 
 data_spider = as.data.frame(data_spider)
 
 ## Définition et affichage du radarchart
-par(mar = c(1, 1, 1, 1))
+#par(mar = c(1, 1, 1, 1))
 
-radarchart(data_spider,axistype = 1,pcol = c("lightskyblue2", "lightgoldenrod3", "mistyrose4", "lightcoral", "mediumblue", "lightseagreen"),plwd = 2, plty = 1,cglcol = "grey", cglty = 1, cglwd = 0.4,
-axislabcol = "grey",vlcex = 0.7, vlabels = colnames(data_spider),caxislabels = NULL, title = " Unavailability category distribution per pole")
+radarchart(data_spider,axistype = 1,pcol = c("lightskyblue2", "lightgoldenrod3", "mistyrose4", "lightcoral", "mediumblue", "lightseagreen",  "darkorange2", "brown4"),plwd = 6, plty = 1,cglcol = "grey", cglty = 1, cglwd = 4,
+axislabcol = "black",vlcex = 2.7, vlabels = colnames(data_spider),caxislabels = NULL, title = "Downtime types distribution per pole", cex.main = 3.2, calcex = 2.2)
 
-legend(x = "right", legend = rownames(data_spider[-c(1,2),]), horiz = FALSE,bty = "n", pch = 20 , col = c("lightskyblue2", "lightgoldenrod3", "mistyrose4", "lightcoral", "mediumblue", "lightseagreen"),text.col = "black", cex = 1, pt.cex = 1.5)
+#radarchart(data_spider, axistype = 1,pcol = c("lightskyblue2", "lightgoldenrod3", "mistyrose4", "lightcoral", "mediumblue", "lightseagreen",  "darkorange2", "brown4"),plwd = 6, plty = 7,cglcol = "grey", cglty = 1, cglwd = 4, axislabcol = "black", vlcex = 2.7, vlabels = colnames(data_spider), caxislabels = NULL, title = "Average score for each exercise category", cex.main = 3.2, calcex = 2.2)
+
+legend(x = "right", legend = rownames(data_spider[-c(1,2),]), horiz = FALSE,bty = "n", pch = 20 , col = c("lightskyblue2", "lightgoldenrod3", "mistyrose4", "lightcoral", "mediumblue", "lightseagreen", "darkorange2", "brown4"),text.col = "black", cex = 3.5, pt.cex = 4)
 ```
 Sur ce radar chart, on peut voir la répartition des blessures selon les pôles. On remarque notamment par exemple que les boxeurs se blessent souvent (nombre de blessures supérieur à tous les autres pôles), mais principalement sur des blessures de type 1 (blessures qui engendrent moins de temps d'indisponibilité).
 Pour la Natation et la Natation Synchronisée, la répartition des blessures selon leur type semble plutôt uniforme. 
 En ce qui concerne le bowling, il y a plus de blessures de type 2 (blessures "moyennes").
 
-```{r}
+```{r, fig.height=10, fig.width=18}
 Moy_ind_1= c(mean(donnees_indispo$NB_INDISPO_1[POLE=="RW"]),mean(donnees_indispo$NB_INDISPO_1[POLE=="FB"]),mean(donnees_indispo$NB_INDISPO_1[POLE=="BK"]), mean(donnees_indispo$NB_INDISPO_1[POLE=="BL"]), mean(donnees_indispo$NB_INDISPO_1[POLE=="BS"]), mean(donnees_indispo$NB_INDISPO_1[POLE=="S"]), mean(donnees_indispo$NB_INDISPO_1[POLE=="SS"]), mean(donnees_indispo$NB_INDISPO_1[POLE=="R"]))
 print(Moy_ind_1)
 
@@ -1020,11 +1022,11 @@ ordonnee_R=c(mean(donnees_indispo$NB_INDISPO_1[POLE=="R"]), mean(donnees_indispo
 x=matrix(data=c(1,2,3), nrow=3, ncol=1)
 y=matrix(data=c(ordonnee_AV, ordonnee_BF, ordonnee_BK, ordonnee_BL, ordonnee_BS, ordonnee_NAT, ordonnee_NS, ordonnee_R), nrow = 3, ncol = 8)
 
-#par(mar=c(5,5,2,2))
-matplot(x,y,type="l", ylim=range(y), col=c("black","red", "green3","blue","cyan","magenta", "yellow","gray"), lty=1:3, xaxt="n", ylab="Mean of Injuries", xlab="Downtime category", main="Average number of injuries per downtime category, for each centre", cex.main=0.8)
-legend('topright',legend = c("RW", "FB", "BK", "BL", "BS", "S", "SS", "R"), col = c("black","red", "green3","blue","cyan","magenta", "yellow","gray"), lty = 1:3, lwd = 1 )
+par(mar=c(5,5,2,2))
+matplot(x,y,type="l", ylim=range(y), col=c("black","red", "green3","blue","cyan","magenta", "yellow","gray"), lty=1:3, xaxt="n", ylab="Mean of Injuries", xlab="Type of downtime", main="Average number of injuries per downtime category, for each centre", cex.main=2, cex.lab = 1.8, cex.axis = 1.6, lwd = 4)
+legend('topright',legend = c("RW", "FB", "BK", "BL", "BS", "S", "SS", "R"), col = c("black","red", "green3","blue","cyan","magenta", "yellow","gray"), lty = 1:3, lwd = 4, ncol = 2, cex = 2)
 xtick=seq(1,3, by=1)
-axis(side=1, at=xtick, labels=c("Downtime 1", "Downtime 2", "Downtime 3"))
+axis(side=1, at=xtick, labels=c("Downtime 1", "Downtime 2", "Downtime 3"), cex.axis = 1.6)
 ```
 
 ```{r}

@@ -1,0 +1,72 @@
+---
+title: "CREPS_Brouillon"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readxl)
+library(ggplot2)
+library(ggmosaic)
+library(MASS)
+library(dplyr)
+library(fmsb)
+library(corrplot)
+```
+
+```{r}
+score_pr_po <- read_excel("Score1920_2021.xlsx")
+
+```
+
+
+```{r}
+POLES=score_pr_po$POLE
+MOB19=score_pr_po$`MOB 1920`
+MOB21=score_pr_po$`MOB 2021`
+STAB19=score_pr_po$`STAB 1920`
+STAB21=score_pr_po$`STAB 20 21`
+SCORE19=score_pr_po$`SCORE 1920`
+SCORE21=score_pr_po$`SCORE 2021`
+```
+
+```{r}
+plot.new()
+barplot(table(factor(SCORE21,levels=0:20)),axes=FALSE, main = "Pre and Post Test Scores", col ="cornflowerblue",cex.names=0.7)
+par(new=TRUE)
+barplot(table(factor(SCORE19,levels=0:20)), ylim = c(0,20), col = "cadetblue2",ylab="Number of athletes",xlab="Score",cex.names=0.7)
+legend('topright',legend = c("19-20","20-21"),lty = 1,col=c("cadetblue2","cornflowerblue"),lwd=2 )
+```
+
+```{r}
+boxplot( SCORE21~POLES , cex.axis = 0.8, main = "Boxplots parallèles des scores en fonction des pôles", xlab = "Centres", ylab = "Score21")
+```
+
+```{r}
+SP=as.data.frame(score_pr_po)
+DIFF=SCORE21-SCORE19
+cbind(SP,DIFF)
+```
+```{r}
+DIFF_neg=sum(DIFF<=0)
+DIFF_pos=sum(DIFF>0)
+pie(c(DIFF_neg,DIFF_pos),labels=c("-","+"),col=c("brown1","coral"), main = "Répartition des athlètes selon leur progression")
+legend("bottomleft",legend = c("Score 19 better than 21","Score 21 better than 19"),lty = 1,col=c("brown1","coral"),lwd=3 )
+
+```
+```{r}
+SS_ratio=sum(SCORE19<SCORE21&POLES=="SS")/sum(POLES=="SS")
+BL_ratio=sum(SCORE19<SCORE21&POLES=="BL")/sum(POLES=="BL")
+BK_ratio=sum(SCORE19<SCORE21&POLES=="BK")/sum(POLES=="BK")
+R_ratio=sum(SCORE19<SCORE21 &POLES=="R")/sum(POLES=="R")
+FB_ratio=sum(SCORE19<SCORE21&POLES=="FB")/sum(POLES=="FB")
+BS_ratio=sum(SCORE19<SCORE21 &POLES=="BS")/sum(POLES=="BS")
+SS_ratio
+BL_ratio
+BS_ratio
+R_ratio
+FB_ratio
+```
+
+
+

@@ -223,12 +223,15 @@ Blessures sont parfois des chocs, des coups, des blessures minimes, et d'autres 
 Faire la même chose, en précisant avec les scores en stabilité et en mobilité ?
 Types de blessures à discriminer ??
 
--   Reprenons notre étude sur le modèle log-linéaire, et ajustons le modèle complet.
-    Par le biais de ce modèle, on cherche à expliquer le nombre de blessures par le score total obtenu au TM2S, ainsi que le pôle auquel appartient l'athlète, avec des interactions entre ces deux variables explicatives.
+-   Reprenons notre étude sur le modèle log-linéaire, et ajustons le modèle complet. Par le biais de ce modèle, on cherche à expliquer le nombre de blessures par le score total obtenu au TM2S, ainsi que le pôle auquel appartient l'athlète, avec des interactions entre ces deux variables explicatives.
 
 ```{r}
 modpoiscomplet <- glm(BLESS ~  SCORE*POLES, data = donnees_creps21, family = poisson)
 summary(modpoiscomplet)
+```
+
+```{r}
+plot(modpoiscomplet)
 ```
 
 Au vu des résultats, pas beaucoup de paramètres associés aux variables semblent très significatifs... Commençons par voir si l'on peut annuler les interactions présentes dans le modèle complet, par un test de sous-modèle de rapport de vraisemblance :
@@ -259,6 +262,10 @@ Test de sous-modèle :
 
 ```{r}
 anova(modpoisscore,modpoisadd,test="Chisq")
+```
+
+```{r}
+anova(glm(BLESS ~  POLES, data = donnees_creps21, family = poisson),modpoisadd,test="Chisq")
 ```
 
 On obtient une $p$-valeur très inférieure à $5\%$ , on ne peut donc *a priori* pas simplifier le modèle, il y a bien un effet de l'appartenance au pôle sur les blessures que connaissent les athlètes.
@@ -424,3 +431,116 @@ Si le nombre de blessures n'est pas réduit, peut-être que les routines correct
 Et par extension, le test TM2S ne parvenait peut-être pas à mettre en évidence les faiblesses d'un athlète?
 Propos à nuancer: il faut un long moment pour corriger des défauts de mobilité/stabilité.
 Ainsi, il serait intéressant de comparer le nombre de blessures sur plusieurs saisons!
+
+# Comparaison score pré/post test
+
+```{r}
+# Importation du fichier de données depuis un .xlsx
+score_pr_po <- read_excel("Score1920_2021.xlsx")
+summary(score_pr_po)
+```
+
+```{r}
+# Renommage des colonnes de l'Excel
+POLES=score_pr_po$POLE
+MOB19=score_pr_po$`MOB 1920`
+MOB21=score_pr_po$`MOB 2021`
+STAB19=score_pr_po$`STAB 1920`
+STAB21=score_pr_po$`STAB 20 21`
+SCORE19=score_pr_po$`SCORE 1920`
+SCORE21=score_pr_po$`SCORE 2021`
+
+```
+
+En toute rigueur, on commence par vérifier la normalité de la distribution des scores pour les deux échantillons considérés ; même si nous savons qu'en pratique, pour un grand nombre $n$ d'individus, la loi tend vers une distribution normale.
+
+```{r}
+p1 = ggplot(data.frame(y=SCORE19), aes(sample = y))+
+  stat_qq() + 
+  stat_qq_line(col="red")+
+  ggtitle("2019-2020")
+p2 = ggplot(data.frame(y=SCORE21), aes(sample = y))+
+  stat_qq() + 
+  stat_qq_line(col="red")+
+  ggtitle("2020-2021")
+grid.arrange(p1,p2,ncol=2)
+```
+
+```{r}
+plot(ecdf(SCORE19), main="TM2S 2019-2020", xlab="2019-2020")
+x = seq(0, 20, 0.01)
+points(x, pnorm(x, mean = mean(SCORE19), sd = sd(SCORE19)), type = "l", col = "red")
+
+plot(ecdf(SCORE21), main="TM2S 2020-2021", xlab="2020-2021")
+x = seq(0, 20, 0.01)
+points(x, pnorm(x, mean = mean(SCORE21), sd = sd(SCORE21)), type = "l", col = "red")
+```
+
+```{r}
+
+```
+
+On commence par effectuer un test d'égalité des variances des deux échantillons
+
+```{r}
+var.test(score_pr_po$`SCORE 1920`, score_pr_po$`SCORE 2021`, paired = T)
+```
+
+```{r}
+var(score_pr_po$`SCORE 1920`)
+var(score_pr_po$`SCORE 2021`)
+```
+
+La $p$-valeur du test de comparaison des variances est de \$0.78\$, on ne rejette donc pas l'hypothèse nulle au risque de 5%.
+On pourra supposer par la suite que les variances de nos deux échantillons sont égales.
+
+On va supposer que les variances des deux échantillons sont égales, on construit à présent un test de Student de comparaison des moyennes :
+
+```{r}
+mean(score_pr_po$`SCORE 1920`)
+mean(score_pr_po$`SCORE 2021`)
+```
+
+```{r}
+t.test(score_pr_po$`SCORE 1920`,score_pr_po$`SCORE 2021`,var.equal = T, alternative = "less", paired = TRUE)
+```
+
+On obtient une $p$-valeur extrêmement faible, largement inférieure au risque 5%.
+On rejette donc avec certitude l'hypothèse nulle, à savoir l'égalité des moyennes entre les deux échantillons.
+On accepte alors qu'en 2020/2021, pour tous les pôles confondus, la moyenne est supérieure à l'année d'avant.
+On en conclut que les routines correctives ont eu un effet sur les scores au TM2S des athlètes de cet échantillon.
+
+```{r}
+mean(score_pr_po$`MOB 1920`)
+mean(score_pr_po$`MOB 2021`)
+```
+
+```{r}
+var(score_pr_po$`MOB 1920`)
+var(score_pr_po$`MOB 2021`)
+```
+
+```{r}
+var.test(score_pr_po$`MOB 1920`, score_pr_po$`MOB 2021`, paired = T, alternative = "two.sided")
+```
+
+```{r}
+t.test(score_pr_po$`MOB 1920`,score_pr_po$`MOB 2021`,var.equal = T, alternative = "less", paired = TRUE)
+```
+
+```{r}
+t.test(score_pr_po$`STAB 1920`,score_pr_po$`STAB 20 21`,var.equal = F, alternative = "less", paired = TRUE)
+```
+
+```{}
+```
+
+```{r}
+shapiro.test(score_pr_po$`SCORE 1920`)
+shapiro.test(score_pr_po$`SCORE 2021`)
+```
+
+```{r}
+wilcox.test(score_pr_po$`SCORE 1920`, score_pr_po$`SCORE 2021`, alternative = "less")
+
+```
